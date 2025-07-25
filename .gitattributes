@@ -1,2 +1,2 @@
 Makefile linguist-generated
-*.lds linguist-vendored
+*.ld linguist-generated

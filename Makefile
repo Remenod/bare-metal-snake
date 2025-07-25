@@ -1,35 +1,60 @@
-SRC_DIR := uefi-app
+SRC_DIR := src
 BUILD_DIR := build
 
-SRC_C := $(SRC_DIR)/main.c
-SRC_ASM := $(SRC_DIR)/start.asm
+BOOT := $(SRC_DIR)/boot.asm
+ENTRY := $(SRC_DIR)/kernel_entry.asm
+KERNEL := $(SRC_DIR)/kernel.c
+LINKER := $(SRC_DIR)/linker.ld
 
-OBJ_C := $(BUILD_DIR)/main.o
-OBJ_ASM := $(BUILD_DIR)/start.o
+BOOT_BIN := $(BUILD_DIR)/boot.bin
+ENTRY_OBJ := $(BUILD_DIR)/entry.o
+KERNEL_OBJ := $(BUILD_DIR)/kernel.o
+KERNEL_ELF := $(BUILD_DIR)/kernel.elf
+KERNEL_BIN := $(BUILD_DIR)/kernel.bin
 
-EFI := $(BUILD_DIR)/boot.efi
-LINKER_SCRIPT := $(SRC_DIR)/elf_x86_64_efi.lds
+IMAGE := $(BUILD_DIR)/image.img
 
-CFLAGS := -I/usr/include/efi -I/usr/include/efi/x86_64 -Wall -Wextra -ffreestanding -fno-stack-protector -mno-red-zone -fshort-wchar
-ASMFLAGS := -f elf64
+ASM := nasm
+CC := i386-elf-gcc
+LD := i386-elf-ld
+OBJCOPY := i386-elf-objcopy
 
-LDFLAGS := -nostdlib -T $(LINKER_SCRIPT) -shared -Bsymbolic -L/usr/lib -L/usr/lib/gnu-efi
+CFLAGS := -ffreestanding -m32 -c
+LDFLAGS := -T $(LINKER)
 
-.PHONY: all clean
-
-all: $(EFI)
+all: $(IMAGE)
 
 $(BUILD_DIR):
-	mkdir -p $@
+	mkdir -p $(BUILD_DIR)
 
-$(OBJ_C): $(SRC_C) | $(BUILD_DIR)
-	clang $(CFLAGS) -c $< -o $@
+$(BOOT_BIN): $(BOOT) | $(BUILD_DIR)
+	$(ASM) -f bin $(BOOT) -o $(BOOT_BIN)
 
-$(OBJ_ASM): $(SRC_ASM) | $(BUILD_DIR)
-	nasm $(ASMFLAGS) $< -o $@
+$(ENTRY_OBJ): $(ENTRY) | $(BUILD_DIR)
+	$(ASM) -f elf32 $(ENTRY) -o $(ENTRY_OBJ)
 
-$(EFI): $(OBJ_ASM) $(OBJ_C)
-	ld $(LDFLAGS) $^ -o $@
+$(KERNEL_OBJ): $(KERNEL) | $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(KERNEL) -o $(KERNEL_OBJ)
+
+$(KERNEL_ELF): $(ENTRY_OBJ) $(KERNEL_OBJ) $(LINKER)
+	$(LD) $(LDFLAGS) -o $(KERNEL_ELF) $(ENTRY_OBJ) $(KERNEL_OBJ)
+
+$(KERNEL_BIN): $(KERNEL_ELF)
+	$(OBJCOPY) -O binary $(KERNEL_ELF) $(KERNEL_BIN)
+	make pad_kernel
+
+$(IMAGE): $(BOOT_BIN) $(KERNEL_BIN)
+	cat $(BOOT_BIN) $(KERNEL_BIN) > $(IMAGE)
+
+pad_kernel:
+	@size=$$(stat -c%s $(KERNEL_BIN)); \
+	pad=$$(( (512 - (size % 512)) % 512 )); \
+	if [ $$pad -ne 0 ]; then \
+	  dd if=/dev/zero bs=1 count=$$pad >> $(KERNEL_BIN); \
+	fi
+
+run: $(IMAGE)
+	qemu-system-i386 -drive file=$(IMAGE),format=raw,if=floppy
 
 clean:
 	rm -rf $(BUILD_DIR)
