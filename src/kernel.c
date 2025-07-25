@@ -5,6 +5,15 @@ void put_char(int pos, char c)
     vga[pos] = (0x0F << 8) | c;
 }
 
+void put_string(int start_pos, char text[])
+{
+    int endpoint = start_pos + strlen(text);
+    for (int i = start_pos; i < endpoint; i++)
+    {
+        put_char(i, text[i - start_pos]);
+    }
+}
+
 void clear_screen()
 {
     unsigned short blank = (0x07 << 8) | ' ';
@@ -14,10 +23,21 @@ void clear_screen()
     }
 }
 
+int strlen(const char *s)
+{
+    int len = 0;
+    while (s[len] != '\0')
+    {
+        len++;
+    }
+    return len;
+}
+
 void kernel_main()
 {
-    put_char(0, 'H');
-    put_char(1, 'i');
+    char hello[] = "Hello, world!";
+
+    put_string(80 * 25 / 2 - strlen(hello) / 2, hello);
     while (1)
         ;
 }
