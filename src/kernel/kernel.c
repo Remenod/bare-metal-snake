@@ -1,6 +1,6 @@
-#include "lib/stdint.h"
-#include "lib/stddef.h"
-#include "lib/string.h"
+#include <stdint.h>
+#include <stddef.h>
+#include <string.h>
 
 volatile uint16_t *vga = (volatile uint16_t *)0xB8000;
 
