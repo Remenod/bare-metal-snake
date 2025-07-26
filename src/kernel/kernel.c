@@ -2,7 +2,7 @@
 #include "lib/stddef.h"
 #include "lib/string.h"
 
-volatile unsigned short *vga = (volatile unsigned short *)0xB8000;
+volatile uint16_t *vga = (volatile uint16_t *)0xB8000;
 
 void put_char(int pos, char c)
 {
@@ -20,7 +20,7 @@ void put_string(int start_pos, char text[])
 
 void clear_screen()
 {
-    unsigned short blank = (0x07 << 8) | ' ';
+    uint16_t blank = (0x07 << 8) | ' ';
     for (int i = 0; i < 80 * 25; i++)
     {
         vga[i] = blank;
