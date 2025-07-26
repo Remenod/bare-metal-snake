@@ -1,6 +1,6 @@
 #include <stdint.h>
-#include <stddef.h>
 #include <string.h>
+#include <stdbool.h>
 
 void kernel_main()
 {
@@ -8,6 +8,7 @@ void kernel_main()
     char hello[] = "Hello, world!";
 
     put_string(80 * 25 / 2 - strlen(hello) / 2, hello);
-    while (1)
-        ;
+    put_char(0, '1');
+    while (true)
+        asm volatile("hlt");
 }
