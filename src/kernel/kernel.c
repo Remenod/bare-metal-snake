@@ -1,3 +1,7 @@
+#include "lib/stdint.h"
+#include "lib/stddef.h"
+#include "lib/string.h"
+
 volatile unsigned short *vga = (volatile unsigned short *)0xB8000;
 
 void put_char(int pos, char c)
@@ -23,18 +27,9 @@ void clear_screen()
     }
 }
 
-int strlen(const char *s)
-{
-    int len = 0;
-    while (s[len] != '\0')
-    {
-        len++;
-    }
-    return len;
-}
-
 void kernel_main()
 {
+    clear_screen();
     char hello[] = "Hello, world!";
 
     put_string(80 * 25 / 2 - strlen(hello) / 2, hello);
