@@ -15,8 +15,11 @@ KERNEL_ELF := $(BUILD_DIR)/kernel.elf
 KERNEL_BIN := $(BUILD_DIR)/kernel.bin
 IMAGE := $(BUILD_DIR)/snake.img
 
-LIB_SRCS := $(wildcard $(SRC_DIR)/lib/*.c)
-LIB_OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(LIB_SRCS))
+LIB_C_SRCS := $(wildcard $(SRC_DIR)/lib/*.c)
+LIB_ASM_SRCS := $(wildcard $(SRC_DIR)/lib/*.asm)
+
+LIB_C_OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(LIB_C_SRCS))
+LIB_ASM_OBJS := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(LIB_ASM_SRCS))
 
 ASM := nasm
 CC := i386-elf-gcc
@@ -33,29 +36,42 @@ all: $(IMAGE)
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
+# Boot sector
 $(BOOT_BIN): $(BOOT_SRC) | $(BUILD_DIR)
-	$(ASM) -f bin $(BOOT_SRC) -o $(BOOT_BIN)
+	$(ASM) -f bin $< -o $@
 
+# Kernel entry (asm)
 $(ENTRY_OBJ): $(ENTRY_SRC) | $(BUILD_DIR)
-	$(ASM) -f elf32 $(ENTRY_SRC) -o $(ENTRY_OBJ)
+	$(ASM) -f elf32 $< -o $@
 
+# Kernel main (C)
 $(KERNEL_OBJ): $(KERNEL_SRC) | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $(KERNEL_SRC) -o $(KERNEL_OBJ)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+# Compile C library files
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(KERNEL_ELF): $(ENTRY_OBJ) $(KERNEL_OBJ) $(LIB_OBJS) $(LINKER)
-	$(LD) $(LDFLAGS) -o $(KERNEL_ELF) $(ENTRY_OBJ) $(KERNEL_OBJ) $(LIB_OBJS)
+# Compile ASM library files
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.asm | $(BUILD_DIR)
+	@mkdir -p $(dir $@)
+	$(ASM) -f elf32 $< -o $@
 
+# Link everything into kernel.elf
+$(KERNEL_ELF): $(ENTRY_OBJ) $(KERNEL_OBJ) $(LIB_C_OBJS) $(LIB_ASM_OBJS) $(LINKER)
+	$(LD) $(LDFLAGS) -o $@ $(ENTRY_OBJ) $(KERNEL_OBJ) $(LIB_C_OBJS) $(LIB_ASM_OBJS)
+
+# Extract flat binary
 $(KERNEL_BIN): $(KERNEL_ELF)
-	$(OBJCOPY) -O binary $(KERNEL_ELF) $(KERNEL_BIN)
+	$(OBJCOPY) -O binary $< $@
 	$(MAKE) pad_kernel
 
+# Final image: bootloader + kernel
 $(IMAGE): $(BOOT_BIN) $(KERNEL_BIN)
-	cat $(BOOT_BIN) $(KERNEL_BIN) > $(IMAGE)
+	cat $^ > $@
 
+# Pad kernel to multiple of 512
 pad_kernel:
 	@size=$$(stat -c%s $(KERNEL_BIN)); \
 	pad=$$(( (512 - (size % 512)) % 512 )); \
