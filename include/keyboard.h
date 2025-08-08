@@ -1,5 +1,4 @@
 #pragma once
-#include <stdint.h>
 
 #define KEY_UP 1
 #define KEY_DOWN 2

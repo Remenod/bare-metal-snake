@@ -1,5 +1,7 @@
 #include <pic.h>
 
+#include <ports.h>
+
 void remap_pic()
 {
     outb(0x20, 0x11);
@@ -14,6 +16,6 @@ void remap_pic()
     outb(0x21, 0x01);
     outb(0xA1, 0x01);
 
-    outb(0x21, 0xFC); // дозвіл IRQ0 і IRQ1
-    outb(0xA1, 0xFF); // заборона всіх на slave
+    outb(0x21, 0xFC); // enable IRQ0 and IRQ1
+    outb(0xA1, 0xFF); // disable all on slave
 }

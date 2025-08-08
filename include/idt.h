@@ -1,9 +1,6 @@
 #pragma once
 
 #include <stdint.h>
-#include <stdint.h>
-#include <ports.h>
-#include <pic.h>
 
 #define IDT_ENTRIES 256
 

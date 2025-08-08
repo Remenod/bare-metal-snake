@@ -1,5 +1,8 @@
 #include <screen.h>
 
+#include <ports.h>
+#include <string.h>
+
 volatile uint16_t *vga = (volatile uint16_t *)0xB8000;
 
 void put_char(int pos, char c)

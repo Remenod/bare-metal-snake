@@ -1,7 +1,9 @@
 #include <keyboard.h>
+
 #include <ports.h>
 #include <isr.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #define KBD_DATA_PORT 0x60
 

@@ -1,5 +1,8 @@
 #include <idt.h>
 
+#include <ports.h>
+#include <pic.h>
+
 struct idt_entry
 {
     uint16_t base_low;
