@@ -3,6 +3,7 @@
 #include <keyboard.h>
 #include <string.h>
 #include <stdbool.h>
+#include <pit.h>
 #include "../snake/snake.h"
 #include "../text_sandbox/text_sandbox.h"
 
@@ -20,27 +21,30 @@ static App apps[] = {
 
 void app_selector()
 {
-    clear_screen();
-    print("=== Application Selector ===\n\n");
-
-    for (uint32_t i = 0; i < APP_COUNT; i++)
-    {
-        print_dec(i + 1);
-        print(". ");
-        print(apps[i].name);
-        print("\n");
-    }
-
-    print("\nSelect app: ");
-
-    int choice = read_number();
-    if (choice > 0 && choice <= APP_COUNT)
+    while (true)
     {
         clear_screen();
-        apps[choice - 1].entry_point();
-    }
-    else
-    {
-        print("\nInvalid selection!\n");
+        print("=== Application Selector ===\n\n");
+
+        for (uint32_t i = 0; i < APP_COUNT; i++)
+        {
+            print_dec(i + 1);
+            print(". ");
+            print(apps[i].name);
+            print("\n");
+        }
+
+        print("\nSelect app: ");
+        int choice = read_number();
+        if (choice > 0 && choice <= APP_COUNT)
+        {
+            clear_screen();
+            apps[choice - 1].entry_point();
+        }
+        else
+        {
+            print("\nInvalid selection!\n");
+            sleep(1000);
+        }
     }
 }
