@@ -7,3 +7,4 @@
 
 void keyboard_install();
 char get_char();
+int read_number();
