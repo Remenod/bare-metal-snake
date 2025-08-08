@@ -8,7 +8,7 @@ int strlen(const char *str)
     return len;
 }
 
-void int_to_str(int value, char *str)
+char *int_to_str(int value, char *str)
 {
     char *p = str;
     char *p1, *p2;
@@ -39,4 +39,6 @@ void int_to_str(int value, char *str)
         *p1++ = *p2;
         *p2-- = tmp;
     }
+
+    return str;
 }
