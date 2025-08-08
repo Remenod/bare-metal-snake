@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <ports.h>
+#include <string.h>
 
 void put_char(int pos, char c);
 

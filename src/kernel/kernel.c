@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <keyboard.h>
 #include <screen.h>
+#include <idt.h>
 
 void kernel_main()
 {

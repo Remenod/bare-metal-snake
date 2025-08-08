@@ -1,3 +1,5 @@
+#include <pic.h>
+
 void remap_pic()
 {
     outb(0x20, 0x11);
