@@ -80,7 +80,7 @@ pad_kernel:
 	fi
 
 run: $(IMAGE)
-	qemu-system-i386 -drive file=$(IMAGE),format=raw,if=floppy
+	qemu-system-i386 -drive file=$(IMAGE),format=raw
 
 clean:
 	rm -rf $(BUILD_DIR)

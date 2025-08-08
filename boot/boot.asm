@@ -124,5 +124,20 @@ msg_disk_error     db "Disk read error", 0
 
 BOOT_DRIVE db 0
 
-times 510 - ($ - $$) db 0
-dw 0xaa55
+times 446 - ($ - $$) db 0
+
+; ===== Partition Table (64 bytes) =====
+; One active partition starting at LBA=1, size — 100 sectors
+
+db 0x80                    ; status — active
+db 0x01, 0x01, 0x00        ; CHS start (doesn't matter, set to minimum)
+db 0x06                    ; partition type (FAT16, or any valid one)
+db 0xFE, 0xFF, 0xFF        ; CHS end (maximum — for reliability)
+dd 0x00000001              ; LBA start = 1 (after MBR)
+dd 0x00000064              ; size = 100 sectors (can be changed)
+
+times 16 * 3 db 0          ; the remaining 3 records are zero
+
+; ===== Boot Signature =====
+dw 0xAA55
+
