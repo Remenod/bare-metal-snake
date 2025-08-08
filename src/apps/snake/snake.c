@@ -1,3 +1,13 @@
 #include "snake.h"
 
-void snake_main() {}
+#include <stdbool.h>
+#include <keyboard.h>
+
+void snake_main()
+{
+    while (true)
+    {
+        if (check_exit_key())
+            return;
+    }
+}

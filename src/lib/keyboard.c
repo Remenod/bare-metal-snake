@@ -2,7 +2,6 @@
 
 #include <ports.h>
 #include <isr.h>
-#include <stdbool.h>
 #include <stdint.h>
 #include <screen.h>
 
@@ -129,6 +128,12 @@ int read_number()
         value = -value;
 
     return value;
+}
+
+bool_t check_exit_key(void)
+{
+    char c = get_char();
+    return (c == 27); // 27 — ESC
 }
 
 void keyboard_install()

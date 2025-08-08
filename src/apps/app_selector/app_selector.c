@@ -34,7 +34,7 @@ void app_selector()
             print("\n");
         }
 
-        print("\nSelect app: ");
+        print("\nPress ESC to exit any app\nSelect app: ");
         int choice = read_number();
         if (choice > 0 && choice <= APP_COUNT)
         {

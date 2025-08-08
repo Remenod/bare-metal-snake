@@ -21,6 +21,8 @@ void text_sandbox_main()
 
         switch (c)
         {
+        case 27:
+            return;
         case '\b':
             i--;
             put_char(i, 0);
