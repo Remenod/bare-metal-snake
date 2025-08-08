@@ -2,6 +2,7 @@
 
 #include <ports.h>
 #include <string.h>
+#include <stdbool.h>
 
 volatile uint16_t *vga = (volatile uint16_t *)0xB8000;
 
@@ -28,10 +29,18 @@ void put_string(int start_pos, char text[])
     }
 }
 
-void disable_vga_cursor()
+void set_cursor_visibility(bool_t visible)
 {
     outb(0x3D4, 0x0A);
-    outb(0x3D5, 0x20);
+    uint8_t cursor_start = inb(0x3D5);
+
+    if (visible)
+        cursor_start &= ~0x20;
+    else
+        cursor_start |= 0x20;
+
+    outb(0x3D4, 0x0A);
+    outb(0x3D5, cursor_start);
 }
 
 void move_cursor(uint16_t pos)
