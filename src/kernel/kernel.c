@@ -1,7 +1,7 @@
 #include <idt.h>
 #include <screen.h>
 #include <keyboard.h>
-#include "../apps/text_sandbox/text_sandbox.h"
+#include "../apps/app_selector/app_selector.h"
 
 void kernel_main()
 {
@@ -10,5 +10,5 @@ void kernel_main()
     idt_install();
     keyboard_install();
 
-    text_sandbox_main();
+    app_selector();
 }
