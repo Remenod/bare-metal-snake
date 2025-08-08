@@ -1,7 +1,9 @@
 #include <keyboard.h>
+
 #include <ports.h>
 #include <isr.h>
-#include <stdbool.h>
+#include <stdint.h>
+#include <screen.h>
 
 #define KBD_DATA_PORT 0x60
 
@@ -19,6 +21,7 @@ static const char scancode_ascii[128] = {
 
 static volatile char last_char = 0;
 static volatile bool_t extended = 0;
+char read_number_buf[12];
 
 void keyboard_handler()
 {
@@ -72,6 +75,65 @@ char get_char()
     char c = last_char;
     last_char = 0;
     return c;
+}
+
+int read_number()
+{
+    int idx = 0;
+    bool_t negative = false;
+
+    while (1)
+    {
+        char c = 0;
+        while (!(c = get_char()))
+            asm volatile("hlt");
+
+        if (c == '\n' || c == '\r')
+        {
+            if (idx == 0)
+                continue;
+            read_number_buf[idx] = '\0';
+            break;
+        }
+
+        if (c == '\b' && idx > 0)
+        {
+            idx--;
+            print_char(c);
+            continue;
+        }
+
+        if (idx == 0 && c == '-')
+        {
+            negative = true;
+            read_number_buf[idx++] = c;
+            print_char(c);
+            continue;
+        }
+
+        if (c >= '0' && c <= '9' && idx < (int)(sizeof(read_number_buf) - 1))
+        {
+            read_number_buf[idx++] = c;
+            print_char(c);
+        }
+    }
+
+    int value = 0;
+    int start = (negative ? 1 : 0);
+    for (int i = start; read_number_buf[i] != '\0'; i++)
+    {
+        value = value * 10 + (read_number_buf[i] - '0');
+    }
+    if (negative)
+        value = -value;
+
+    return value;
+}
+
+bool_t check_exit_key(void)
+{
+    char c = get_char();
+    return (c == 27); // 27 — ESC
 }
 
 void keyboard_install()

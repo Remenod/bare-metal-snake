@@ -1,5 +1,5 @@
 #include <idt.h>
-#include <stdint.h>
+
 #include <ports.h>
 #include <pic.h>
 
