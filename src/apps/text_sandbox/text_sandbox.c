@@ -11,7 +11,7 @@ void text_sandbox_main()
     char hello[] = "Hello, world!";
 
     put_string(80 * 25 / 2 - strlen(hello) / 2, hello);
-    int i = 3;
+    int i = 0;
     move_cursor(i);
     while (true)
     {
