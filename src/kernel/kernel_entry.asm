@@ -11,14 +11,6 @@ _start:
     mov ss, ax
     mov esp, 0x90000
 
-    mov edi, 0xB8000
-    mov ecx, 80 * 25
-
-    mov eax, 0x07200720
-clear_loop:
-    stosd
-    loop clear_loop
-
     call kernel_main
 
 .loop:
