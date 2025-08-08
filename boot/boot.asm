@@ -13,7 +13,14 @@ start:
   mov bp, 0x9000
   mov sp, bp
 
+  mov si, msg_loading_kernel
+  call print_str
+
   call load_kernel
+
+  mov si, msg_kernel_loaded
+  call print_str
+
   call switch_to_pm
   jmp $
 
@@ -34,6 +41,8 @@ disk_load:
   ret
 
 disk_error:
+  mov si, msg_disk_error
+  call print_str
   jmp $
 
 load_kernel:
@@ -43,6 +52,21 @@ load_kernel:
   call disk_load
   ret
 
+; ===== PRINT TO SCREEN =====
+print_str:
+  pusha
+  mov ah, 0x0E
+.print_char:
+  lodsb
+  cmp al, 0
+  je .done
+  int 0x10
+  jmp .print_char
+.done:
+  popa
+  ret
+
+; ===== GDT =====
 gdt_start:
   dq 0x0
 
@@ -92,6 +116,11 @@ init_pm:
   mov esp, ebp
   call KERNEL_OFFSET
   jmp $
+
+; ===== STRINGS =====
+msg_loading_kernel db "Loading kernel...", 0
+msg_kernel_loaded  db "Kernel loaded!", 0
+msg_disk_error     db "Disk read error", 0
 
 BOOT_DRIVE db 0
 
