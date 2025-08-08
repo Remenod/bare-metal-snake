@@ -21,6 +21,9 @@ LIB_ASM_SRCS := $(wildcard $(SRC_DIR)/lib/*.asm)
 LIB_C_OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(LIB_C_SRCS))
 LIB_ASM_OBJS := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(LIB_ASM_SRCS))
 
+APP_C_SRCS := $(wildcard $(SRC_DIR)/apps/**/*.c)
+APP_OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(APP_C_SRCS))
+
 ASM := nasm
 CC := i386-elf-gcc
 LD := i386-elf-ld
@@ -58,9 +61,16 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.asm | $(BUILD_DIR)
 	@mkdir -p $(dir $@)
 	$(ASM) -f elf32 $< -o $@
 
-# Link everything into kernel.elf
-$(KERNEL_ELF): $(ENTRY_OBJ) $(KERNEL_OBJ) $(LIB_C_OBJS) $(LIB_ASM_OBJS) $(LINKER)
-	$(LD) $(LDFLAGS) -o $@ $(ENTRY_OBJ) $(KERNEL_OBJ) $(LIB_C_OBJS) $(LIB_ASM_OBJS)
+# Create build/apps directory for app objects
+$(BUILD_DIR)/apps:
+	mkdir -p $@
+
+# Ensure app objects directory exists before compiling app .c files
+$(BUILD_DIR)/apps/%.o: | $(BUILD_DIR)/apps
+
+# Link everything into kernel.elf (include apps objects)
+$(KERNEL_ELF): $(ENTRY_OBJ) $(KERNEL_OBJ) $(LIB_C_OBJS) $(LIB_ASM_OBJS) $(APP_OBJS) $(LINKER)
+	$(LD) $(LDFLAGS) -o $@ $(ENTRY_OBJ) $(KERNEL_OBJ) $(LIB_C_OBJS) $(LIB_ASM_OBJS) $(APP_OBJS)
 
 # Extract flat binary
 $(KERNEL_BIN): $(KERNEL_ELF)
@@ -71,7 +81,7 @@ $(KERNEL_BIN): $(KERNEL_ELF)
 $(IMAGE): $(BOOT_BIN) $(KERNEL_BIN)
 	cat $^ > $@
 
-# Pad kernel to multiple of 512
+# Pad kernel to multiple of 512 bytes
 pad_kernel:
 	@size=$$(stat -c%s $(KERNEL_BIN)); \
 	pad=$$(( (512 - (size % 512)) % 512 )); \
