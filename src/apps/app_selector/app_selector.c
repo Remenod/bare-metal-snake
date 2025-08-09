@@ -36,7 +36,7 @@ void app_selector()
 
         print("\nPress ESC to exit any app\nSelect app: ");
         int choice = read_number();
-        if (choice > 0 && choice <= APP_COUNT)
+        if (choice > 0 && choice <= (int)APP_COUNT)
         {
             clear_screen();
             apps[choice - 1].entry_point();
