@@ -13,12 +13,12 @@ char buf[12];
 uint16_t snake_size, tail_end_shift, head_pos, apple_pos;
 uint16_t tail[2000];
 
-uint16_t get_random_even_apple_pos()
+uint16_t get_random_odd_apple_pos()
 {
     uint16_t res = (uint32_t)get_timer_ticks() % 1920;
-    res = res - (res % 2);
+    res = res - (res % 2) + 1;
     if (res == head_pos || contains(tail, snake_size, res))
-        return get_random_even_apple_pos();
+        return get_random_odd_apple_pos();
     else
         return res;
 }
@@ -27,11 +27,11 @@ void snake_main()
 {
     snake_size = 4;
     tail_end_shift = 0;
-    tail[0] = 0;
-    tail[1] = 2;
-    tail[2] = 4;
-    head_pos = 6;
-    apple_pos = get_random_even_apple_pos();
+    tail[0] = 1;
+    tail[1] = 3;
+    tail[2] = 5;
+    head_pos = 7;
+    apple_pos = get_random_odd_apple_pos();
     put_char(apple_pos - 1, 177);
     put_char(apple_pos, 177);
 
@@ -73,7 +73,7 @@ void snake_main()
         if (head_pos == apple_pos)
         {
             snake_size++;
-            apple_pos = get_random_even_apple_pos();
+            apple_pos = get_random_odd_apple_pos();
             put_char(apple_pos - 1, 177);
             put_char(apple_pos, 177);
         }
