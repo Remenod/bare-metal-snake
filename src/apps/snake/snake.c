@@ -13,6 +13,16 @@ char buf[12];
 uint16_t snake_size, tail_end_shift, head_pos, apple_pos;
 uint16_t tail[2000];
 
+uint16_t get_random_even_apple_pos()
+{
+    uint16_t res = (uint32_t)get_timer_ticks() % 1920;
+    res = res - (res % 2);
+    if (res == head_pos || contains(tail, snake_size, res))
+        return get_random_even_apple_pos();
+    else
+        return res;
+}
+
 void snake_main()
 {
     snake_size = 4;
@@ -21,6 +31,9 @@ void snake_main()
     tail[1] = 2;
     tail[2] = 4;
     head_pos = 6;
+    apple_pos = get_random_even_apple_pos();
+    put_char(apple_pos - 1, 177);
+    put_char(apple_pos, 177);
 
     while (true)
     {
@@ -53,16 +66,17 @@ void snake_main()
                 head_pos += 2;
             break;
         }
-        put_string(1920, "                                                                               ");
-        // put_string(1930, int_to_str(tail[0], buf));
-        // put_string(1940, int_to_str(tail[1], buf));
-        // put_string(1950, int_to_str(tail[2], buf));
-        // put_string(1960, int_to_str(tail[3], buf));
-        put_string(1970, int_to_str(head_pos, buf));
-        put_string(1980, int_to_str(snake_size, buf));
 
         if (contains(tail, snake_size, head_pos))
             return; // TODO improve lose routine
+
+        if (head_pos == apple_pos)
+        {
+            snake_size++;
+            apple_pos = get_random_even_apple_pos();
+            put_char(apple_pos - 1, 177);
+            put_char(apple_pos, 177);
+        }
 
         put_char(head_pos - 1, 219);
         put_char(head_pos, 219); // 177 178 good also
@@ -73,5 +87,13 @@ void snake_main()
 
         tail_end_shift++;
         tail_end_shift %= snake_size;
+
+        put_string(1920, "                                                                               ");
+        // put_string(1930, int_to_str(tail[0], buf));
+        // put_string(1940, int_to_str(tail[1], buf));
+        // put_string(1950, int_to_str(tail[2], buf));
+        put_string(1960, int_to_str(apple_pos, buf));
+        put_string(1970, int_to_str(head_pos, buf));
+        put_string(1980, int_to_str(snake_size, buf));
     }
 }
