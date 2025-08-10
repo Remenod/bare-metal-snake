@@ -7,6 +7,7 @@
 
 void text_sandbox_main()
 {
+    set_cursor_visibility(true);
     clear_screen();
     for (int i = 0; i < 257; i++)
         print_char(i);

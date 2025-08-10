@@ -25,6 +25,7 @@ uint16_t get_random_odd_apple_pos()
 
 void snake_main()
 {
+    set_cursor_visibility(false);
     snake_size = 4;
     tail_end_shift = 0;
     tail[0] = 1;
