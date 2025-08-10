@@ -24,6 +24,9 @@ LIB_ASM_OBJS := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(LIB_ASM_SRCS))
 APP_C_SRCS := $(wildcard $(SRC_DIR)/apps/**/*.c)
 APP_OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(APP_C_SRCS))
 
+DRIVERS_C_SRCS := $(wildcard $(SRC_DIR)/drivers/*.c)
+DRIVERS_OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(DRIVERS_C_SRCS))
+
 ASM := nasm
 CC := i386-elf-gcc
 LD := i386-elf-ld
@@ -69,8 +72,8 @@ $(BUILD_DIR)/apps:
 $(BUILD_DIR)/apps/%.o: | $(BUILD_DIR)/apps
 
 # Link everything into kernel.elf (include apps objects)
-$(KERNEL_ELF): $(ENTRY_OBJ) $(KERNEL_OBJ) $(LIB_C_OBJS) $(LIB_ASM_OBJS) $(APP_OBJS) $(LINKER)
-	$(LD) $(LDFLAGS) -o $@ $(ENTRY_OBJ) $(KERNEL_OBJ) $(LIB_C_OBJS) $(LIB_ASM_OBJS) $(APP_OBJS)
+$(KERNEL_ELF): $(ENTRY_OBJ) $(KERNEL_OBJ) $(LIB_C_OBJS) $(LIB_ASM_OBJS) $(APP_OBJS) $(DRIVERS_OBJS) $(LINKER)
+	$(LD) $(LDFLAGS) -o $@ $(ENTRY_OBJ) $(KERNEL_OBJ) $(LIB_C_OBJS) $(LIB_ASM_OBJS) $(APP_OBJS) $(DRIVERS_OBJS)
 
 # Extract flat binary
 $(KERNEL_BIN): $(KERNEL_ELF)
@@ -90,7 +93,7 @@ pad_kernel:
 	fi
 
 run: $(IMAGE)
-	qemu-system-i386 -drive file=$(IMAGE),format=raw
+	qemu-system-i386 -serial stdio -drive file=$(IMAGE),format=raw
 
 clean:
 	rm -rf $(BUILD_DIR)

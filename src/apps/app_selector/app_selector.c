@@ -25,6 +25,11 @@ void app_selector()
     {
         clear_screen();
         print("=== Application Selector ===\n\n");
+        for (int n = 0; n < 256; n++)
+        {
+            print_char(n);
+        }
+        print("\n\n");
 
         for (uint32_t i = 0; i < APP_COUNT; i++)
         {
