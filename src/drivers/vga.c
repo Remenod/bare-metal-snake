@@ -11,7 +11,7 @@ To do:
 - flesh out code to support SVGA chips?
 - do something with 16- and 256-color palettes?
 *****************************************************************************/
-/*vendored from https://files.osdev.org/mirrors/geezer/osd/graphics/modes.c*/
+/*vendored from https://files.osdev.org/mirrors/geezer/osd/graphics/modes.c */
 
 #include <ports.h> /* inb(), outb() */
 #include <stddef.h>
@@ -33,6 +33,7 @@ To do:
 #define VGA_GC_DATA 0x3CF
 
 #define VGA_PLANE_FONT 2
+#define FONT_PLANE_ADDRESS ((uint8_t *)0xA0000)
 
 /*			COLOR emulation		MONO emulation */
 #define VGA_CRTC_INDEX 0x3D4 /* 0x3B4 */
@@ -1534,18 +1535,26 @@ void write_regs(uint8_t *regs)
     outb(VGA_AC_INDEX, 0x20);
 }
 
-void set_plane(unsigned p)
-{
-    uint8_t pmask;
+// void set_plane(unsigned p)
+// {
+//     uint8_t pmask;
+//
+//     p &= 3;
+//     pmask = 1 << p;
+//     /* set read plane */
+//     outb(VGA_GC_INDEX, 4);
+//     outb(VGA_GC_DATA, p);
+//     /* set write plane */
+//     outb(VGA_SEQ_INDEX, 2);
+//     outb(VGA_SEQ_DATA, pmask);
+// }
 
-    p &= 3;
-    pmask = 1 << p;
-    /* set read plane */
-    outb(VGA_GC_INDEX, 4);
-    outb(VGA_GC_DATA, p);
-    /* set write plane */
+void set_plane(int plane)
+{
     outb(VGA_SEQ_INDEX, 2);
-    outb(VGA_SEQ_DATA, pmask);
+    uint8_t val = inb(VGA_SEQ_DATA);
+    val = (val & 0xFC) | (plane & 0x03);
+    outb(VGA_SEQ_DATA, val);
 }
 
 /*****************************************************************************
@@ -1692,26 +1701,40 @@ void read_font(uint8_t font[256][FONT_HEIGHT])
 {
     uint8_t seq2, seq4, gc4, gc5, gc6;
 
+    // Зберігаємо поточні регістри VGA
     outb(VGA_SEQ_INDEX, 2);
     seq2 = inb(VGA_SEQ_DATA);
+
     outb(VGA_SEQ_INDEX, 4);
     seq4 = inb(VGA_SEQ_DATA);
+
     outb(VGA_GC_INDEX, 4);
     gc4 = inb(VGA_GC_DATA);
+
     outb(VGA_GC_INDEX, 5);
     gc5 = inb(VGA_GC_DATA);
+
     outb(VGA_GC_INDEX, 6);
     gc6 = inb(VGA_GC_DATA);
 
+    outb(VGA_SEQ_INDEX, 4);
     outb(VGA_SEQ_DATA, seq4 | 0x04);
-    outb(VGA_GC_DATA, gc5 & ~0x10);
-    outb(VGA_GC_DATA, gc6 & ~0x02);
+
+    outb(VGA_GC_INDEX, 5);
+    outb(VGA_GC_DATA, gc5 & ~0x10); // clear bit 4 - disable odd/even
+
+    outb(VGA_GC_INDEX, 6);
+    outb(VGA_GC_DATA, gc6 & ~0x02); // clear bit 1 - disable chain odd/even addressing
 
     set_plane(VGA_PLANE_FONT);
 
-    for (int i = 0; i < 256; i++)
-        for (int j = 0; j < FONT_HEIGHT; j++)
-            font[i][j] = ((uint8_t *)0xA0000)[i * 32 + j];
+    for (int ch = 0; ch < 256; ch++)
+    {
+        for (int row = 0; row < FONT_HEIGHT; row++)
+        {
+            font[ch][row] = FONT_PLANE_ADDRESS[ch * 32 + row];
+        }
+    }
 
     outb(VGA_SEQ_INDEX, 2);
     outb(VGA_SEQ_DATA, seq2);

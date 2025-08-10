@@ -12,8 +12,8 @@ start:
   ;mov ax, 0x0013     ; 13h — 320x200x256
   ;int 0x10
 
-  mov ax, 0x0003     ; 03h
-  int 0x10
+  ;mov ax, 0x0003     ; 03h
+  ;int 0x10
 
   mov [BOOT_DRIVE], dl
   mov bp, 0x9000
@@ -53,7 +53,7 @@ disk_error:
 
 load_kernel:
   mov bx, KERNEL_OFFSET
-  mov dh, 26                       ; kernel sectors count
+  mov dh, 19                       ; kernel sectors count
   mov dl, [BOOT_DRIVE]
   call disk_load
   ret

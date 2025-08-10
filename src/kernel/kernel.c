@@ -2,6 +2,7 @@
 #include <screen.h>
 #include <keyboard.h>
 #include <pit.h>
+#include <string.h>
 #include "../apps/app_selector/app_selector.h"
 
 #include "../drivers/vga.h"
@@ -28,17 +29,27 @@ void kernel_main()
     // sleep(2000);
     // serial_write_char('\n');
     // serial_write_char('\n');
-    demo_graphics();
 
-    draw_mode13h_test_pattern();
+    uint8_t font_buf[256][FONT_HEIGHT];
+
+    read_font(font_buf);
+    send_font(font_buf);
+
+    // sleep(5000);
+    // demo_graphics();
+
+    // draw_mode13h_test_pattern();
+
+    read_font(font_buf);
+    send_font(font_buf);
     // read_regs(dump);
 
     // serial_write_dump_hex(dump, 61);
 
-    sleep(2000);
+    // sleep(5000);
     // write_regs(dump);
 
-    set_text_m();
+    // set_text_m();
 
     // serial_write_char('\n');
     // serial_write_char('\n');
@@ -132,6 +143,24 @@ void send_palette(uint8_t palette[256][3])
         {
             serial_write_uint8(palette[i][j]);
             if (j < 2)
+                serial_write_char(' ');
+        }
+        serial_write_str("\r\n");
+    }
+}
+
+void send_font(uint8_t font[256][FONT_HEIGHT])
+{
+    char print_dec_buf[12];
+    for (int i = 0; i < 256; i++)
+    {
+        serial_write_str(int_to_str(i, print_dec_buf));
+        serial_write_str(":  ");
+        for (int j = 0; j < FONT_HEIGHT; j++)
+        {
+
+            serial_write_hex_byte(font[i][j]);
+            if (j < FONT_HEIGHT - 1)
                 serial_write_char(' ');
         }
         serial_write_str("\r\n");
