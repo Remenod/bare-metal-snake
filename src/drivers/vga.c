@@ -14,9 +14,8 @@ To do:
 /*vendored from https://files.osdev.org/mirrors/geezer/osd/graphics/modes.c */
 
 #include <ports.h> /* inb(), outb() */
-#include <stddef.h>
-#include <screen.h>
-#include <stdint.h>
+#include <drivers/screen.h>
+#include <lib/types.h>
 
 #define VGA_AC_INDEX 0x3C0
 #define VGA_AC_WRITE 0x3C0
@@ -47,7 +46,8 @@ To do:
 #define VGA_NUM_REGS (1 + VGA_NUM_SEQ_REGS + VGA_NUM_CRTC_REGS + \
                       VGA_NUM_GC_REGS + VGA_NUM_AC_REGS)
 
-static inline void pokeb(unsigned seg, unsigned off, uint8_t val)
+static inline void
+pokeb(unsigned seg, unsigned off, uint8_t val)
 {
     volatile uint8_t *addr = (volatile uint8_t *)(seg * 16 + off);
     *addr = val;
@@ -1701,7 +1701,6 @@ void read_font(uint8_t font[256][FONT_HEIGHT])
 {
     uint8_t seq2, seq4, gc4, gc5, gc6;
 
-    // Зберігаємо поточні регістри VGA
     outb(VGA_SEQ_INDEX, 2);
     seq2 = inb(VGA_SEQ_DATA);
 

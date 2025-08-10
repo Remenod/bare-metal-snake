@@ -1,7 +1,7 @@
-#include <idt.h>
-#include <screen.h>
-#include <keyboard.h>
-#include <pit.h>
+#include <interrupts/idt.h>
+#include <drivers/screen.h>
+#include <drivers/keyboard.h>
+#include <timer/pit.h>
 #include <string.h>
 #include "../apps/app_selector/app_selector.h"
 
@@ -29,7 +29,6 @@ void kernel_main()
     // sleep(2000);
     // serial_write_char('\n');
     // serial_write_char('\n');
-
     uint8_t font_buf[256][FONT_HEIGHT];
 
     read_font(font_buf);
