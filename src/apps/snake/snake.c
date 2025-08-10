@@ -67,6 +67,9 @@ void snake_main()
             break;
         }
 
+        if (head_pos > 1920)
+            head_pos = 1921; // TODO make this thing smarter
+
         if (contains(tail, snake_size, head_pos))
             return; // TODO improve lose routine
 
