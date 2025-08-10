@@ -8,6 +8,10 @@
 void text_sandbox_main()
 {
     clear_screen();
+    for (int i = 0; i < 257; i++)
+        print_char(i);
+    print_char('\n');
+    print_char(219);
     char hello[] = "Hello, world!";
 
     put_string(80 * 25 / 2 - strlen(hello) / 2, hello);

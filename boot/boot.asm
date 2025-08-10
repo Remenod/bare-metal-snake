@@ -47,7 +47,7 @@ disk_error:
 
 load_kernel:
   mov bx, KERNEL_OFFSET
-  mov dh, 9                       ; kernel sectors count
+  mov dh, 10                       ; kernel sectors count
   mov dl, [BOOT_DRIVE]
   call disk_load
   ret
