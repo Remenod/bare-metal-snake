@@ -1701,6 +1701,7 @@ void read_font(uint8_t font[256][FONT_HEIGHT])
 {
     uint8_t seq2, seq4, gc4, gc5, gc6;
 
+    // Зберігаємо поточні регістри VGA
     outb(VGA_SEQ_INDEX, 2);
     seq2 = inb(VGA_SEQ_DATA);
 
