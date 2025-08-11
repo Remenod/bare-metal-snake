@@ -71,6 +71,7 @@ restart:
         char c;
         while (!(c = get_char()))
         {
+
             if (ticks_on_last_automove + game_speed < get_timer_ticks())
             {
                 c = last_key;
@@ -80,7 +81,6 @@ restart:
             show_info((int[]){ticks_on_last_automove, get_timer_ticks(), 0, apple_pos, head_pos, snake_size});
             asm volatile("hlt");
         }
-        ticks_on_last_automove = get_timer_ticks();
         switch (c)
         {
         case 27:
@@ -105,8 +105,10 @@ restart:
                 head_pos += 2;
             last_key = KEY_RIGHT;
             break;
+        default:
+            continue;
         }
-
+        ticks_on_last_automove = get_timer_ticks();
         if (head_pos > 1920)
             head_pos = 1921; // TODO make this thing smarter
 
