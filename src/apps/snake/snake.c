@@ -86,21 +86,29 @@ restart:
         case 27:
             return;
         case KEY_UP:
+            if (last_key == KEY_DOWN)
+                continue;
             if (head_pos >= 80)
                 head_pos -= 80;
             last_key = KEY_UP;
             break;
         case KEY_DOWN:
+            if (last_key == KEY_UP)
+                continue;
             if (head_pos <= 80 * 24)
                 head_pos += 80;
             last_key = KEY_DOWN;
             break;
         case KEY_LEFT:
+            if (last_key == KEY_RIGHT)
+                continue;
             if (head_pos > 0)
                 head_pos -= 2;
             last_key = KEY_LEFT;
             break;
         case KEY_RIGHT:
+            if (last_key == KEY_LEFT)
+                continue;
             if (head_pos <= 80 * 25)
                 head_pos += 2;
             last_key = KEY_RIGHT;
