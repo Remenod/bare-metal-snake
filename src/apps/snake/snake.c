@@ -11,6 +11,17 @@
 char buf[12];
 
 char last_key;
+
+char score_text[12];
+
+const char *lose_text[] = {
+    "You lose!",
+    score_text,
+    "Press R to restart",
+    "Press ESC to go app selector"};
+
+const int lose_text_size = 4;
+
 uint64_t ticks_on_last_automove;
 uint16_t snake_size, tail_end_shift, head_pos, apple_pos, game_speed;
 uint16_t tail[2000];
@@ -39,6 +50,8 @@ void show_info(int data[6])
 void snake_main()
 {
     set_cursor_visibility(false);
+restart:
+    clear_screen();
     ticks_on_last_automove = get_timer_ticks();
     last_key = KEY_RIGHT;
     snake_size = 4;
@@ -48,7 +61,7 @@ void snake_main()
     tail[2] = 5;
     head_pos = 7;
     apple_pos = get_random_odd_apple_pos();
-    game_speed = 200;
+    game_speed = 300;
 
     put_char(apple_pos - 1, 177);
     put_char(apple_pos, 177);
@@ -75,22 +88,22 @@ void snake_main()
         case KEY_UP:
             if (head_pos >= 80)
                 head_pos -= 80;
-            last_key = c;
+            last_key = KEY_UP;
             break;
         case KEY_DOWN:
             if (head_pos <= 80 * 24)
                 head_pos += 80;
-            last_key = c;
+            last_key = KEY_DOWN;
             break;
         case KEY_LEFT:
             if (head_pos > 0)
                 head_pos -= 2;
-            last_key = c;
+            last_key = KEY_LEFT;
             break;
         case KEY_RIGHT:
             if (head_pos <= 80 * 25)
                 head_pos += 2;
-            last_key = c;
+            last_key = KEY_RIGHT;
             break;
         }
 
@@ -98,7 +111,24 @@ void snake_main()
             head_pos = 1921; // TODO make this thing smarter
 
         if (contains(tail, snake_size, head_pos))
-            return; // TODO improve lose routine
+        {
+            strcpy(score_text, "Score: ");
+            strcat(score_text, int_to_str(snake_size, buf));
+            for (int i = 0; i < lose_text_size; i++)
+                put_string((80 * 25 / 2 - strlen(lose_text[i]) / 2) + 80 * (i - 2), lose_text[i]);
+            while (true)
+            {
+                while (!(c = get_char()))
+                    asm volatile("hlt");
+                switch (c)
+                {
+                case 27:
+                    return;
+                case 'r':
+                    goto restart;
+                }
+            }
+        }
 
         if (head_pos == apple_pos)
         {
