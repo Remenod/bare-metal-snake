@@ -24,7 +24,7 @@ const int lose_text_size = 4;
 
 uint64_t ticks_on_last_automove;
 uint16_t snake_size, tail_end_shift, head_pos, apple_pos, game_speed;
-uint16_t tail[2000];
+uint16_t tail[1000];
 
 uint16_t get_random_odd_apple_pos()
 {
@@ -83,6 +83,9 @@ restart:
         }
         switch (c)
         {
+        case '\n':
+            game_speed = 1;
+            continue;
         case 27:
             return;
         case KEY_UP:
