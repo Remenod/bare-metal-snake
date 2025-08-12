@@ -27,31 +27,19 @@ const int lose_text_size = 3;
 
 uint64_t ticks_on_last_automove;
 uint32_t timer_frequency;
-uint16_t snake_size, tail_end_shift, head_pos, apple_pos, game_speed;
-uint16_t tail[1000];
+uint16_t snake_size, tail_end_shift, head_pos, apple_pos, game_speed, tail[1000];
 
 Random rand;
 
 uint16_t get_new_apple_pos()
 {
 gnap:
-    uint16_t res = random_next_bounded(&rand, 1920);
+    uint16_t res = random_next_bounded(&rand, 2000);
     res = res - (res % 2) + 1;
     if (res == head_pos || contains(tail, snake_size, res))
         goto gnap;
     else
         return res;
-}
-
-void show_info(int data[6])
-{
-    put_string(1920, "                                                                               ");
-    put_string(1930, int_to_str(data[0], buf));
-    put_string(1940, int_to_str(data[1], buf));
-    put_string(1950, int_to_str(data[2], buf));
-    put_string(1960, int_to_str(data[3], buf));
-    put_string(1970, int_to_str(data[4], buf));
-    put_string(1980, int_to_str(data[5], buf));
 }
 
 void draw_snake()
@@ -123,7 +111,6 @@ restart:
                 ticks_on_last_automove = get_timer_ticks();
                 break;
             }
-            show_info((int[]){ticks_on_last_automove, get_timer_ticks(), 0, apple_pos, head_pos, snake_size});
             asm volatile("hlt");
         }
         switch (c)
@@ -165,8 +152,8 @@ restart:
             continue;
         }
         ticks_on_last_automove = get_timer_ticks();
-        if (head_pos > 1920)
-            head_pos = 1921; // TODO make this thing smarter
+        if (head_pos > 2000)
+            head_pos = 1999; // TODO make this thing smarter
 
         if (contains(tail, snake_size, head_pos) || snake_size > 999)
         {
@@ -198,7 +185,5 @@ restart:
         tail[tail_end_shift] = head_pos;
         tail_end_shift++;
         tail_end_shift %= snake_size;
-
-        show_info((int[]){ticks_on_last_automove, get_timer_ticks(), 0, apple_pos, head_pos, snake_size});
     }
 }
