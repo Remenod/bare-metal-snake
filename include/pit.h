@@ -12,4 +12,6 @@ void pit_init(uint32_t frequency);
 
 uint64_t get_timer_ticks();
 
+uint32_t get_timer_frequency();
+
 void sleep(uint32_t ms);

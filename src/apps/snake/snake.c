@@ -23,6 +23,7 @@ const char *lose_text[] = {
 const int lose_text_size = 4;
 
 uint64_t ticks_on_last_automove;
+uint32_t timer_frequency;
 uint16_t snake_size, tail_end_shift, head_pos, apple_pos, game_speed;
 uint16_t tail[1000];
 
@@ -78,6 +79,7 @@ void snake_main()
     set_cursor_visibility(false);
 restart:
     clear_screen();
+    timer_frequency = get_timer_frequency();
     ticks_on_last_automove = get_timer_ticks();
     last_key = KEY_RIGHT;
     snake_size = 4;
@@ -87,7 +89,7 @@ restart:
     tail[2] = 5;
     head_pos = 7;
     apple_pos = get_random_odd_apple_pos();
-    game_speed = 300;
+    game_speed = 4;
 
     draw_apple();
 
@@ -96,7 +98,7 @@ restart:
         char c;
         while (!(c = get_char()))
         {
-            if (ticks_on_last_automove + game_speed < get_timer_ticks())
+            if (ticks_on_last_automove + (timer_frequency / game_speed) < get_timer_ticks())
             {
                 c = last_key;
                 ticks_on_last_automove = get_timer_ticks();
