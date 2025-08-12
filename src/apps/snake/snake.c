@@ -47,6 +47,32 @@ void show_info(int data[6])
     put_string(1980, int_to_str(data[5], buf));
 }
 
+void draw_snake()
+{
+    put_char(head_pos - 1, 219);
+    put_char(head_pos, 219);
+}
+
+void erase(uint16_t pos)
+{
+    put_char(pos - 1, 0);
+    put_char(pos, 0);
+}
+
+void draw_apple()
+{
+    put_char(apple_pos - 1, 177);
+    put_char(apple_pos, 177);
+}
+
+void print_lose()
+{
+    strcpy(score_text, "Score: ");
+    strcat(score_text, int_to_str(snake_size, buf));
+    for (int i = 0; i < lose_text_size; i++)
+        put_string((80 * 25 / 2 - strlen(lose_text[i]) / 2) + 80 * (i - 2), lose_text[i]);
+}
+
 void snake_main()
 {
     set_cursor_visibility(false);
@@ -63,15 +89,13 @@ restart:
     apple_pos = get_random_odd_apple_pos();
     game_speed = 300;
 
-    put_char(apple_pos - 1, 177);
-    put_char(apple_pos, 177);
+    draw_apple();
 
     while (true)
     {
         char c;
         while (!(c = get_char()))
         {
-
             if (ticks_on_last_automove + game_speed < get_timer_ticks())
             {
                 c = last_key;
@@ -83,9 +107,6 @@ restart:
         }
         switch (c)
         {
-        case '\n':
-            game_speed = 1;
-            continue;
         case 27:
             return;
         case KEY_UP:
@@ -112,7 +133,7 @@ restart:
         case KEY_RIGHT:
             if (last_key == KEY_LEFT)
                 continue;
-            if (head_pos <= 80 * 25)
+            if (head_pos <= 80 * 24)
                 head_pos += 2;
             last_key = KEY_RIGHT;
             break;
@@ -125,10 +146,7 @@ restart:
 
         if (contains(tail, snake_size, head_pos))
         {
-            strcpy(score_text, "Score: ");
-            strcat(score_text, int_to_str(snake_size, buf));
-            for (int i = 0; i < lose_text_size; i++)
-                put_string((80 * 25 / 2 - strlen(lose_text[i]) / 2) + 80 * (i - 2), lose_text[i]);
+            void print_lose();
             while (true)
             {
                 while (!(c = get_char()))
@@ -147,17 +165,13 @@ restart:
         {
             snake_size++;
             apple_pos = get_random_odd_apple_pos();
-            put_char(apple_pos - 1, 177);
-            put_char(apple_pos, 177);
+            draw_apple();
         }
 
-        put_char(head_pos - 1, 219);
-        put_char(head_pos, 219);
-        put_char(tail[tail_end_shift] - 1, 0);
-        put_char(tail[tail_end_shift], 0);
+        draw_snake();
+        erase(tail[tail_end_shift]);
 
         tail[tail_end_shift] = head_pos;
-
         tail_end_shift++;
         tail_end_shift %= snake_size;
 
