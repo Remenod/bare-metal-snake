@@ -59,7 +59,7 @@ void move_cursor(uint16_t pos)
 
 void print(const char *text)
 {
-    for (size_t i = 0; i < strlen(text); i++)
+    for (size_t i = 0; i < (size_t)strlen(text); i++)
     {
         if (text[i] == '\n')
         {

@@ -25,6 +25,11 @@ void app_selector()
     {
         clear_screen();
         print("=== Application Selector ===\n\n");
+        for (int n = 0; n < 256; n++)
+        {
+            print_char(n);
+        }
+        print("\n\n");
 
         for (uint32_t i = 0; i < APP_COUNT; i++)
         {
@@ -36,7 +41,7 @@ void app_selector()
 
         print("\nPress ESC to exit any app\nSelect app: ");
         int choice = read_number();
-        if (choice > 0 && choice <= APP_COUNT)
+        if (choice > 0 && choice <= (int)APP_COUNT)
         {
             clear_screen();
             apps[choice - 1].entry_point();
