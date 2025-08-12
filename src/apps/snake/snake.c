@@ -75,13 +75,13 @@ void draw_apple()
 void print_game_end(bool_t is_win)
 {
     if (is_win)
-        put_string((80 * 25 / 2 - strlen(game_end_win) / 2) + 80 * -2, game_end_win);
+        put_string((80 * 25 / 2 - strlen(game_end_win) / 2) + 80 * -3, game_end_win);
     else
-        put_string((80 * 25 / 2 - strlen(game_end_lose) / 2) + 80 * -2, game_end_lose);
+        put_string((80 * 25 / 2 - strlen(game_end_lose) / 2) + 80 * -3, game_end_lose);
     strcpy(score_text, "Score: ");
     strcat(score_text, int_to_str(snake_size, buf));
     for (int i = 0; i < lose_text_size; i++)
-        put_string((80 * 25 / 2 - strlen(lose_text[i]) / 2) + 80 * (i - 3), lose_text[i]);
+        put_string((80 * 25 / 2 - strlen(lose_text[i]) / 2) + 80 * (i - 2), lose_text[i]);
 }
 
 void snake_main()
