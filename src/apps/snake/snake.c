@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <arrlib.h>
 #include <pit.h>
+#include <random.h>
 
 char buf[12];
 
@@ -27,12 +28,15 @@ uint32_t timer_frequency;
 uint16_t snake_size, tail_end_shift, head_pos, apple_pos, game_speed;
 uint16_t tail[1000];
 
-uint16_t get_random_odd_apple_pos()
+Random rand;
+
+uint16_t get_new_apple_pos()
 {
-    uint16_t res = (uint32_t)get_timer_ticks() % 1920;
+gnap:
+    uint16_t res = random_next_bounded(&rand, 1920);
     res = res - (res % 2) + 1;
     if (res == head_pos || contains(tail, snake_size, res))
-        return get_random_odd_apple_pos();
+        goto gnap;
     else
         return res;
 }
@@ -77,6 +81,7 @@ void print_lose()
 void snake_main()
 {
     set_cursor_visibility(false);
+    random_init(&rand, get_timer_ticks());
 restart:
     clear_screen();
     timer_frequency = get_timer_frequency();
@@ -88,7 +93,7 @@ restart:
     tail[1] = 3;
     tail[2] = 5;
     head_pos = 7;
-    apple_pos = get_random_odd_apple_pos();
+    apple_pos = get_new_apple_pos();
     game_speed = 4;
 
     draw_apple();
@@ -166,7 +171,7 @@ restart:
         if (head_pos == apple_pos)
         {
             snake_size++;
-            apple_pos = get_random_odd_apple_pos();
+            apple_pos = get_new_apple_pos();
             draw_apple();
         }
 
