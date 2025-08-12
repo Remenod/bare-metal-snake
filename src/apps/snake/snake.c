@@ -84,6 +84,14 @@ void print_game_end(bool_t is_win)
         put_string((80 * 25 / 2 - strlen(lose_text[i]) / 2) + 80 * (i - 2), lose_text[i]);
 }
 
+bool_t is_opposite_direction(char new_dir, char old_dir)
+{
+    return (new_dir == KEY_UP && old_dir == KEY_DOWN) ||
+           (new_dir == KEY_DOWN && old_dir == KEY_UP) ||
+           (new_dir == KEY_LEFT && old_dir == KEY_RIGHT) ||
+           (new_dir == KEY_RIGHT && old_dir == KEY_LEFT);
+}
+
 void snake_main()
 {
     set_cursor_visibility(false);
@@ -120,36 +128,39 @@ restart:
         }
         switch (c)
         {
-        case 27:
+        case KEY_ESC:
             return;
+
         case KEY_UP:
-            if (last_key == KEY_DOWN)
-                continue;
-            if (head_pos >= 80)
-                head_pos -= 80;
-            last_key = KEY_UP;
-            break;
         case KEY_DOWN:
-            if (last_key == KEY_UP)
-                continue;
-            if (head_pos <= 80 * 24)
-                head_pos += 80;
-            last_key = KEY_DOWN;
-            break;
         case KEY_LEFT:
-            if (last_key == KEY_RIGHT)
-                continue;
-            if (head_pos > 0)
-                head_pos -= 2;
-            last_key = KEY_LEFT;
-            break;
         case KEY_RIGHT:
-            if (last_key == KEY_LEFT)
+            if (is_opposite_direction(c, last_key))
                 continue;
-            if (head_pos <= 80 * 24)
-                head_pos += 2;
-            last_key = KEY_RIGHT;
+
+            switch (c)
+            {
+            case KEY_UP:
+                if (head_pos >= 80)
+                    head_pos -= 80;
+                break;
+            case KEY_DOWN:
+                if (head_pos + 80 < 80 * 25)
+                    head_pos += 80;
+                break;
+            case KEY_LEFT:
+                if (head_pos % 80 > 0)
+                    head_pos -= 2;
+                break;
+            case KEY_RIGHT:
+                if (head_pos % 80 < 78)
+                    head_pos += 2;
+                break;
+            }
+
+            last_key = c;
             break;
+
         default:
             continue;
         }
@@ -166,7 +177,7 @@ restart:
                     asm volatile("hlt");
                 switch (c)
                 {
-                case 27:
+                case KEY_ESC:
                     return;
                 case 'r':
                     goto restart;

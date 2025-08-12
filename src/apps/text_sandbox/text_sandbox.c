@@ -26,7 +26,7 @@ void text_sandbox_main()
 
         switch (c)
         {
-        case 27:
+        case KEY_ESC:
             return;
         case '\b':
             i--;
