@@ -146,7 +146,7 @@ restart:
 
         if (contains(tail, snake_size, head_pos))
         {
-            void print_lose();
+            print_lose();
             while (true)
             {
                 while (!(c = get_char()))
