@@ -15,13 +15,15 @@ char last_key;
 
 char score_text[12];
 
-const char *lose_text[] = {
-    "You lose!",
+static const char game_end_win[] = "You win!";
+static const char game_end_lose[] = "You lose!";
+
+static const char *lose_text[] = {
     score_text,
     "Press R to restart",
     "Press ESC to go app selector"};
 
-const int lose_text_size = 4;
+const int lose_text_size = 3;
 
 uint64_t ticks_on_last_automove;
 uint32_t timer_frequency;
@@ -70,12 +72,16 @@ void draw_apple()
     put_char(apple_pos, 177);
 }
 
-void print_lose()
+void print_game_end(bool_t is_win)
 {
+    if (is_win)
+        put_string((80 * 25 / 2 - strlen(game_end_win) / 2) + 80 * -2, game_end_win);
+    else
+        put_string((80 * 25 / 2 - strlen(game_end_lose) / 2) + 80 * -2, game_end_lose);
     strcpy(score_text, "Score: ");
     strcat(score_text, int_to_str(snake_size, buf));
     for (int i = 0; i < lose_text_size; i++)
-        put_string((80 * 25 / 2 - strlen(lose_text[i]) / 2) + 80 * (i - 2), lose_text[i]);
+        put_string((80 * 25 / 2 - strlen(lose_text[i]) / 2) + 80 * (i - 3), lose_text[i]);
 }
 
 void snake_main()
@@ -151,9 +157,9 @@ restart:
         if (head_pos > 1920)
             head_pos = 1921; // TODO make this thing smarter
 
-        if (contains(tail, snake_size, head_pos))
+        if (contains(tail, snake_size, head_pos) || snake_size > 999)
         {
-            print_lose();
+            print_game_end(snake_size > 999);
             while (true)
             {
                 while (!(c = get_char()))
