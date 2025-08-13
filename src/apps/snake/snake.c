@@ -46,19 +46,19 @@ gnap:
         return res;
 }
 
-static void draw_snake()
+static inline void draw_snake()
 {
     put_char(head_pos - 1, SNAKE_SYMBOL);
     put_char(head_pos, SNAKE_SYMBOL);
 }
 
-static void draw_apple()
+static inline void draw_apple()
 {
     put_char(apple_pos - 1, APPLE_SYMBOL);
     put_char(apple_pos, APPLE_SYMBOL);
 }
 
-static void erase(uint16_t pos)
+static inline void erase(uint16_t pos)
 {
     put_char(pos - 1, 0);
     put_char(pos, 0);
@@ -76,7 +76,7 @@ static void print_game_end(bool_t is_win)
         put_string((FIELD_WIDTH * FIELD_HEIGHT / 2 - strlen(lose_text[i]) / 2) + FIELD_WIDTH * (i - 2), lose_text[i]);
 }
 
-static bool_t is_opposite_direction(char new_dir, char old_dir)
+static inline bool_t is_opposite_direction(char new_dir, char old_dir)
 {
     return (new_dir == KEY_UP && old_dir == KEY_DOWN) ||
            (new_dir == KEY_DOWN && old_dir == KEY_UP) ||
