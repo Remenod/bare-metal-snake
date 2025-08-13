@@ -84,25 +84,28 @@ static bool_t is_opposite_direction(char new_dir, char old_dir)
            (new_dir == KEY_RIGHT && old_dir == KEY_LEFT);
 }
 
+static void game_reset()
+{
+    clear_screen();
+    static const uint16_t start_tail[] = {1, 3, 5};
+    ticks_on_last_automove = get_timer_ticks();
+    last_key = KEY_RIGHT;
+    snake_size = sizeof(start_tail) / sizeof(start_tail[0]) + 1;
+    tail_end_shift = 0;
+    memcpy(tail, start_tail, sizeof(start_tail));
+    head_pos = 7;
+    apple_pos = get_new_apple_pos();
+    game_speed = 4;
+    draw_apple();
+}
+
 void snake_main()
 {
     set_cursor_visibility(false);
     random_init(&rand, get_timer_ticks());
     timer_frequency = get_timer_frequency();
 restart:
-    clear_screen();
-    ticks_on_last_automove = get_timer_ticks();
-    last_key = KEY_RIGHT;
-    snake_size = 4;
-    tail_end_shift = 0;
-    tail[0] = 1;
-    tail[1] = 3;
-    tail[2] = 5;
-    head_pos = 7;
-    apple_pos = get_new_apple_pos();
-    game_speed = 4;
-
-    draw_apple();
+    game_reset();
 
     while (true)
     {
