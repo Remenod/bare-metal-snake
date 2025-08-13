@@ -2,7 +2,6 @@
 
 #include <ports.h>
 #include <string.h>
-#include <stdbool.h>
 #include <stddef.h>
 
 volatile uint16_t *vga = (volatile uint16_t *)0xB8000;
