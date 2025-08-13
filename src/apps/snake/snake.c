@@ -18,11 +18,11 @@
 static char last_key, buf[12], score_text[12];
 
 static const char game_end_win[] = "You win!",
-                  game_end_lose[] = "You lose!";
-static const char *lose_text[] = {
-    score_text, // before use lose_text set correct buf
-    "Press R to restart",
-    "Press ESC to go app selector"};
+                  game_end_lose[] = "You lose!",
+                  *lose_text[] = {
+                      score_text,
+                      "Press R to restart",
+                      "Press ESC to go app selector"};
 
 enum
 {
