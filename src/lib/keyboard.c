@@ -25,8 +25,6 @@ char read_number_buf[12];
 
 void keyboard_handler()
 {
-    outb(0x20, 0x20); // EOI for PIC1
-
     uint8_t scancode = inb(KBD_DATA_PORT);
 
     if (scancode == 0xE0)
@@ -68,6 +66,8 @@ void keyboard_handler()
         if (c)
             last_char = c;
     }
+
+    outb(PIC1_COMMAND, PIC_EOI);
 }
 
 char get_char()

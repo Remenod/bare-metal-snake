@@ -8,6 +8,22 @@ int strlen(const char *str)
     return len;
 }
 
+int strcpy(char *dst, const char *src)
+{
+    int i = 0;
+    while ((dst[i] = src[i]) != '\0')
+        i++;
+    return i;
+}
+
+void strcat(char *dst, const char *src)
+{
+    int dst_len = strlen(dst);
+    int i = 0;
+    while ((dst[dst_len + i] = src[i]) != '\0')
+        i++;
+}
+
 char *int_to_str(int value, char *str)
 {
     char *p = str;
