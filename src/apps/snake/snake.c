@@ -137,18 +137,26 @@ restart:
             case KEY_UP:
                 if (head_pos >= FIELD_WIDTH)
                     head_pos -= FIELD_WIDTH;
+                else
+                    head_pos += (FIELD_HEIGHT - 1) * FIELD_WIDTH;
                 break;
             case KEY_DOWN:
                 if (head_pos + FIELD_WIDTH < FIELD_WIDTH * FIELD_HEIGHT)
                     head_pos += FIELD_WIDTH;
+                else
+                    head_pos -= (FIELD_HEIGHT - 1) * FIELD_WIDTH;
                 break;
             case KEY_LEFT:
                 if (head_pos % FIELD_WIDTH > 0)
                     head_pos -= 2;
+                else
+                    head_pos += FIELD_WIDTH - 2;
                 break;
             case KEY_RIGHT:
                 if (head_pos % FIELD_WIDTH < FIELD_WIDTH - 2)
                     head_pos += 2;
+                else
+                    head_pos -= FIELD_WIDTH - 2;
                 break;
             }
 
@@ -159,9 +167,6 @@ restart:
             continue;
         }
         ticks_on_last_automove = get_timer_ticks();
-
-        if (head_pos > FIELD_HEIGHT * FIELD_WIDTH)
-            head_pos = FIELD_HEIGHT * FIELD_WIDTH - 1; // TODO make this thing smarter
 
         if (contains(tail, snake_size, head_pos) || snake_size > FIELD_HEIGHT * FIELD_WIDTH / 2 - 1)
         {
