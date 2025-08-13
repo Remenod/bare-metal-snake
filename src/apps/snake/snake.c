@@ -15,6 +15,8 @@
 #define SNAKE_SYMBOL 219
 #define APPLE_SYMBOL 177
 
+#define LOSE_TEXT_SIZE (sizeof(lose_text) / sizeof(lose_text[0]))
+
 static char last_key, buf[12], score_text[12];
 
 static const char game_end_win[] = "You win!",
@@ -23,11 +25,6 @@ static const char game_end_win[] = "You win!",
                       score_text,
                       "Press R to restart",
                       "Press ESC to go app selector"};
-
-enum
-{
-    LOSE_TEXT_SIZE = 3
-};
 
 static uint16_t snake_size, tail_end_shift, head_pos, apple_pos, game_speed, tail[(FIELD_HEIGHT * FIELD_WIDTH) / 2];
 static uint32_t timer_frequency;
