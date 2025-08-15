@@ -1,4 +1,4 @@
-#include <interrupts/pit.h>
+#include <timer/pit.h>
 
 #include <ports.h>
 #include <interrupts/isr.h>

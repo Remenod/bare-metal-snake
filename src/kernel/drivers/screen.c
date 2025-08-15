@@ -1,8 +1,8 @@
-#include <screen.h>
+#include <drivers/screen.h>
 
 #include <ports.h>
-#include <string.h>
-#include <stddef.h>
+#include <lib/string.h>
+#include <lib/types.h>
 
 volatile uint16_t *vga = (volatile uint16_t *)0xB8000;
 static uint16_t cursor_pos = 0;

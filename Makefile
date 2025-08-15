@@ -1,7 +1,7 @@
 BOOT_DIR := boot
 SRC_DIR := src
 BUILD_DIR := build
-INCLUDE_DIRS := include include/arch/x86 include/drivers
+INCLUDE_DIRS := include include/arch/x86
 
 ASM := nasm
 CC := i386-elf-gcc

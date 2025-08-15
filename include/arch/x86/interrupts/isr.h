@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <lib/types.h>
 
 #define PIC1_COMMAND 0x20
 #define PIC2_COMMAND 0xA0

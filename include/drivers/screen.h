@@ -1,7 +1,6 @@
 #pragma once
 
-#include <stdint.h>
-#include <stdbool.h>
+#include <lib/types.h>
 
 void put_char(uint16_t pos, char c);
 

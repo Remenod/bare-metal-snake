@@ -1,9 +1,9 @@
-#include <stdint.h>
-#include <screen.h>
-#include <keyboard.h>
-#include <string.h>
-#include <stdbool.h>
-#include <interrupts/pit.h>
+#include <lib/types.h>
+#include <drivers/screen.h>
+#include <drivers/keyboard.h>
+#include <lib/string.h>
+#include <timer/pit.h>
+
 #include "../snake/snake.h"
 #include "../text_sandbox/text_sandbox.h"
 

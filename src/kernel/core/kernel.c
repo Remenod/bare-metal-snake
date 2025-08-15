@@ -1,8 +1,8 @@
 #include <interrupts/idt.h>
 #include <drivers/screen.h>
 #include <drivers/keyboard.h>
-#include <interrupts/pit.h>
-#include "../apps/app_selector/app_selector.h"
+#include <timer/pit.h>
+#include "../../apps/app_selector/app_selector.h"
 
 void kernel_main()
 {

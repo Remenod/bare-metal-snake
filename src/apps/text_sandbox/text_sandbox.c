@@ -1,9 +1,9 @@
 #include "text_sandbox.h"
 
-#include <stdbool.h>
-#include <keyboard.h>
-#include <screen.h>
-#include <string.h>
+#include <lib/types.h>
+#include <drivers/keyboard.h>
+#include <drivers/screen.h>
+#include <lib/string.h>
 
 void text_sandbox_main()
 {

@@ -1,13 +1,12 @@
 #include "snake.h"
 
-#include <stdbool.h>
-#include <keyboard.h>
-#include <screen.h>
-#include <string.h>
-#include <stdint.h>
-#include <arrlib.h>
-#include <interrupts/pit.h>
-#include <random.h>
+#include <lib/types.h>
+#include <drivers/keyboard.h>
+#include <drivers/screen.h>
+#include <lib/string.h>
+#include <lib/arrlib.h>
+#include <timer/pit.h>
+#include <lib/random.h>
 
 #define FIELD_HEIGHT 25
 #define FIELD_WIDTH 80

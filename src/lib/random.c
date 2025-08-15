@@ -1,4 +1,4 @@
-#include <random.h>
+#include <lib/random.h>
 
 void random_init(Random *r, uint32_t seed)
 {
