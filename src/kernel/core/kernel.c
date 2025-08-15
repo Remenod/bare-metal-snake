@@ -10,7 +10,6 @@ void kernel_main()
 
     idt_install();
     keyboard_install();
-
     pit_init(1000);
 
     app_selector();
