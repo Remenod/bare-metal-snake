@@ -10,7 +10,3 @@ void *memcpy(void *dest, const void *src, unsigned int n)
         d[i] = s[i];
     return dest;
 }
-
-void malloc();
-
-void free();
