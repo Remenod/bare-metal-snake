@@ -1,7 +1,7 @@
 #pragma once
 
-#include <pic.h>
-#include <stdint.h>
+#include <interrupts/pic.h>
+#include <lib/types.h>
 
 #define PIT_FREQUENCY 1193182 // base frequency of PIT in Hz
 #define IRQ_TIMER 0           // IRQ 0 for PIT

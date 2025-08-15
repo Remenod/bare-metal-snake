@@ -1,11 +1,10 @@
 #pragma once
 
-#include <stdint.h>
-#include <stdbool.h>
+#include <lib/types.h>
 
 void put_char(uint16_t pos, char c);
 
-void put_string(uint16_t start_pos, char text[]);
+void put_string(uint16_t start_pos, const char text[]);
 
 void clear_screen();
 

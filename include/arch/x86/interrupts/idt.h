@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <lib/types.h>
 
 #define IDT_ENTRIES 256
 

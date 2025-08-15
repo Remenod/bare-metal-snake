@@ -1,4 +1,4 @@
-#include <arrlib.h>
+#include <lib/arrlib.h>
 
 bool_t contains_uint8(uint8_t arr[], uint32_t size, uint8_t value)
 {
