@@ -33,9 +33,6 @@ all: $(IMAGE)
 $(BUILD_DIR):
 	mkdir -p $@
 
-$(BOOT_BIN): $(BOOT_SRC) | $(BUILD_DIR)
-	$(ASM) -f bin $< -o $@
-
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -51,6 +48,13 @@ $(KERNEL_ELF): $(ENTRY_OBJ) $(C_OBJS) $(ASM_OBJS)
 $(KERNEL_BIN): $(KERNEL_ELF)
 	$(OBJCOPY) -O binary $< $@
 	$(MAKE) pad_kernel
+
+
+$(BOOT_BIN): $(BOOT_SRC) $(KERNEL_BIN) | $(BUILD_DIR)
+	@size=$$(stat -c%s $(KERNEL_BIN)); \
+	sectors=$$(( ($$size + 511)/512 )); \
+	echo Kernel sectors count: $$sectors; \
+	$(ASM) -f bin $< -o $@ -DKERNEL_SECTORS=$$sectors
 
 $(IMAGE): $(BOOT_BIN) $(KERNEL_BIN)
 	cat $^ > $@

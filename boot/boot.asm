@@ -1,6 +1,10 @@
 [org 0x7c00]
 KERNEL_OFFSET equ 0x1000
 
+%ifndef KERNEL_SECTORS
+%define KERNEL_SECTORS 12
+%endif
+
 [bits 16]
 
 start:
@@ -47,7 +51,7 @@ disk_error:
 
 load_kernel:
   mov bx, KERNEL_OFFSET
-  mov dh, 12                       ; kernel sectors count
+  mov dh, KERNEL_SECTORS
   mov dl, [BOOT_DRIVE]
   call disk_load
   ret
