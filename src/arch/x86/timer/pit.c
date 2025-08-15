@@ -1,8 +1,8 @@
-#include <pit.h>
+#include <timer/pit.h>
 
 #include <ports.h>
-#include <isr.h>
-#include <pic.h>
+#include <interrupts/isr.h>
+#include <interrupts/pic.h>
 
 static volatile uint64_t timer_ticks = 0;
 

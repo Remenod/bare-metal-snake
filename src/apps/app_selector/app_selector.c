@@ -1,9 +1,9 @@
-#include <stdint.h>
-#include <screen.h>
-#include <keyboard.h>
-#include <string.h>
-#include <stdbool.h>
-#include <pit.h>
+#include <lib/types.h>
+#include <drivers/screen.h>
+#include <drivers/keyboard.h>
+#include <lib/string.h>
+#include <timer/pit.h>
+
 #include "../snake/snake.h"
 #include "../text_sandbox/text_sandbox.h"
 
@@ -17,7 +17,7 @@ static App apps[] = {
     {"Text Sandbox", text_sandbox_main},
     {"Snake", snake_main}};
 
-#define APP_COUNT (sizeof(apps) / sizeof(App))
+#define APP_COUNT (uint8_t)(sizeof(apps) / sizeof(App))
 
 void app_selector()
 {
@@ -40,8 +40,8 @@ void app_selector()
         }
 
         print("\nPress ESC to exit any app\nSelect app: ");
-        int choice = read_number();
-        if (choice > 0 && choice <= (int)APP_COUNT)
+        uint8_t choice = read_number();
+        if (choice > 0 && choice <= APP_COUNT)
         {
             clear_screen();
             apps[choice - 1].entry_point();

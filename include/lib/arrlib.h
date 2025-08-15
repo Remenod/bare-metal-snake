@@ -1,7 +1,6 @@
 #pragma once
 
-#include <stdbool.h>
-#include <stdint.h>
+#include <lib/types.h>
 
 #define contains(arr, size, value) \
     _Generic((value),              \

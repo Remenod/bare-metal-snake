@@ -1,28 +1,7 @@
 BOOT_DIR := boot
 SRC_DIR := src
 BUILD_DIR := build
-INCLUDE_DIR := include
-
-BOOT_SRC := $(BOOT_DIR)/boot.asm
-ENTRY_SRC := $(SRC_DIR)/kernel/kernel_entry.asm
-KERNEL_SRC := $(SRC_DIR)/kernel/kernel.c
-LINKER := $(SRC_DIR)/kernel/linker.ld
-
-BOOT_BIN := $(BUILD_DIR)/boot.bin
-ENTRY_OBJ := $(BUILD_DIR)/entry.o
-KERNEL_OBJ := $(BUILD_DIR)/kernel.o
-KERNEL_ELF := $(BUILD_DIR)/kernel.elf
-KERNEL_BIN := $(BUILD_DIR)/kernel.bin
-IMAGE := $(BUILD_DIR)/snake.img
-
-LIB_C_SRCS := $(wildcard $(SRC_DIR)/lib/*.c)
-LIB_ASM_SRCS := $(wildcard $(SRC_DIR)/lib/*.asm)
-
-LIB_C_OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(LIB_C_SRCS))
-LIB_ASM_OBJS := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(LIB_ASM_SRCS))
-
-APP_C_SRCS := $(wildcard $(SRC_DIR)/apps/**/*.c)
-APP_OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(APP_C_SRCS))
+INCLUDE_DIRS := include include/arch/x86
 
 DRIVERS_C_SRCS := $(wildcard $(SRC_DIR)/drivers/*.c)
 DRIVERS_OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(DRIVERS_C_SRCS))
@@ -32,59 +11,57 @@ CC := i386-elf-gcc
 LD := i386-elf-ld
 OBJCOPY := i386-elf-objcopy
 
-CFLAGS := -ffreestanding -O2 -Wall -Wextra -m32 -I$(INCLUDE_DIR)
-LDFLAGS := -T $(LINKER)
+CFLAGS := -ffreestanding -O2 -Wall -Wextra -m32 $(foreach dir,$(INCLUDE_DIRS),-I$(dir))
+LDFLAGS := -T $(SRC_DIR)/kernel/linker.ld
+
+BOOT_SRC := $(BOOT_DIR)/boot.asm
+ENTRY_SRC := $(SRC_DIR)/kernel/kernel_entry.asm
+
+BOOT_BIN := $(BUILD_DIR)/boot.bin
+ENTRY_OBJ := $(BUILD_DIR)/kernel/kernel_entry.o
+KERNEL_ELF := $(BUILD_DIR)/kernel.elf
+KERNEL_BIN := $(BUILD_DIR)/kernel.bin
+IMAGE := $(BUILD_DIR)/snake.img
+
+C_SRCS := $(shell find $(SRC_DIR) -name "*.c")
+ASM_SRCS := $(shell find $(SRC_DIR) -name "*.asm")
+
+C_OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(C_SRCS))
+ASM_OBJS := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
 .PHONY: all clean run pad_kernel
 
 all: $(IMAGE)
 
 $(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+	mkdir -p $@
 
-# Boot sector
-$(BOOT_BIN): $(BOOT_SRC) | $(BUILD_DIR)
-	$(ASM) -f bin $< -o $@
-
-# Kernel entry (asm)
-$(ENTRY_OBJ): $(ENTRY_SRC) | $(BUILD_DIR)
-	$(ASM) -f elf32 $< -o $@
-
-# Kernel main (C)
-$(KERNEL_OBJ): $(KERNEL_SRC) | $(BUILD_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# Compile C library files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Compile ASM library files
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.asm | $(BUILD_DIR)
 	@mkdir -p $(dir $@)
 	$(ASM) -f elf32 $< -o $@
 
-# Create build/apps directory for app objects
-$(BUILD_DIR)/apps:
-	mkdir -p $@
+$(KERNEL_ELF): $(ENTRY_OBJ) $(C_OBJS) $(ASM_OBJS)
+	@mkdir -p $(dir $@)
+	$(LD) $(LDFLAGS) -o $@ $(ENTRY_OBJ) $(filter-out $(ENTRY_OBJ),$(C_OBJS) $(ASM_OBJS))
 
-# Ensure app objects directory exists before compiling app .c files
-$(BUILD_DIR)/apps/%.o: | $(BUILD_DIR)/apps
-
-# Link everything into kernel.elf (include apps objects)
-$(KERNEL_ELF): $(ENTRY_OBJ) $(KERNEL_OBJ) $(LIB_C_OBJS) $(LIB_ASM_OBJS) $(APP_OBJS) $(DRIVERS_OBJS) $(LINKER)
-	$(LD) $(LDFLAGS) -o $@ $(ENTRY_OBJ) $(KERNEL_OBJ) $(LIB_C_OBJS) $(LIB_ASM_OBJS) $(APP_OBJS) $(DRIVERS_OBJS)
-
-# Extract flat binary
 $(KERNEL_BIN): $(KERNEL_ELF)
 	$(OBJCOPY) -O binary $< $@
 	$(MAKE) pad_kernel
 
-# Final image: bootloader + kernel
+
+$(BOOT_BIN): $(BOOT_SRC) $(KERNEL_BIN) | $(BUILD_DIR)
+	@size=$$(stat -c%s $(KERNEL_BIN)); \
+	sectors=$$(( ($$size + 511)/512 )); \
+	echo Kernel sectors count: $$sectors; \
+	$(ASM) -f bin $< -o $@ -DKERNEL_SECTORS=$$sectors
+
 $(IMAGE): $(BOOT_BIN) $(KERNEL_BIN)
 	cat $^ > $@
 
-# Pad kernel to multiple of 512 bytes
 pad_kernel:
 	@size=$$(stat -c%s $(KERNEL_BIN)); \
 	pad=$$(( (512 - (size % 512)) % 512 )); \

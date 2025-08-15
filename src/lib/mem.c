@@ -1,6 +1,6 @@
-#include <mem.h>
+#include <lib/mem.h>
 
-#include <stdint.h>
+#include <lib/types.h>
 
 void *memcpy(void *dest, const void *src, unsigned int n)
 {
@@ -10,7 +10,3 @@ void *memcpy(void *dest, const void *src, unsigned int n)
         d[i] = s[i];
     return dest;
 }
-
-void malloc();
-
-void free();

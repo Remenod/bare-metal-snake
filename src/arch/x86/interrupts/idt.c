@@ -1,7 +1,7 @@
-#include <idt.h>
+#include <interrupts/idt.h>
 
 #include <ports.h>
-#include <pic.h>
+#include <interrupts/pic.h>
 
 struct idt_entry
 {

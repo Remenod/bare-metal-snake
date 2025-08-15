@@ -1,6 +1,6 @@
-#include <string.h>
+#include <lib/string.h>
 
-int strlen(const char *str)
+uint32_t strlen(const char *str)
 {
     int len = 0;
     while (str[len] != '\0')
@@ -8,7 +8,7 @@ int strlen(const char *str)
     return len;
 }
 
-int strcpy(char *dst, const char *src)
+uint32_t strcpy(char *dst, const char *src)
 {
     int i = 0;
     while ((dst[i] = src[i]) != '\0')
