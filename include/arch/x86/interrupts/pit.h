@@ -1,6 +1,6 @@
 #pragma once
 
-#include <pic.h>
+#include <interrupts/pic.h>
 #include <stdint.h>
 
 #define PIT_FREQUENCY 1193182 // base frequency of PIT in Hz

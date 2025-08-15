@@ -3,7 +3,7 @@
 #include <keyboard.h>
 #include <string.h>
 #include <stdbool.h>
-#include <pit.h>
+#include <interrupts/pit.h>
 #include "../snake/snake.h"
 #include "../text_sandbox/text_sandbox.h"
 

@@ -1,7 +1,7 @@
 #include <keyboard.h>
 
 #include <ports.h>
-#include <isr.h>
+#include <interrupts/isr.h>
 #include <stdint.h>
 #include <screen.h>
 

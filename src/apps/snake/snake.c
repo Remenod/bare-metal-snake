@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <arrlib.h>
-#include <pit.h>
+#include <interrupts/pit.h>
 #include <random.h>
 
 #define FIELD_HEIGHT 25

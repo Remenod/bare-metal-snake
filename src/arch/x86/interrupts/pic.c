@@ -1,4 +1,4 @@
-#include <pic.h>
+#include <interrupts/pic.h>
 
 #include <ports.h>
 

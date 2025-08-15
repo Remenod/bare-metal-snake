@@ -1,7 +1,7 @@
-#include <idt.h>
-#include <screen.h>
-#include <keyboard.h>
-#include <pit.h>
+#include <interrupts/idt.h>
+#include <drivers/screen.h>
+#include <drivers/keyboard.h>
+#include <interrupts/pit.h>
 #include "../apps/app_selector/app_selector.h"
 
 void kernel_main()
