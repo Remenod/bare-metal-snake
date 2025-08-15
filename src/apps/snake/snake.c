@@ -1,12 +1,13 @@
 #include "snake.h"
 
 #include <lib/types.h>
-#include <drivers/keyboard.h>
-#include <drivers/screen.h>
 #include <lib/string.h>
 #include <lib/arrlib.h>
-#include <timer/pit.h>
 #include <lib/random.h>
+#include <lib/mem.h>
+#include <timer/pit.h>
+#include <drivers/screen.h>
+#include <drivers/keyboard.h>
 
 #define FIELD_HEIGHT 25
 #define FIELD_WIDTH 80
@@ -14,7 +15,7 @@
 #define SNAKE_SYMBOL 219
 #define APPLE_SYMBOL 177
 
-#define LOSE_TEXT_SIZE (sizeof(lose_text) / sizeof(lose_text[0]))
+#define LOSE_TEXT_SIZE (int)(sizeof(lose_text) / sizeof(lose_text[0]))
 
 static char last_key, buf[12], score_text[12];
 

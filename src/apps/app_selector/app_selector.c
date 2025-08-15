@@ -17,7 +17,7 @@ static App apps[] = {
     {"Text Sandbox", text_sandbox_main},
     {"Snake", snake_main}};
 
-#define APP_COUNT (sizeof(apps) / sizeof(App))
+#define APP_COUNT (uint8_t)(sizeof(apps) / sizeof(App))
 
 void app_selector()
 {
@@ -35,7 +35,7 @@ void app_selector()
         }
 
         print("\nPress ESC to exit any app\nSelect app: ");
-        int choice = read_number();
+        uint8_t choice = read_number();
         if (choice > 0 && choice <= APP_COUNT)
         {
             clear_screen();
