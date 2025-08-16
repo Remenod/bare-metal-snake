@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <lib/types.h>
 
 #define FONT_HEIGHT 16
 

@@ -1867,7 +1867,7 @@ void set_text_mode(/*int hi_res*/)
     // }
     // else
     // {
-    write_font(g_8x16_font);
+    // write_font(g_8x16_font);
     sleep(2000);
     write_regs(g_80x25_text);
     cols = 80;
