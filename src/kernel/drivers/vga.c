@@ -1,4 +1,4 @@
-#include "vga.h"
+#include <drivers/vga.h>
 /*****************************************************************************
 Sets VGA-compatible video modes without using the BIOS
 Chris Giese <geezer@execpc.com>	http://my.execpc.com/~geezer
