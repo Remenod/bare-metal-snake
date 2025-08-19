@@ -16,8 +16,8 @@ start:
   ;mov ax, 0x0013     ; 13h — 320x200x256
   ;int 0x10
 
-  ;mov ax, 0x0003     ; 03h
-  ;int 0x10
+  mov ax, 0x0003     ; 03h
+  int 0x10
 
   mov [BOOT_DRIVE], dl
   mov bp, 0x9000

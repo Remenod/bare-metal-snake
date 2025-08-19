@@ -11,8 +11,6 @@
 #define WIDTH 320
 #define HEIGHT 200
 
-#define COM1_PORT 0x3F8
-
 #define VGA_SIZE (WIDTH * HEIGHT / 6)
 
 uint8_t saved_screen[VGA_SIZE] __attribute__((section(".bss.vga")));
@@ -43,17 +41,16 @@ void kernel_main()
     // send_font(font_buf);
 
     // sleep(5000);
-    char buf[12];
-    put_string(1920, int_to_str(&saved_screen, buf));
     sleep(1000);
     demo_graphics();
 
     // sleep(2000);
-    save_screen(0);
+    // save_screen(0);
     // sleep(2000);
+    sleep(1000);
     draw_mode13h_test_pattern();
-    sleep(2000);
-    restore_screen(0);
+    sleep(1000);
+    // restore_screen(0);
 
     // read_font(font_buf);
     // send_font(font_buf);
@@ -65,7 +62,7 @@ void kernel_main()
     // write_regs(dump);
 
     set_text_m();
-
+    sleep(1000);
     // serial_write_char('\n');
     // serial_write_char('\n');
 

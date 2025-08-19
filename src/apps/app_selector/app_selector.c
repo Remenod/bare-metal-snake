@@ -27,7 +27,7 @@ void app_selector()
         print("=== Application Selector ===\n\n");
         for (int n = 0; n < 256; n++)
         {
-            print_char(n);
+            put_char(n + 160, n);
         }
         print("\n\n");
 
