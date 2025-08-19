@@ -1,5 +1,8 @@
 #include <drivers/qemu_serial.h>
 
+#include <ports.h>
+#include <lib/string.h>
+
 #define COM1_PORT 0x3F8
 
 void serial_init()

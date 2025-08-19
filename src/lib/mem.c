@@ -1,7 +1,5 @@
 #include <lib/mem.h>
 
-#include <lib/types.h>
-
 void *memcpy(void *dest, const void *src, unsigned int n)
 {
     uint8_t *d = dest;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <lib/types.h>
+
 void *memcpy(void *dest, const void *src, unsigned int n);
 
 void *memset(void *dst, int value, unsigned count);
