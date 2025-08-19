@@ -8,7 +8,7 @@ volatile uint16_t *vga = (volatile uint16_t *)0xB8000;
 static uint16_t cursor_pos = 0;
 char print_dec_buf[12];
 
-void put_char(uint16_t pos, char c)
+void put_char(uint16_t pos, unsigned char c)
 {
     vga[pos] = (0x0F << 8) | c;
 }

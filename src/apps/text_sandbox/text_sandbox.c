@@ -9,12 +9,11 @@ void text_sandbox_main()
 {
     set_cursor_visibility(true);
     clear_screen();
-    for (int i = 0; i < 257; i++)
-        print_char(i);
-    print_char('\n');
-    print_char(219);
-    char hello[] = "Hello, world!";
 
+    for (int n = 0; n < 256; n++)
+        put_char(n, n);
+
+    static const char hello[] = "Hello, world!";
     put_string(80 * 25 / 2 - strlen(hello) / 2, hello);
     int i = 0;
     move_cursor(i);

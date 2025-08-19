@@ -13,6 +13,12 @@ start:
   mov ds, ax
   mov es, ax
 
+  ;mov ax, 0x0013     ; 13h — 320x200x256
+  ;int 0x10
+
+  mov ax, 0x0003     ; 03h
+  int 0x10
+
   mov [BOOT_DRIVE], dl
   mov bp, 0x9000
   mov sp, bp
@@ -144,4 +150,3 @@ times 16 * 3 db 0          ; the remaining 3 records are zero
 
 ; ===== Boot Signature =====
 dw 0xAA55
-
