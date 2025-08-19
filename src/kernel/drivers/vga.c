@@ -972,7 +972,7 @@ void draw_mode13h_test_pattern()
 
 void set_text_mode(void)
 {
-    uint8_t rows, cols, ht, i;
+    uint8_t rows, cols, ht;
     write_regs(g_80x25_text);
     write_palette(g_80x25_text_palette, sizeof(g_80x25_text_palette) / sizeof(g_80x25_text_palette[0]));
     write_font(g_8x16_font);
