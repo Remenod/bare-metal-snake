@@ -666,6 +666,7 @@ static const uint8_t g_80x25_text_palette[][3] = {
     {63, 63, 21},
     {63, 63, 63}};
 
+#ifdef VGA_EXTRA_FUNCS
 static void read_regs(uint8_t *regs)
 {
     unsigned i;
@@ -706,6 +707,7 @@ static void read_regs(uint8_t *regs)
     (void)inb(VGA_INSTAT_READ);
     outb(VGA_AC_INDEX, 0x20);
 }
+#endif
 static void write_regs(const uint8_t *regs)
 {
     unsigned i;
