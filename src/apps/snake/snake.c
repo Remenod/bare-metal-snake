@@ -144,7 +144,7 @@ restart:
                     head_pos -= (FIELD_HEIGHT - 1) * FIELD_WIDTH;
                 break;
             case KEY_LEFT:
-                if (head_pos % FIELD_WIDTH > 0)
+                if (head_pos % FIELD_WIDTH - 2 > 0)
                     head_pos -= 2;
                 else
                     head_pos += FIELD_WIDTH - 2;
