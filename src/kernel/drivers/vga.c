@@ -827,23 +827,6 @@ static void write_font(const uint8_t font[256][FONT_HEIGHT])
     outb(VGA_GC_DATA, gc6);
 }
 
-#ifdef VGA_EXTRA_FUNCS
-static void dac_write_color(uint8_t index, uint8_t r, uint8_t g, uint8_t b)
-{
-    outb(VGA_DAC_WRITE_INDEX, index);
-    outb(VGA_DAC_DATA, r & 0x3F); // R
-    outb(VGA_DAC_DATA, g & 0x3F); // G
-    outb(VGA_DAC_DATA, b & 0x3F); // B
-}
-static void dac_read_color(uint8_t index, uint8_t *r, uint8_t *g, uint8_t *b)
-{
-    outb(VGA_DAC_READ_INDEX, index);
-    *r = inb(VGA_DAC_DATA) & 0x3F; // R
-    *g = inb(VGA_DAC_DATA) & 0x3F; // G
-    *b = inb(VGA_DAC_DATA) & 0x3F; // B
-}
-#endif
-
 static void write_palette(const uint8_t palette[][3], uint16_t count)
 {
     outb(VGA_DAC_WRITE_INDEX, 0);
@@ -865,6 +848,21 @@ static void read_palette(uint8_t palette[256][3])
         palette[i][1] = inb(VGA_DAC_DATA); // G
         palette[i][2] = inb(VGA_DAC_DATA); // B
     }
+}
+
+static void dac_write_color(uint8_t index, uint8_t r, uint8_t g, uint8_t b)
+{
+    outb(VGA_DAC_WRITE_INDEX, index);
+    outb(VGA_DAC_DATA, r & 0x3F); // R
+    outb(VGA_DAC_DATA, g & 0x3F); // G
+    outb(VGA_DAC_DATA, b & 0x3F); // B
+}
+static void dac_read_color(uint8_t index, uint8_t *r, uint8_t *g, uint8_t *b)
+{
+    outb(VGA_DAC_READ_INDEX, index);
+    *r = inb(VGA_DAC_DATA) & 0x3F; // R
+    *g = inb(VGA_DAC_DATA) & 0x3F; // G
+    *b = inb(VGA_DAC_DATA) & 0x3F; // B
 }
 
 static uint16_t get_framebuf_segment(void)
