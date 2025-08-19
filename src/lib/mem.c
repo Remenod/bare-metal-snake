@@ -1,6 +1,6 @@
 #include <lib/mem.h>
 
-void *memcpy(void *dest, const void *src, unsigned int n)
+void *memcpy(void *dest, const void *src, uint32_t n)
 {
     uint8_t *d = dest;
     const uint8_t *s = src;
@@ -11,9 +11,9 @@ void *memcpy(void *dest, const void *src, unsigned int n)
 
 void *memset(void *dst, int value, unsigned count)
 {
-    unsigned char *p = dst;
+    uint8_t *p = dst;
     while (count--)
-        *p++ = (unsigned char)value;
+        *p++ = (uint8_t)value;
     return dst;
 }
 
@@ -29,13 +29,13 @@ uint8_t peekb(unsigned seg, unsigned off)
     return *addr;
 }
 
-void pokew(unsigned seg, unsigned off, unsigned short val)
+void pokew(unsigned seg, unsigned off, uint16_t val)
 {
-    volatile unsigned short *ptr = (volatile unsigned short *)(seg * 16 + off);
+    volatile uint16_t *ptr = (volatile uint16_t *)(seg * 16 + off);
     *ptr = val;
 }
 
 uint16_t peekw(void *addr)
 {
-    return *((volatile unsigned short *)addr);
+    return *((volatile uint16_t *)addr);
 }
