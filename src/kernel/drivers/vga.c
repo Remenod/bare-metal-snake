@@ -39,6 +39,8 @@
 #define VGA_NUM_REGS (1 + VGA_NUM_SEQ_REGS + VGA_NUM_CRTC_REGS + \
                       VGA_NUM_GC_REGS + VGA_NUM_AC_REGS)
 
+#define VGA_CRTC_PROTECT_BIT 0x80
+
 static const uint8_t g_80x25_text[] =
     {
         /* MISC */
@@ -704,7 +706,7 @@ static void read_regs(uint8_t *regs)
     (void)inb(VGA_INSTAT_READ);
     outb(VGA_AC_INDEX, 0x20);
 }
-static void write_regs(uint8_t *regs)
+static void write_regs(const uint8_t *regs)
 {
     unsigned i;
 
@@ -724,8 +726,11 @@ static void write_regs(uint8_t *regs)
     outb(VGA_CRTC_INDEX, 0x11);
     outb(VGA_CRTC_DATA, inb(VGA_CRTC_DATA) & ~0x80);
     /* make sure they remain unlocked */
-    regs[0x03] |= 0x80;
-    regs[0x11] &= ~0x80;
+    if (!(regs[0x03] & VGA_CRTC_PROTECT_BIT) ||
+        (regs[0x11] & VGA_CRTC_PROTECT_BIT))
+    {
+        // TODO add kernel warning here
+    }
     /* write CRTC regs */
     for (i = 0; i < VGA_NUM_CRTC_REGS; i++)
     {
@@ -772,7 +777,7 @@ VGA framebuffer is at A000:0000, B000:0000, or B800:0000
 depending on bits in GC 6
 *****************************************************************************/
 
-static void write_font(uint8_t font[256][FONT_HEIGHT])
+static void write_font(const uint8_t font[256][FONT_HEIGHT])
 {
     uint8_t seq2, seq4, gc4, gc5, gc6;
 
@@ -839,7 +844,7 @@ static void dac_read_color(uint8_t index, uint8_t *r, uint8_t *g, uint8_t *b)
 }
 #endif
 
-static void write_palette(uint8_t palette[][3], uint16_t count)
+static void write_palette(const uint8_t palette[][3], uint16_t count)
 {
     outb(VGA_DAC_WRITE_INDEX, 0);
     for (int i = 0; i < count; i++)
