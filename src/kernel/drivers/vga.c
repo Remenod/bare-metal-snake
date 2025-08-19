@@ -960,15 +960,15 @@ static void write_pixel8x(uint32_t x, uint32_t y, uint8_t c)
     vpokeb(off, c);
 }
 
-void draw_mode13h_test_pattern()
+#endif
+
+void draw_mode13h_test_pattern(void)
 {
     volatile uint8_t *vga = (volatile uint8_t *)0xA0000;
     for (int y = 0; y < 200; y++)
         for (int x = 0; x < 320; x++)
             vga[y * 320 + x] = (uint8_t)((x + y) & 0xFF);
 }
-
-#endif
 
 void set_text_mode(void)
 {
