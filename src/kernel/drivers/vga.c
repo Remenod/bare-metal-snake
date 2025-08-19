@@ -772,11 +772,6 @@ static void set_plane(uint8_t plane)
     outb(VGA_SEQ_DATA, pmask);
 }
 
-/*****************************************************************************
-VGA framebuffer is at A000:0000, B000:0000, or B800:0000
-depending on bits in GC 6
-*****************************************************************************/
-
 static void write_font(const uint8_t font[256][FONT_HEIGHT])
 {
     uint8_t seq2, seq4, gc4, gc5, gc6;
