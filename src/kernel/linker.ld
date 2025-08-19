@@ -5,5 +5,4 @@ SECTIONS {
     .text : { *(.text*) }
     .data : { *(.data*) }
     .bss  : { *(.bss*)  }
-    .bss.vga : { *(.bss.vga) }
 }
