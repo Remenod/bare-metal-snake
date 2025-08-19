@@ -989,9 +989,6 @@ void set_text_mode(void)
     pokeb(0x40, 0x61, ht - 2);
     pokeb(0x40, 0x84, rows - 1); /* rows on screen - 1 */
     pokeb(0x40, 0x85, ht);       /* char height */
-    /* set white-on-black attributes for all text */
-    for (i = 0; i < cols * rows; i++)
-        pokeb(0xB800, i * 2 + 1, 7);
 }
 void set_graphics_mode(void)
 {
