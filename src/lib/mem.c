@@ -18,3 +18,26 @@ void *memset(void *dst, int value, unsigned count)
         *p++ = (unsigned char)value;
     return dst;
 }
+
+void pokeb(unsigned seg, unsigned off, uint8_t val)
+{
+    volatile uint8_t *addr = (volatile uint8_t *)(seg * 16 + off);
+    *addr = val;
+}
+
+uint8_t peekb(unsigned seg, unsigned off)
+{
+    volatile uint8_t *addr = (volatile uint8_t *)(seg * 16 + off);
+    return *addr;
+}
+
+void pokew(unsigned seg, unsigned off, unsigned short val)
+{
+    volatile unsigned short *ptr = (volatile unsigned short *)(seg * 16 + off);
+    *ptr = val;
+}
+
+uint16_t peekw(void *addr)
+{
+    return *((volatile unsigned short *)addr);
+}
