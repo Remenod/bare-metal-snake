@@ -3,9 +3,6 @@ SRC_DIR := src
 BUILD_DIR := build
 INCLUDE_DIRS := include include/arch/x86
 
-DRIVERS_C_SRCS := $(wildcard $(SRC_DIR)/drivers/*.c)
-DRIVERS_OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(DRIVERS_C_SRCS))
-
 ASM := nasm
 CC := i386-elf-gcc
 LD := i386-elf-ld
