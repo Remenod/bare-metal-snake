@@ -168,18 +168,42 @@ void serial_write_uint8(uint8_t value)
     while (i--)
         serial_write_char(buf[i]);
 }
+void serial_write_uint16(uint16_t value)
+{
+    char buf[6];
+    int i = 0;
+
+    if (value == 0)
+    {
+        serial_write_char('0');
+        return;
+    }
+
+    while (value > 0)
+    {
+        buf[i++] = '0' + (value % 10);
+        value /= 10;
+    }
+
+    while (i--)
+        serial_write_char(buf[i]);
+}
 
 void send_palette(uint8_t palette[256][3])
 {
     for (int i = 0; i < 256; i++)
     {
+        serial_write_char('{');
         for (int j = 0; j < 3; j++)
         {
             serial_write_uint8(palette[i][j]);
             if (j < 2)
+            {
+                serial_write_char(',');
                 serial_write_char(' ');
+            }
         }
-        serial_write_str("\r\n");
+        serial_write_str("},\r\n");
     }
 }
 

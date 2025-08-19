@@ -10,3 +10,11 @@ void *memcpy(void *dest, const void *src, unsigned int n)
         d[i] = s[i];
     return dest;
 }
+
+void *memset(void *dst, int value, unsigned count)
+{
+    unsigned char *p = dst;
+    while (count--)
+        *p++ = (unsigned char)value;
+    return dst;
+}
