@@ -94,6 +94,7 @@ void print_dec(const int num)
 
 void print_hex(uint32_t val)
 {
+    print("0x");
     const char *hex = "0123456789ABCDEF";
     for (int i = 7; i >= 0; i--)
         put_char(cursor_pos++, hex[(val >> (i * 4)) & 0xF]);
