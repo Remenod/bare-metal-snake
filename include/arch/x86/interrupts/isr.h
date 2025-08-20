@@ -9,8 +9,6 @@
 
 #define IDT_ENTRIES 256
 
-typedef void (*isr_t)(void);
-
-void isr_common_handler(uint32_t int_no);
+typedef void (*isr_t)();
 
 void register_interrupt_handler(uint32_t int_no, isr_t handler);
