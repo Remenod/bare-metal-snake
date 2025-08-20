@@ -4,7 +4,7 @@
 #include <drivers/vga.h>
 #include <drivers/screen.h>
 
-#define MAX_RSOD_LOG 12
+#define MAX_RSOD_LOG 15
 #define RSOD_MSG_LEN 35
 
 static const char *rsod_log[MAX_RSOD_LOG];
@@ -32,20 +32,24 @@ void show_rsod(const char *msg, struct cpu_state *state)
     fill_screen(0, BLACK, RED);
 
     print(
-        " ___  ___  ___  ___  \n"
-        "| _ \\/ __|/ _ \\|   \\ \n"
-        "|   /\\__ \\ (_) | |) |\n"
-        "|_|_\\|___/\\___/|___/  r o u t i n e\n\n");
+        "  ___  ___  ___  ___  \n"
+        " | _ \\/ __|/ _ \\|   \\ \n"
+        " |   /\\__ \\ (_) | |) |\n"
+        " |_|_\\|___/\\___/|___/  r o u t i n e\n\n");
 
     if (msg)
     {
-        print("KERNEL PANIC: ");
+        print(" KERNEL PANIC: ");
         print(msg);
-        print("\nInt number: ");
+        print("\n Int number: ");
         print_dec(state->int_no);
         print(" Error code: ");
         print_hex(state->err_code);
         print("\n\n");
+        print(
+            " A critical error has occurred\n"
+            " System halted to prevent data\n"
+            " corruption.\n\n");
     }
 
     for (int i = 0; i < rsod_log_count; i++)
@@ -56,21 +60,21 @@ void show_rsod(const char *msg, struct cpu_state *state)
 
     if (state)
     {
-        print("\nCPU STATE:\n");
-        print("EIP: ");
+        print(" CPU STATE:\n");
+        print(" EIP: ");
         print_hex(state->eip);
         print("  CS:  ");
         print_hex(state->cs);
         print("\n");
-        print("ESP: ");
+        print(" ESP: ");
         print_hex(state->useresp);
         print("  SS:  ");
         print_hex(state->ss);
         print("\n");
-        print("EFLAGS: ");
+        print(" EFLAGS: ");
         print_hex(state->eflags);
         print("\n");
-        print("EAX: ");
+        print(" EAX: ");
         print_hex(state->eax);
         print("  EBX: ");
         print_hex(state->ebx);
@@ -79,20 +83,19 @@ void show_rsod(const char *msg, struct cpu_state *state)
         print("  EDX: ");
         print_hex(state->edx);
         print("\n");
-        print("ESI: ");
+        print(" ESI: ");
         print_hex(state->esi);
         print("  EDI: ");
         print_hex(state->edi);
         print("  EBP: ");
         print_hex(state->ebp);
-        print("\n");
+        print("\n\n");
 
-        // CR2 page fault (0x0E)
-        if (state->int_no == 0x0E)
+        if (state->int_no == 0x0E) // CR2 page fault (0x0E)
         {
             uint32_t cr2;
             asm volatile("mov %%cr2, %0" : "=r"(cr2));
-            print("CR2 (fault addr): ");
+            print(" CR2 (Paging fault addr): ");
             print_hex(cr2);
             print("\n");
         }
