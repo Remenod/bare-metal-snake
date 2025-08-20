@@ -10,16 +10,25 @@ char print_dec_buf[12];
 
 void put_char(uint16_t pos, unsigned char c)
 {
-    vga[pos] = (0x0F << 8) | c;
+    vga[pos] = (vga[pos] & 0b1111111100000000) | c;
+}
+
+void put_attr(uint16_t pos, uint8_t attr)
+{
+    vga[pos] |= (attr << 8);
 }
 
 void clear_screen()
 {
-    uint16_t blank = (0x07 << 8) | ' ';
+    fill_screen('\0', 0x0F, 0x00);
+}
+
+void fill_screen(unsigned char symb, uint8_t fg_color, uint8_t bg_color)
+{
+    uint16_t fill = ((bg_color << 4 | fg_color) << 8) | symb;
     for (int i = 0; i < 80 * 25; i++)
-    {
-        vga[i] = blank;
-    }
+        vga[i] = fill;
+
     cursor_pos = 0;
     move_cursor(cursor_pos);
 }
