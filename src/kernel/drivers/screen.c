@@ -92,6 +92,13 @@ void print_dec(const int num)
     print(int_to_str(num, print_dec_buf));
 }
 
+void print_hex(uint32_t val)
+{
+    const char *hex = "0123456789ABCDEF";
+    for (int i = 7; i >= 0; i--)
+        put_char(cursor_pos++, hex[(val >> (i * 4)) & 0xF]);
+}
+
 void print_char(char c)
 {
     char s[2] = {c, '\0'};
