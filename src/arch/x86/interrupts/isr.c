@@ -6,6 +6,9 @@ static isr_t interrupt_handlers[IDT_ENTRIES];
 
 void isr_common_handler(uint32_t int_no, uint32_t err_code)
 {
+    char buffer[3];
+    if (int_no != 32)
+        put_string(1998, int_to_str(int_no, buffer));
     if (interrupt_handlers[int_no])
         interrupt_handlers[int_no](err_code);
 

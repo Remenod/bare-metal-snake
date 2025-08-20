@@ -7,6 +7,7 @@
 
 void text_sandbox_main()
 {
+    asm volatile("int $3");
     set_cursor_visibility(true);
     clear_screen();
 
