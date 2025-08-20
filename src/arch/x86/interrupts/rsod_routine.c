@@ -21,7 +21,8 @@ void rsod_add_log(const char *msg)
             truncated_msg[rsod_log_count][i] = msg[i];
         truncated_msg[rsod_log_count][i] = '\0';
 
-        rsod_log[rsod_log_count++] = truncated_msg[rsod_log_count];
+        rsod_log[rsod_log_count] = truncated_msg[rsod_log_count];
+        rsod_log_count++;
     }
 }
 
