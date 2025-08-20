@@ -12,3 +12,5 @@ struct cpu_state
 };
 
 void show_rsod(const char *msg, struct cpu_state *state);
+
+void rsod_add_log(const char *msg);

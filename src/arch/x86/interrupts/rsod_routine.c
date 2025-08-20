@@ -4,15 +4,25 @@
 #include <drivers/vga.h>
 #include <drivers/screen.h>
 
-#define MAX_RSOD_LOG 16
+#define MAX_RSOD_LOG 12
+#define RSOD_MSG_LEN 35
 
 static const char *rsod_log[MAX_RSOD_LOG];
 static int rsod_log_count = 0;
 
 void rsod_add_log(const char *msg)
 {
+    static char truncated_msg[MAX_RSOD_LOG][RSOD_MSG_LEN + 1];
+
     if (rsod_log_count < MAX_RSOD_LOG)
-        rsod_log[rsod_log_count++] = msg;
+    {
+        int i;
+        for (i = 0; i < RSOD_MSG_LEN && msg[i] != '\0'; i++)
+            truncated_msg[rsod_log_count][i] = msg[i];
+        truncated_msg[rsod_log_count][i] = '\0';
+
+        rsod_log[rsod_log_count++] = truncated_msg[rsod_log_count];
+    }
 }
 
 void show_rsod(const char *msg, struct cpu_state *state)
@@ -36,9 +46,8 @@ void show_rsod(const char *msg, struct cpu_state *state)
 
     for (int i = 0; i < rsod_log_count; i++)
     {
-        print("LOG: ");
-        print(rsod_log[i]);
-        print("\n");
+        put_string(40 + (80 * i), "LOG:");
+        put_string(45 + (80 * i), rsod_log[i]);
     }
 
     if (state)
