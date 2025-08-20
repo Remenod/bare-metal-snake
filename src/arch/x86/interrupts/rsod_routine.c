@@ -41,6 +41,10 @@ void show_rsod(const char *msg, struct cpu_state *state)
     {
         print("KERNEL PANIC: ");
         print(msg);
+        print("\nInt number: ");
+        print_dec(state->int_no);
+        print(" Error code: ");
+        print_hex(state->err_code);
         print("\n\n");
     }
 
@@ -53,18 +57,34 @@ void show_rsod(const char *msg, struct cpu_state *state)
     if (state)
     {
         print("\nCPU STATE:\n");
-        print("EIP: 0x");
+        print("EIP: ");
         print_hex(state->eip);
-        print("  CS: 0x");
+        print("  CS:  ");
         print_hex(state->cs);
         print("\n");
-        print("EFLAGS: 0x");
+        print("ESP: ");
+        print_hex(state->useresp);
+        print("  SS:  ");
+        print_hex(state->ss);
+        print("\n");
+        print("EFLAGS: ");
         print_hex(state->eflags);
         print("\n");
-        print("ESP: 0x");
-        print_hex(state->useresp);
-        print("  SS: 0x");
-        print_hex(state->ss);
+        print("EAX: ");
+        print_hex(state->eax);
+        print("  EBX: ");
+        print_hex(state->ebx);
+        print("  ECX: ");
+        print_hex(state->ecx);
+        print("  EDX: ");
+        print_hex(state->edx);
+        print("\n");
+        print("ESI: ");
+        print_hex(state->esi);
+        print("  EDI: ");
+        print_hex(state->edi);
+        print("  EBP: ");
+        print_hex(state->ebp);
         print("\n");
 
         // CR2 page fault (0x0E)
@@ -72,12 +92,12 @@ void show_rsod(const char *msg, struct cpu_state *state)
         {
             uint32_t cr2;
             asm volatile("mov %%cr2, %0" : "=r"(cr2));
-            print("CR2 (fault addr): 0x");
+            print("CR2 (fault addr): ");
             print_hex(cr2);
             print("\n");
         }
     }
 
-    for (;;)
+    while (true)
         asm volatile("hlt");
 }
