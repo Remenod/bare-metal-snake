@@ -2,32 +2,16 @@
 #include <drivers/vga.h>
 #include <drivers/screen.h>
 #include <lib/types.h>
-
-void show_rsod(const char *msg)
-{
-    set_text_mode();
-    set_cursor_visibility(false);
-    fill_screen(0, BLACK, RED);
-
-    print(
-        " ___  ___  ___  ___  \n"
-        "| _ \\/ __|/ _ \\|   \\ \n"
-        "|   /\\__ \\ (_) | |) |\n"
-        "|_|_\\|___/\\___/|___/  routine\n\n");
-
-    if (msg)
-    {
-        print("KERNEL PANIC: ");
-        print(msg);
-        print("\n");
-    }
-
-    for (;;)
-        asm volatile("hlt");
-}
+#include <interrupts/rsod_routine.h>
 
 /* 0 Divide Error */
-void isr_divide_error();
+void isr_divide_error(struct cpu_state *state)
+{
+    show_rsod("Division by zero", state);
+    asm volatile("cli");
+    while (true)
+        ;
+}
 
 /* 1 Debug Exception */
 void isr_debug();
@@ -38,7 +22,7 @@ void isr_nmi();
 /* 3 Breakpoint (int3) */
 void isr_breakpoint()
 {
-    show_rsod("breakpoint");
+    show_rsod("breakpoint", NULL);
     asm volatile("cli");
     while (true)
         ;
@@ -94,7 +78,7 @@ void isr_virtualization();
 
 void register_all_cpu_exceptions_isrs()
 {
-    // register_interrupt_handler(0, isr_divide_error);
+    register_interrupt_handler(0, isr_divide_error);
     // register_interrupt_handler(1, isr_debug);
     // register_interrupt_handler(2, isr_nmi);
     register_interrupt_handler(3, isr_breakpoint);
