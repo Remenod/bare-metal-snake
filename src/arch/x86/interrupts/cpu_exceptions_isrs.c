@@ -73,7 +73,13 @@ void isr_segment_not_present(struct cpu_state *state);
 void isr_stack_segment_fault(struct cpu_state *state);
 
 /* 13 General Protection Fault */
-void isr_general_protection(struct cpu_state *state);
+void isr_general_protection(struct cpu_state *state)
+{
+    show_rsod("General Protection Fault", state);
+    asm volatile("cli");
+    while (true)
+        ;
+}
 
 /* 14 Page Fault */
 void isr_page_fault(struct cpu_state *state);
@@ -108,7 +114,7 @@ void register_all_cpu_exceptions_isrs()
     // register_interrupt_handler(10, isr_invalid_tss);
     // register_interrupt_handler(11, isr_segment_not_present);
     // register_interrupt_handler(12, isr_stack_segment_fault);
-    // register_interrupt_handler(13, isr_general_protection);
+    register_interrupt_handler(13, isr_general_protection);
     // register_interrupt_handler(14, isr_page_fault);
     // register_interrupt_handler(16, isr_fpu_floating_point);
     // register_interrupt_handler(17, isr_alignment_check);
