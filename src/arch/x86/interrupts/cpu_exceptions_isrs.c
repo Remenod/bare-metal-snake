@@ -5,22 +5,20 @@
 #include <interrupts/rsod_routine.h>
 
 /* 0 Divide Error */
-void isr_divide_error(cpu_state_t *state)
+_Noreturn void isr_divide_error(const cpu_state_t *state)
 {
     show_rsod("Division by Zero", state);
-    asm volatile("cli");
-    while (true)
-        ;
+    __builtin_unreachable();
 }
 
 /* 1 Debug Exception */
-void isr_debug(cpu_state_t *state);
+_Noreturn void isr_debug(const cpu_state_t *state);
 
 /* 2 Non-Maskable Interrupt (NMI) */
-void isr_nmi(cpu_state_t *state);
+_Noreturn void isr_nmi(const cpu_state_t *state);
 
 /* 3 Breakpoint (int3) */
-void isr_breakpoint(/*cpu_state_t *state*/) // marked as stateless in cpu_interrupts.asm
+_Noreturn void isr_breakpoint(/* const cpu_state_t *state */) // marked as stateless in cpu_interrupts.asm
 {
     asm volatile("cli");
     while (true)
@@ -28,76 +26,68 @@ void isr_breakpoint(/*cpu_state_t *state*/) // marked as stateless in cpu_interr
 }
 
 /* 4 Overflow (into instruction) */
-void isr_overflow(cpu_state_t *state)
+_Noreturn void isr_overflow(const cpu_state_t *state)
 {
     show_rsod("Signed Int Overflow", state);
-    asm volatile("cli");
-    while (true)
-        ;
+    __builtin_unreachable();
 }
 
 /* 5 Bound Range Exceeded - (bound instruction) */
-void isr_bound_range(cpu_state_t *state);
+_Noreturn void isr_bound_range(const cpu_state_t *state);
 
 /* 6 Invalid Opcode */
-void isr_invalid_opcode(cpu_state_t *state)
+_Noreturn void isr_invalid_opcode(const cpu_state_t *state)
 {
     show_rsod("Invalid Opcode", state);
-    asm volatile("cli");
-    while (true)
-        ;
+    __builtin_unreachable();
 }
 
 /* 7 Device Not Available - FPU or coprocessor not available */
-void isr_device_not_available(cpu_state_t *state);
+_Noreturn void isr_device_not_available(const cpu_state_t *state);
 
 /* 8 Double Fault */
-void isr_double_fault(cpu_state_t *state)
+_Noreturn void isr_double_fault(const cpu_state_t *state)
 {
     show_rsod("Double Fault", state);
-    asm volatile("cli");
-    while (true)
-        ;
+    __builtin_unreachable();
 }
 
 /* 9 Coprocessor Segment Overrun (Intel only) */
-void isr_coprocessor_segment_overrun(cpu_state_t *state);
+_Noreturn void isr_coprocessor_segment_overrun(const cpu_state_t *state);
 
 /* 10 Invalid TSS */
-void isr_invalid_tss(cpu_state_t *state);
+_Noreturn void isr_invalid_tss(const cpu_state_t *state);
 
 /* 11 Segment Not Present */
-void isr_segment_not_present(cpu_state_t *state);
+_Noreturn void isr_segment_not_present(const cpu_state_t *state);
 
 /* 12 Stack Segment Fault */
-void isr_stack_segment_fault(cpu_state_t *state);
+_Noreturn void isr_stack_segment_fault(const cpu_state_t *state);
 
 /* 13 General Protection Fault */
-void isr_general_protection(cpu_state_t *state)
+_Noreturn void isr_general_protection(const cpu_state_t *state)
 {
     show_rsod("General Protection Fault", state);
-    asm volatile("cli");
-    while (true)
-        ;
+    __builtin_unreachable();
 }
 
 /* 14 Page Fault */
-void isr_page_fault(cpu_state_t *state);
+_Noreturn void isr_page_fault(const cpu_state_t *state);
 
 /* 16 x87 FPU Floating-Point Error */
-void isr_fpu_floating_point(cpu_state_t *state);
+_Noreturn void isr_fpu_floating_point(const cpu_state_t *state);
 
 /* 17 Alignment Check */
-void isr_alignment_check(cpu_state_t *state);
+_Noreturn void isr_alignment_check(const cpu_state_t *state);
 
 /* 18 Machine Check - serious hardware error */
-void isr_machine_check(cpu_state_t *state);
+_Noreturn void isr_machine_check(const cpu_state_t *state);
 
 /* 19 SIMD Floating-Point Exception */
-void isr_simd_floating_point(cpu_state_t *state);
+_Noreturn void isr_simd_floating_point(const cpu_state_t *state);
 
 /* 20 Virtualization Exception */
-void isr_virtualization(cpu_state_t *state);
+_Noreturn void isr_virtualization(const cpu_state_t *state);
 
 void register_all_cpu_exceptions_isrs()
 {

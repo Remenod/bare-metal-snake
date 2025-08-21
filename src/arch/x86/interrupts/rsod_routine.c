@@ -26,8 +26,10 @@ void rsod_add_log(const char *msg)
     }
 }
 
-void show_rsod(const char *msg, const struct cpu_state *state)
+_Noreturn void show_rsod(const char *msg, const cpu_state_t *state)
 {
+    asm volatile("cli");
+
     set_text_mode();
     set_cursor_visibility(false);
     fill_screen(0, BLACK, RED);
