@@ -20,7 +20,7 @@ void isr_debug(struct cpu_state *state);
 void isr_nmi(struct cpu_state *state);
 
 /* 3 Breakpoint (int3) */
-void isr_breakpoint(struct cpu_state *state)
+void isr_breakpoint(struct cpu_state *state) // marked as stateless in cpu_interrupts.asm
 {
     asm volatile("cli");
     while (true)
@@ -34,13 +34,25 @@ void isr_overflow(struct cpu_state *state);
 void isr_bound_range(struct cpu_state *state);
 
 /* 6 Invalid Opcode */
-void isr_invalid_opcode(struct cpu_state *state);
+void isr_invalid_opcode(struct cpu_state *state)
+{
+    show_rsod("Invalid Opcode", state);
+    asm volatile("cli");
+    while (true)
+        ;
+}
 
 /* 7 Device Not Available - FPU or coprocessor not available */
 void isr_device_not_available(struct cpu_state *state);
 
 /* 8 Double Fault */
-void isr_double_fault(struct cpu_state *state);
+void isr_double_fault(struct cpu_state *state)
+{
+    show_rsod("Double Fault", state);
+    asm volatile("cli");
+    while (true)
+        ;
+}
 
 /* 9 Coprocessor Segment Overrun (Intel only) */
 void isr_coprocessor_segment_overrun(struct cpu_state *state);
@@ -83,9 +95,9 @@ void register_all_cpu_exceptions_isrs()
     register_interrupt_handler(3, isr_breakpoint);
     // register_interrupt_handler(4, isr_overflow);
     // register_interrupt_handler(5, isr_bound_range);
-    // register_interrupt_handler(6, isr_invalid_opcode);
+    register_interrupt_handler(6, isr_invalid_opcode);
     // register_interrupt_handler(7, isr_device_not_available);
-    // register_interrupt_handler(8, isr_double_fault);
+    register_interrupt_handler(8, isr_double_fault);
     // register_interrupt_handler(9, isr_coprocessor_segment_overrun);
     // register_interrupt_handler(10, isr_invalid_tss);
     // register_interrupt_handler(11, isr_segment_not_present);
