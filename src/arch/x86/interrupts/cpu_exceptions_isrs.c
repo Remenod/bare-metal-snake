@@ -28,7 +28,13 @@ void isr_breakpoint(struct cpu_state *state) // marked as stateless in cpu_inter
 }
 
 /* 4 Overflow (into instruction) */
-void isr_overflow(struct cpu_state *state);
+void isr_overflow(struct cpu_state *state)
+{
+    show_rsod("Signed int overflow", state);
+    asm volatile("cli");
+    while (true)
+        ;
+}
 
 /* 5 Bound Range Exceeded - (bound instruction) */
 void isr_bound_range(struct cpu_state *state);
@@ -93,7 +99,7 @@ void register_all_cpu_exceptions_isrs()
     // register_interrupt_handler(1, isr_debug);
     // register_interrupt_handler(2, isr_nmi);
     register_interrupt_handler(3, isr_breakpoint);
-    // register_interrupt_handler(4, isr_overflow);
+    register_interrupt_handler(4, isr_overflow);
     // register_interrupt_handler(5, isr_bound_range);
     register_interrupt_handler(6, isr_invalid_opcode);
     // register_interrupt_handler(7, isr_device_not_available);
