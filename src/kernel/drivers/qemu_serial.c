@@ -95,6 +95,27 @@ void serial_write_uint16(uint16_t value)
         serial_write_char(buf[i]);
 }
 
+void serial_write_uint32(uint32_t value)
+{
+    char buf[12];
+    int i = 0;
+
+    if (value == 0)
+    {
+        serial_write_char('0');
+        return;
+    }
+
+    while (value > 0)
+    {
+        buf[i++] = '0' + (value % 10);
+        value /= 10;
+    }
+
+    while (i--)
+        serial_write_char(buf[i]);
+}
+
 void serial_send_palette(uint8_t palette[256][3])
 {
     for (int i = 0; i < 256; i++)
