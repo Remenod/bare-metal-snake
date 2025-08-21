@@ -37,4 +37,6 @@ void print_dec(const int num);
 
 void print_hex(uint32_t val);
 
+void print_bin(uint32_t val, bool_t slicing);
+
 void print_char(char c);

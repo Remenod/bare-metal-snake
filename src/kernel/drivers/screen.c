@@ -87,7 +87,7 @@ void print(const char *text)
     move_cursor(cursor_pos);
 }
 
-void print_dec(const int num)
+void print_dec(int num)
 {
     print(int_to_str(num, print_dec_buf));
 }
@@ -97,11 +97,21 @@ void print_hex(uint32_t val)
     print("0x");
     const char *hex = "0123456789ABCDEF";
     for (int i = 7; i >= 0; i--)
-        put_char(cursor_pos++, hex[(val >> (i * 4)) & 0xF]);
+        print_char(hex[(val >> (i * 4)) & 0xF]);
+}
+
+void print_bin(uint32_t val, bool_t slicing)
+{
+    print("0b");
+    for (int i = 31; i >= 0; i--)
+    {
+        print_char(((val >> i) & 1) ? '1' : '0');
+        if (slicing && i % 8 == 0)
+            print_char(0);
+    }
 }
 
 void print_char(char c)
 {
-    char s[2] = {c, '\0'};
-    print(s);
+    put_char(cursor_pos++, c);
 }
