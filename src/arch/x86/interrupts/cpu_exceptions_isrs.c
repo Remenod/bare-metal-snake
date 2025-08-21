@@ -14,67 +14,66 @@ void isr_divide_error(struct cpu_state *state)
 }
 
 /* 1 Debug Exception */
-void isr_debug();
+void isr_debug(struct cpu_state *state);
 
 /* 2 Non-Maskable Interrupt (NMI) */
-void isr_nmi();
+void isr_nmi(struct cpu_state *state);
 
 /* 3 Breakpoint (int3) */
-void isr_breakpoint()
+void isr_breakpoint(struct cpu_state *state)
 {
-    show_rsod("breakpoint", NULL);
     asm volatile("cli");
     while (true)
         ;
 }
 
 /* 4 Overflow (into instruction) */
-void isr_overflow();
+void isr_overflow(struct cpu_state *state);
 
 /* 5 Bound Range Exceeded - (bound instruction) */
-void isr_bound_range();
+void isr_bound_range(struct cpu_state *state);
 
 /* 6 Invalid Opcode */
-void isr_invalid_opcode();
+void isr_invalid_opcode(struct cpu_state *state);
 
 /* 7 Device Not Available - FPU or coprocessor not available */
-void isr_device_not_available();
+void isr_device_not_available(struct cpu_state *state);
 
 /* 8 Double Fault */
-void isr_double_fault(uint32_t err_code);
+void isr_double_fault(struct cpu_state *state);
 
 /* 9 Coprocessor Segment Overrun (Intel only) */
-void isr_coprocessor_segment_overrun();
+void isr_coprocessor_segment_overrun(struct cpu_state *state);
 
 /* 10 Invalid TSS */
-void isr_invalid_tss(uint32_t err_code);
+void isr_invalid_tss(struct cpu_state *state);
 
 /* 11 Segment Not Present */
-void isr_segment_not_present(uint32_t err_code);
+void isr_segment_not_present(struct cpu_state *state);
 
 /* 12 Stack Segment Fault */
-void isr_stack_segment_fault(uint32_t err_code);
+void isr_stack_segment_fault(struct cpu_state *state);
 
 /* 13 General Protection Fault */
-void isr_general_protection(uint32_t err_code);
+void isr_general_protection(struct cpu_state *state);
 
 /* 14 Page Fault */
-void isr_page_fault(uint32_t err_code);
+void isr_page_fault(struct cpu_state *state);
 
 /* 16 x87 FPU Floating-Point Error */
-void isr_fpu_floating_point();
+void isr_fpu_floating_point(struct cpu_state *state);
 
 /* 17 Alignment Check */
-void isr_alignment_check(uint32_t err_code);
+void isr_alignment_check(struct cpu_state *state);
 
 /* 18 Machine Check - serious hardware error */
-void isr_machine_check();
+void isr_machine_check(struct cpu_state *state);
 
 /* 19 SIMD Floating-Point Exception */
-void isr_simd_floating_point();
+void isr_simd_floating_point(struct cpu_state *state);
 
 /* 20 Virtualization Exception */
-void isr_virtualization();
+void isr_virtualization(struct cpu_state *state);
 
 void register_all_cpu_exceptions_isrs()
 {

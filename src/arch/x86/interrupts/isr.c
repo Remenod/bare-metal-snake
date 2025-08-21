@@ -17,39 +17,60 @@ void isr_common_handler(uint32_t int_no)
         outb(PIC1_COMMAND, PIC_EOI); // master
 }
 
-void isr_exception_handler(uint32_t int_no, uint32_t err_code)
+void isr_exception_handler(
+    uint32_t gs,
+    uint32_t fs,
+    uint32_t es,
+    uint32_t ds,
+    uint32_t edi,
+    uint32_t esi,
+    uint32_t ebp,
+    uint32_t esp,
+    uint32_t ebx,
+    uint32_t edx,
+    uint32_t ecx,
+    uint32_t eax,
+    uint32_t int_no,
+    uint32_t err_code,
+    uint32_t eip,
+    uint32_t cs,
+    uint32_t eflags) // TODO somehow pack this directrly in cpu_interrupts.asm
 {
     struct cpu_state state;
-
-    asm volatile(
-        "mov %%eax, %0\n"
-        "mov %%ebx, %1\n"
-        "mov %%ecx, %2\n"
-        "mov %%edx, %3\n"
-        "mov %%esi, %4\n"
-        "mov %%edi, %5\n"
-        "mov %%ebp, %6\n"
-        : "=m"(state.eax), "=m"(state.ebx), "=m"(state.ecx),
-          "=m"(state.edx), "=m"(state.esi), "=m"(state.edi),
-          "=m"(state.ebp));
-
-    uint32_t esp, ss;
-    asm volatile(
-        "mov %%esp, %0\n"
-        "mov %%ss, %1\n"
-        : "=r"(esp), "=r"(ss));
-
-    uint32_t eip = *((uint32_t *)(esp + 0));
-    uint32_t cs = *((uint32_t *)(esp + 4));
-    uint32_t eflags = *((uint32_t *)(esp + 8));
-
-    state.int_no = int_no;
-    state.err_code = err_code;
     state.eip = eip;
     state.cs = cs;
     state.eflags = eflags;
-    state.useresp = esp;
-    state.ss = ss;
+    state.err_code = err_code;
+    state.int_no = int_no;
+
+    state.eax = eax;
+    state.ecx = ecx;
+    state.edx = edx;
+    state.ebx = ebx;
+    state.esp = esp;
+    state.ebp = ebp;
+    state.esi = esi;
+    state.edi = edi;
+
+    state.ds = ds;
+    state.es = es;
+    state.fs = fs;
+    state.gs = gs;
+
+    if (interrupt_handlers[int_no])
+        interrupt_handlers[int_no](&state);
+}
+void isr_stateless_exception_handler(
+    uint32_t int_no,
+    uint32_t eip,
+    uint32_t cs,
+    uint32_t eflags)
+{
+    struct cpu_state state = {0};
+    state.eip = eip;
+    state.cs = cs;
+    state.eflags = eflags;
+    state.int_no = int_no;
 
     if (interrupt_handlers[int_no])
         interrupt_handlers[int_no](&state);
