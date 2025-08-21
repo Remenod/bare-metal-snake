@@ -39,7 +39,7 @@ _Noreturn void isr_3() // marked as stateless in cpu_interrupts.asm
         ;
 }
 
-void register_all_cpu_exceptions_isrs()
+void register_all_cpu_exceptions_isrs(void)
 {
 #define X(n) register_interrupt_handler(n, isr_##n);
     CPU_EXCEPTIONS
