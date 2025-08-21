@@ -7,7 +7,7 @@
 /* 0 Divide Error */
 void isr_divide_error(struct cpu_state *state)
 {
-    show_rsod("Division by zero", state);
+    show_rsod("Division by Zero", state);
     asm volatile("cli");
     while (true)
         ;
@@ -30,7 +30,7 @@ void isr_breakpoint(struct cpu_state *state) // marked as stateless in cpu_inter
 /* 4 Overflow (into instruction) */
 void isr_overflow(struct cpu_state *state)
 {
-    show_rsod("Signed int overflow", state);
+    show_rsod("Signed Int Overflow", state);
     asm volatile("cli");
     while (true)
         ;
