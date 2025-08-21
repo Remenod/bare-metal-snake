@@ -1,7 +1,6 @@
 #include <interrupts/isr.h>
 
 #include <ports.h>
-#include <interrupts/rsod_routine.h>
 
 static isr_t interrupt_handlers[IDT_ENTRIES];
 
