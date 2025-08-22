@@ -41,6 +41,10 @@ isr%1:
 %macro ISR_EXC_STATELESS 1
 global isr%1
 isr%1:
+    ; EIP CS EFLAFS already pushed by cpu
+
+    ; stateless isr usualy does not autopush err_code
+
     push dword %1           ; interrupt number
 
     mov ax, 0x10
@@ -57,7 +61,7 @@ isr%1:
 
 %assign i 0
 %rep 32
-    %if i == 3
+    %if i == 1 || i == 3                                      ; STATELESS ISR VEC HERE
         ISR_EXC_STATELESS i
     %else
         ISR_EXC_COMMON i
