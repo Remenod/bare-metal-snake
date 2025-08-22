@@ -7,7 +7,7 @@ global isr%1
 isr%1:
     ; EIP CS EFLAFS already pushed by cpu
 
-    %ifidn %1, 8 || %1 >= 10 && %1 <= 14 || %1 == 17
+    %if %1 = 8 || (%1 >= 10 && %1 <= 14) || %1 = 17
         ;err_code already pushed by cpu
     %else
         push dword 0        ; err_code = 0
