@@ -122,8 +122,7 @@ init_pm:
   mov es, ax
   mov fs, ax
   mov gs, ax
-  mov ebp, 0x90000
-  mov esp, ebp
+  mov esp, 0x9FFFC
   call KERNEL_OFFSET
   jmp $
 
