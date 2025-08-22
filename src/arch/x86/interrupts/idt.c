@@ -18,54 +18,15 @@ struct idt_ptr
     uint32_t base;
 } __attribute__((packed));
 
-extern void isr0();  // Divide-by-zero Error
-extern void isr1();  // Debug Exception
-extern void isr2();  // Non-Maskable Interrupt (NMI)
-extern void isr3();  // Breakpoint Exception
-extern void isr4();  // Overflow Exception
-extern void isr5();  // Bound Range Exceeded Exception
-extern void isr6();  // Invalid Opcode Exception
-extern void isr7();  // Device Not Available (FPU) Exception
-extern void isr8();  // Double Fault
-extern void isr9();  // Coprocessor Segment Overrun (obsolete)
-extern void isr10(); // Invalid TSS
-extern void isr11(); // Segment Not Present
-extern void isr12(); // Stack-Segment Fault
-extern void isr13(); // General Protection Fault
-extern void isr14(); // Page Fault
-extern void isr15(); // Reserved
-extern void isr16(); // x87 FPU Floating-Point Error
-extern void isr17(); // Alignment Check
-extern void isr18(); // Machine Check
-extern void isr19(); // SIMD Floating-Point Exception
-extern void isr20(); // Virtualization Exception
-extern void isr21(); // Reserved
-extern void isr22(); // Reserved
-extern void isr23(); // Reserved
-extern void isr24(); // Reserved
-extern void isr25(); // Reserved
-extern void isr26(); // Reserved
-extern void isr27(); // Reserved
-extern void isr28(); // Reserved
-extern void isr29(); // Reserved
-extern void isr30(); // Security Exception
-extern void isr31(); // Reserved
-extern void isr32(); // IRQ0: timer
-extern void isr33(); // IRQ1: keyboard
-extern void isr34(); // IRQ2: cascade
-extern void isr35(); // IRQ3: COM2
-extern void isr36(); // IRQ4: COM1
-extern void isr37(); // IRQ5: LPT2
-extern void isr38(); // IRQ6: floppy
-extern void isr39(); // IRQ7: LPT1
-extern void isr40(); // IRQ8: CMOS
-extern void isr41(); // IRQ9
-extern void isr42(); // IRQ10
-extern void isr43(); // IRQ11
-extern void isr44(); // IRQ12: PS/2 mouse
-extern void isr45(); // IRQ13: FPU
-extern void isr46(); // IRQ14: Primary ATA
-extern void isr47(); // IRQ15: Secondary ATA
+#define ISR_LIST X(0) X(1) X(2) X(3) X(4) X(5) X(6) X(7) X(8) X(9)            \
+    X(10) X(11) X(12) X(13) X(14) X(15) X(16) X(17) X(18) X(19) X(20)         \
+        X(21) X(22) X(23) X(24) X(25) X(26) X(27) X(28) X(29) X(30) X(31)     \
+            X(32) X(33) X(34) X(35) X(36) X(37) X(38) X(39) X(40) X(41) X(42) \
+                X(43) X(44) X(45) X(46) X(47)
+
+#define X(n) extern void isr##n();
+ISR_LIST
+#undef X
 
 static struct idt_entry idt[IDT_ENTRIES];
 static struct idt_ptr idtp;
@@ -88,54 +49,9 @@ void idt_install()
     idtp.limit = sizeof(struct idt_entry) * IDT_ENTRIES - 1;
     idtp.base = (uint32_t)&idt;
 
-    idt_set_gate(0x00, (uint32_t)isr0, 0x08, 0x8E);
-    idt_set_gate(0x01, (uint32_t)isr1, 0x08, 0x8E);
-    idt_set_gate(0x02, (uint32_t)isr2, 0x08, 0x8E);
-    idt_set_gate(0x03, (uint32_t)isr3, 0x08, 0x8E);
-    idt_set_gate(0x04, (uint32_t)isr4, 0x08, 0x8E);
-    idt_set_gate(0x05, (uint32_t)isr5, 0x08, 0x8E);
-    idt_set_gate(0x06, (uint32_t)isr6, 0x08, 0x8E);
-    idt_set_gate(0x07, (uint32_t)isr7, 0x08, 0x8E);
-    idt_set_gate(0x08, (uint32_t)isr8, 0x08, 0x8E);
-    idt_set_gate(0x09, (uint32_t)isr9, 0x08, 0x8E);
-    idt_set_gate(0x0A, (uint32_t)isr10, 0x08, 0x8E);
-    idt_set_gate(0x0B, (uint32_t)isr11, 0x08, 0x8E);
-    idt_set_gate(0x0C, (uint32_t)isr12, 0x08, 0x8E);
-    idt_set_gate(0x0D, (uint32_t)isr13, 0x08, 0x8E);
-    idt_set_gate(0x0E, (uint32_t)isr14, 0x08, 0x8E);
-    idt_set_gate(0x0F, (uint32_t)isr15, 0x08, 0x8E);
-    idt_set_gate(0x10, (uint32_t)isr16, 0x08, 0x8E);
-    idt_set_gate(0x11, (uint32_t)isr17, 0x08, 0x8E);
-    idt_set_gate(0x12, (uint32_t)isr18, 0x08, 0x8E);
-    idt_set_gate(0x13, (uint32_t)isr19, 0x08, 0x8E);
-    idt_set_gate(0x14, (uint32_t)isr20, 0x08, 0x8E);
-    idt_set_gate(0x15, (uint32_t)isr21, 0x08, 0x8E);
-    idt_set_gate(0x16, (uint32_t)isr22, 0x08, 0x8E);
-    idt_set_gate(0x17, (uint32_t)isr23, 0x08, 0x8E);
-    idt_set_gate(0x18, (uint32_t)isr24, 0x08, 0x8E);
-    idt_set_gate(0x19, (uint32_t)isr25, 0x08, 0x8E);
-    idt_set_gate(0x1A, (uint32_t)isr26, 0x08, 0x8E);
-    idt_set_gate(0x1B, (uint32_t)isr27, 0x08, 0x8E);
-    idt_set_gate(0x1C, (uint32_t)isr28, 0x08, 0x8E);
-    idt_set_gate(0x1D, (uint32_t)isr29, 0x08, 0x8E);
-    idt_set_gate(0x1E, (uint32_t)isr30, 0x08, 0x8E);
-    idt_set_gate(0x1F, (uint32_t)isr31, 0x08, 0x8E);
-    idt_set_gate(0x20, (uint32_t)isr32, 0x08, 0x8E); // IRQ0
-    idt_set_gate(0x21, (uint32_t)isr33, 0x08, 0x8E); // IRQ1
-    idt_set_gate(0x22, (uint32_t)isr34, 0x08, 0x8E);
-    idt_set_gate(0x23, (uint32_t)isr35, 0x08, 0x8E);
-    idt_set_gate(0x24, (uint32_t)isr36, 0x08, 0x8E);
-    idt_set_gate(0x25, (uint32_t)isr37, 0x08, 0x8E);
-    idt_set_gate(0x26, (uint32_t)isr38, 0x08, 0x8E);
-    idt_set_gate(0x27, (uint32_t)isr39, 0x08, 0x8E);
-    idt_set_gate(0x28, (uint32_t)isr40, 0x08, 0x8E);
-    idt_set_gate(0x29, (uint32_t)isr41, 0x08, 0x8E);
-    idt_set_gate(0x2A, (uint32_t)isr42, 0x08, 0x8E);
-    idt_set_gate(0x2B, (uint32_t)isr43, 0x08, 0x8E);
-    idt_set_gate(0x2C, (uint32_t)isr44, 0x08, 0x8E);
-    idt_set_gate(0x2D, (uint32_t)isr45, 0x08, 0x8E);
-    idt_set_gate(0x2E, (uint32_t)isr46, 0x08, 0x8E);
-    idt_set_gate(0x2F, (uint32_t)isr47, 0x08, 0x8E);
+#define X(n) idt_set_gate(n, (uint32_t)isr##n, 0x08, 0x8E);
+    ISR_LIST
+#undef X
 
     lidt(&idtp);
     asm volatile("sti");
