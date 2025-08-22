@@ -34,7 +34,7 @@ isr%1:
     pop es
     pop ds
     popa
-    add esp, 20 ; clean EIP, CS, EFLAFS, int_no and err_code
+    add esp, 8 ; clean int_no and err_code
     iretd
 %endmacro
 
@@ -51,7 +51,7 @@ isr%1:
 
     call isr_stateless_exception_handler
 
-    add esp, 4
+    add esp, 4             ; clean int_no
     iretd
 %endmacro
 
