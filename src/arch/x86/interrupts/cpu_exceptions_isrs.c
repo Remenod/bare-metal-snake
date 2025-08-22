@@ -4,7 +4,7 @@
 #define DEFINE_UNSPECIAL_ISR(n, msg)                 \
     _Noreturn void isr_##n(const cpu_state_t *state) \
     {                                                \
-        show_rsod(msg, state);                       \
+        show_rsod(msg, state, n);                    \
         __builtin_unreachable();                     \
     }
 
@@ -52,7 +52,7 @@ _Noreturn void isr_3() // marked as stateless in cpu_interrupts.asm
 _Noreturn void isr_7(const cpu_state_t *state)
 {
     rsod_add_log("ISR7. Probably FPU/SIMD Not Loaded");
-    show_rsod("Coprocessor Not Ready", state);
+    show_rsod("Coprocessor Not Ready", state, 7);
     __builtin_unreachable();
 }
 

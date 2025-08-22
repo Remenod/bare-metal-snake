@@ -26,7 +26,7 @@ void rsod_add_log(const char *msg)
     }
 }
 
-_Noreturn void show_rsod(const char *msg, const cpu_state_t *state)
+_Noreturn void show_rsod(const char *msg, const cpu_state_t *state, uint32_t int_no)
 {
     asm volatile("cli");
 
@@ -43,7 +43,7 @@ _Noreturn void show_rsod(const char *msg, const cpu_state_t *state)
     print(" KERNEL PANIC: ");
     print(msg ? msg : "Unknown");
     print("\n Int vector: ");
-    print_dec(state->int_no);
+    print_dec(int_no);
     print(" Error code: ");
     if (state->err_code)
         print_hex(state->err_code);
@@ -100,7 +100,7 @@ _Noreturn void show_rsod(const char *msg, const cpu_state_t *state)
         print_hex(state->gs);
         print("\n\n");
 
-        if (state->int_no == 0x0E) // CR2 page fault (0x0E)
+        if (int_no == 0x0E) // CR2 page fault (0x0E)
         {
             uint32_t cr2;
             asm volatile("mov %%cr2, %0" : "=r"(cr2));

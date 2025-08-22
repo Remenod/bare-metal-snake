@@ -16,10 +16,10 @@ void isr_common_handler(uint32_t int_no)
         outb(PIC1_COMMAND, PIC_EOI); // master
 }
 
-void isr_exception_handler(cpu_state_t state)
+void isr_exception_handler(uint32_t int_no, cpu_state_t state)
 {
-    if (interrupt_handlers[state.int_no])
-        interrupt_handlers[state.int_no](&state);
+    if (interrupt_handlers[int_no])
+        interrupt_handlers[int_no](&state);
 }
 void isr_stateless_exception_handler(
     uint32_t int_no,
@@ -31,7 +31,6 @@ void isr_stateless_exception_handler(
     state.eip = eip;
     state.cs = cs;
     state.eflags = eflags;
-    state.int_no = int_no;
 
     if (interrupt_handlers[int_no])
         interrupt_handlers[int_no](&state);

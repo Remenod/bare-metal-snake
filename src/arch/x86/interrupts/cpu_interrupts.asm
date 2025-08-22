@@ -13,7 +13,6 @@ isr%1:
         push dword 0        ; err_code = 0
     %endif
 
-    push dword %1           ; interrupt number
 
     pusha    ; EAX, ECX, EDX, EBX, ESP, EBP, ESI, EDI
     push ds
@@ -26,6 +25,8 @@ isr%1:
     mov es, ax
     mov fs, ax
     mov gs, ax
+    
+    push dword %1           ; interrupt number
 
     call isr_exception_handler
 
