@@ -21,6 +21,12 @@
 
 void put_char(uint16_t pos, unsigned char c);
 
+void put_attr(uint16_t pos, uint8_t attr);
+
+void set_fg_color(uint16_t pos, uint8_t fg_color);
+
+void set_bg_color(uint16_t pos, uint8_t bg_color);
+
 void put_string(uint16_t start_pos, const char text[]);
 
 void clear_screen();

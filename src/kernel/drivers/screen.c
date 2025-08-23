@@ -15,7 +15,17 @@ void put_char(uint16_t pos, unsigned char c)
 
 void put_attr(uint16_t pos, uint8_t attr)
 {
-    vga[pos] |= (attr << 8);
+    vga[pos] = (vga[pos] & 0b0000000011111111) | (attr << 8);
+}
+
+void set_fg_color(uint16_t pos, uint8_t fg_color)
+{
+    vga[pos] = (vga[pos] & 0b1111000011111111) | ((fg_color & 0b00001111) << 8);
+}
+
+void set_bg_color(uint16_t pos, uint8_t bg_color)
+{
+    vga[pos] = (vga[pos] & 0b1000111111111111) | ((bg_color & 0b00000111) << 12);
 }
 
 void clear_screen()
@@ -68,23 +78,7 @@ void move_cursor(uint16_t pos)
 void print(const char *text)
 {
     for (uint32_t i = 0; i < strlen(text); i++)
-    {
-        if (text[i] == '\n')
-        {
-            cursor_pos += 80 - (cursor_pos % 80);
-        }
-        else if (text[i] == '\b')
-        {
-            cursor_pos--;
-            put_char(cursor_pos, 0);
-        }
-        else
-        {
-            put_char(cursor_pos, text[i]);
-            cursor_pos++;
-        }
-    }
-    move_cursor(cursor_pos);
+        print_char(text[i]);
 }
 
 void print_dec(int num)
@@ -113,5 +107,11 @@ void print_bin(uint32_t val, bool_t slicing)
 
 void print_char(char c)
 {
-    put_char(cursor_pos++, c);
+    if (c == '\n')
+        cursor_pos += 80 - (cursor_pos % 80);
+    else if (c == '\b')
+        put_char(--cursor_pos, 0);
+    else
+        put_char(cursor_pos++, c);
+    move_cursor(cursor_pos);
 }
