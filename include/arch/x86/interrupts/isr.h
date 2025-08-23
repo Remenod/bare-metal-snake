@@ -9,8 +9,17 @@
 
 #define IDT_ENTRIES 256
 
-typedef void (*isr_t)(void);
+typedef void (*isr_t)();
 
-void isr_common_handler(uint32_t int_no);
+/* cpu state dump for RSOD
+do NOT swap the fields
+*/
+typedef struct cpu_state
+{
+    uint32_t gs, fs, es, ds;
+    uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
+    uint32_t err_code;
+    uint32_t eip, cs, eflags;
+} cpu_state_t;
 
 void register_interrupt_handler(uint32_t int_no, isr_t handler);

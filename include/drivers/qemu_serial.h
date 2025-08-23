@@ -18,6 +18,8 @@ void serial_write_uint8(uint8_t value);
 
 void serial_write_uint16(uint16_t value);
 
+void serial_write_uint32(uint32_t value);
+
 void serial_send_palette(uint8_t palette[256][3]);
 
 void serial_send_font(uint8_t font[256][16]);

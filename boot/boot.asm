@@ -96,6 +96,14 @@ gdt_data:
   db 11001111b
   db 0x0
 
+gdt_debug:
+  dw 0xffff
+  dw 0x0
+  db 0x0
+  db 00010010b
+  db 11001111b
+  db 0x0
+
 gdt_end:
 
 gdt_descriptor:
@@ -122,8 +130,7 @@ init_pm:
   mov es, ax
   mov fs, ax
   mov gs, ax
-  mov ebp, 0x90000
-  mov esp, ebp
+  mov esp, 0x9FFFC
   call KERNEL_OFFSET
   jmp $
 

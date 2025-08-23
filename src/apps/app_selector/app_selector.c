@@ -6,16 +6,18 @@
 
 #include "../snake/snake.h"
 #include "../text_sandbox/text_sandbox.h"
+#include "../rsod_roulette/rsod_roulette.h"
 
 typedef struct
 {
     const char *name;
-    void (*entry_point)();
+    func_t entry_point;
 } App;
 
 static App apps[] = {
     {"Text Sandbox", text_sandbox_main},
-    {"Snake", snake_main}};
+    {"Snake", snake_main},
+    {"RSoD Roulette", rsod_roulette_main}};
 
 #define APP_COUNT (uint8_t)(sizeof(apps) / sizeof(App))
 
