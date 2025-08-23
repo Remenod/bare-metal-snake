@@ -100,8 +100,8 @@ void print_bin(uint32_t val, bool_t slicing)
     for (int i = 31; i >= 0; i--)
     {
         print_char(((val >> i) & 1) ? '1' : '0');
-        if (slicing && i % 8 == 0)
-            print_char(0);
+        if (slicing && i % 8 == 0 && i != 0)
+            print_char(' ');
     }
 }
 

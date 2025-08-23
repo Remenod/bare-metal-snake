@@ -38,9 +38,8 @@ static void inv_opcode(void)
 
 static void seg_np(void)
 {
-    rsod_add_log("Its actually #GP isnt it?");
     asm volatile(
-        "movw $0x2235, %%ax\n"
+        "movw $0x18, %%ax\n"
         "movw %%ax, %%ds\n" : : : "ax");
 }
 
@@ -156,7 +155,10 @@ static inline const Crash *spin_crashes(void)
     {
         for (int8_t j = -2; j < 3; j++)
         {
-            res = (i + j) % CRASHES_LEN;
+            int idx = (int)(i + j) % (int)CRASHES_LEN;
+            if (idx < 0)
+                idx += CRASHES_LEN;
+            res = (uint8_t)idx;
             put_roulette_text(crashes[res].msg, j);
         }
 

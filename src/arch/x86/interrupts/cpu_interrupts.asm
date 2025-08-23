@@ -30,12 +30,14 @@ isr%1:
 
     call isr_exception_handler
 
+    add esp, 4 ; pop int_no
+    
     pop gs
     pop fs
     pop es
     pop ds
     popa
-    add esp, 8 ; clean int_no and err_code
+    add esp, 4 ; pop err_code
     iretd
 %endmacro
 
