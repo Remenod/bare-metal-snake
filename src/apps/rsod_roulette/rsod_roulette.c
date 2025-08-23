@@ -3,6 +3,7 @@
 #include <lib/random.h>
 #include <timer/pit.h>
 #include <drivers/screen.h>
+#include <drivers/keyboard.h>
 #include <lib/string.h>
 #include <lib/math.h>
 #include <interrupts/rsod_routine.h>
@@ -91,6 +92,8 @@ static const char countdown_1_art[4][4] = {
     "| |",
     "|_|"};
 
+static const char launch_text[] = "Press SPACE to continue!";
+
 static Random rand;
 
 static const Crash crashes[] = {
@@ -110,7 +113,7 @@ static void put_art_text(const char *art, uint8_t lines)
     for (int i = 0; i < lines; i++)
     {
         for (int j = 0; j < 80; j++)
-            put_char((start_pos - start_pos % 80) + j + 80 * i, 0);
+            put_char((start_pos - start_pos % 80) + j + 80 * i, 0); // erase whole line
 
         put_string(start_pos + 80 * i, art + (line_len + 1) * i);
     }
@@ -118,7 +121,7 @@ static void put_art_text(const char *art, uint8_t lines)
 
 static inline void put_roulette_text(const char *msg, int8_t place)
 {
-    const uint8_t colors[] = {WHITE, LIGHT_GREY, DARK_GREY, BLACK};
+    static const uint8_t colors[] = {WHITE, LIGHT_GREY, DARK_GREY, BLACK};
     uint16_t msg_len = strlen(msg);
     uint16_t start_pos = (80 * 25 / 2 - msg_len / 2) + place * 3 * 80 + 80 * 3;
 
@@ -130,18 +133,18 @@ static inline void put_roulette_text(const char *msg, int8_t place)
             : WHITE;
 
     for (int i = 0; i < 80; i++)
-        put_char(start_pos - start_pos % 80 + i, 0);
+        put_char(start_pos - start_pos % 80 + i, 0); // erase whole line
 
     for (uint16_t i = start_pos; i < start_pos + msg_len; i++)
         set_fg_color(i, color);
 
-    if (!place)
-        put_char(start_pos - 2, '>');
-
     put_string(start_pos, msg);
 
     if (!place)
+    {
+        put_char(start_pos - 2, '>');
         put_char(start_pos + msg_len + 1, '<');
+    }
 }
 
 static inline const Crash *spin_crashes(void)
@@ -163,6 +166,7 @@ static inline const Crash *spin_crashes(void)
     }
     for (int i = 0; i < 80; i++)
         set_fg_color(80 * 12 + i + 80 * 3, GREEN);
+
     return &crashes[(res + CRASHES_LEN - 2) % CRASHES_LEN];
 }
 
@@ -181,6 +185,28 @@ void rsod_roulette_main(void)
     set_cursor_visibility(false);
 
     put_art_text(&spin_art, 4);
+
+    put_string(((80 - strlen(launch_text)) / 2) + 80 * 12, launch_text); // Add launch_text
+
+    while (true)
+    {
+        char c;
+        while (!(c = get_char()))
+            asm volatile("hlt");
+        switch (c)
+        {
+        case KEY_ESC:
+            return;
+            break;
+        case ' ':
+            goto SPIN;
+            break;
+        }
+    }
+
+SPIN:
+    for (int j = 0; j < 80; j++) // Remove launch_text
+        put_char(80 * 12 + j, 0);
 
     if (!rand.seed)
         random_init(&rand, get_timer_ticks() + get_timer_ticks());
