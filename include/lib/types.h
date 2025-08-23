@@ -19,3 +19,4 @@ typedef int bool_t;
 // def
 #define NULL ((void *)0)
 typedef unsigned long size_t;
+typedef void (*func_t)();
