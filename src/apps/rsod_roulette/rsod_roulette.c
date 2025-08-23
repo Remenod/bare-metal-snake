@@ -1,13 +1,11 @@
 #include "rsod_roulette.h"
 
-#include <drivers/qemu_serial.h>
-#include <interrupts/isr.h>
-
 #include <lib/random.h>
 #include <timer/pit.h>
 #include <drivers/screen.h>
 #include <lib/string.h>
 #include <lib/math.h>
+#include <interrupts/rsod_routine.h>
 
 #define CRASHES_LEN (uint8_t)(sizeof(crashes) / sizeof(crashes[0]))
 #define COLORS_LEN (uint8_t)(sizeof(colors) / sizeof(colors[0]))
@@ -39,6 +37,7 @@ static void inv_opcode(void)
 
 static void seg_np(void)
 {
+    rsod_add_log("Its actually #GP isnt it?");
     asm volatile(
         "movw $0x2235, %%ax\n"
         "movw %%ax, %%ds\n" : : : "ax");
@@ -68,6 +67,30 @@ static void sig_overflow(void)
         : "al");
 }
 
+static const char spin_art[4][21] = {
+    " ___ ___ ___ _  _ _ ",
+    "/ __| _ \\_ _| \\| | |",
+    "\\__ \\  _/| || .` |_|",
+    "|___/_| |___|_|\\_(_)"};
+
+static const char countdown_3_art[4][6] = {
+    " ____",
+    "|__ /",
+    " |_ \\",
+    "|___/"};
+
+static const char countdown_2_art[4][6] = {
+    " ___ ",
+    "|_  )",
+    " / / ",
+    "/___|"};
+
+static const char countdown_1_art[4][4] = {
+    " _ ",
+    "/ |",
+    "| |",
+    "|_|"};
+
 static Random rand;
 
 static const Crash crashes[] = {
@@ -79,11 +102,25 @@ static const Crash crashes[] = {
     {"Overflow Exception", sig_overflow},
 };
 
-static inline void put_text_in_center(const char *msg, int8_t place)
+static void put_art_text(const char *art, uint8_t lines)
+{
+    uint8_t line_len = strlen(art);
+    uint16_t start_pos = ((80 - line_len) / 2) + 80;
+
+    for (int i = 0; i < lines; i++)
+    {
+        for (int j = 0; j < 80; j++)
+            put_char((start_pos - start_pos % 80) + j + 80 * i, 0);
+
+        put_string(start_pos + 80 * i, art + (line_len + 1) * i);
+    }
+}
+
+static inline void put_roulette_text(const char *msg, int8_t place)
 {
     const uint8_t colors[] = {WHITE, LIGHT_GREY, DARK_GREY, BLACK};
     uint16_t msg_len = strlen(msg);
-    uint16_t start_pos = (80 * 25 / 2 - msg_len / 2) + place * 3 * 80;
+    uint16_t start_pos = (80 * 25 / 2 - msg_len / 2) + place * 3 * 80 + 80 * 3;
 
     uint8_t color =
         place
@@ -104,7 +141,7 @@ static inline void put_text_in_center(const char *msg, int8_t place)
     put_string(start_pos, msg);
 
     if (!place)
-        put_char(start_pos + strlen(msg) + 1, '<');
+        put_char(start_pos + msg_len + 1, '<');
 }
 
 static inline const Crash *spin_crashes(void)
@@ -117,7 +154,7 @@ static inline const Crash *spin_crashes(void)
         for (int8_t j = -2; j < 3; j++)
         {
             res = (i + j) % CRASHES_LEN;
-            put_text_in_center(crashes[res].msg, j);
+            put_roulette_text(crashes[res].msg, j);
         }
 
         motion *= 1.05f;
@@ -125,28 +162,33 @@ static inline const Crash *spin_crashes(void)
         sleep((uint32_t)motion);
     }
     for (int i = 0; i < 80; i++)
-        set_fg_color(80 * 12 + i, GREEN);
+        set_fg_color(80 * 12 + i + 80 * 3, GREEN);
     return &crashes[(res + CRASHES_LEN - 2) % CRASHES_LEN];
+}
+
+static inline void countdown(void)
+{
+    put_art_text(&countdown_3_art, 4);
+    sleep(1000);
+    put_art_text(&countdown_2_art, 4);
+    sleep(1000);
+    put_art_text(&countdown_1_art, 4);
+    sleep(1000);
 }
 
 void rsod_roulette_main(void)
 {
     set_cursor_visibility(false);
 
+    put_art_text(&spin_art, 4);
+
     if (!rand.seed)
         random_init(&rand, get_timer_ticks() + get_timer_ticks());
 
     const Crash *choice = spin_crashes();
 
-    put_char(0, '3');
-    sleep(1000);
-    put_char(0, '2');
-    sleep(1000);
-    put_char(0, '1');
-    sleep(1000);
+    countdown();
 
+    rsod_add_log("Hello from RSoD Coundown!");
     choice->crash();
-
-    while (true)
-        ;
 }
