@@ -20,7 +20,7 @@
         int16_t: abs_int16, \
         int32_t: abs_int32)(val)
 
-inline float sinf(float x)
+static inline float sinf(float x)
 {
     while (x > PI)
         x -= 2.0f * PI;
@@ -35,7 +35,7 @@ inline float sinf(float x)
 
     return term1 - term2 + term3 - term4;
 }
-inline double sind(double x)
+static inline double sind(double x)
 {
     while (x > PI)
         x -= 2.0 * PI;
@@ -51,7 +51,7 @@ inline double sind(double x)
     return term1 - term2 + term3 - term4;
 }
 
-inline float cosf(float x)
+static inline float cosf(float x)
 {
     while (x > PI)
         x -= 2.0f * PI;
@@ -66,7 +66,7 @@ inline float cosf(float x)
 
     return term1 - term2 + term3 - term4;
 }
-inline double cosd(double x)
+static inline double cosd(double x)
 {
     while (x > PI)
         x -= 2.0f * PI;
@@ -82,15 +82,15 @@ inline double cosd(double x)
     return term1 - term2 + term3 - term4;
 }
 
-inline int8_t abs_int8(int8_t val)
+static inline int8_t abs_int8(int8_t val)
 {
     return val < 0 ? -val : val;
 }
-inline int16_t abs_int16(int16_t val)
+static inline int16_t abs_int16(int16_t val)
 {
     return val < 0 ? -val : val;
 }
-inline int32_t abs_int32(int32_t val)
+static inline int32_t abs_int32(int32_t val)
 {
     return val < 0 ? -val : val;
 }
