@@ -1,5 +1,3 @@
-[EXTERN stack_overflow_routine]
-
 global stack_guard
 stack_guard:
     cmp esp, 0x60000
@@ -7,5 +5,5 @@ stack_guard:
     ret
     
 overflow:
-    call stack_overflow_routine
+    int 48
     ret
