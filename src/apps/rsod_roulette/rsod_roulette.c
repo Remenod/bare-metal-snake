@@ -203,6 +203,10 @@ void rsod_roulette_main(void)
         case ' ':
             goto SPIN;
             break;
+        case '\n':
+            random_init(&rand, get_timer_ticks() + get_timer_ticks());
+            crashes[random_next_bounded(&rand, CRASHES_LEN)].crash();
+            break;
         }
     }
 
