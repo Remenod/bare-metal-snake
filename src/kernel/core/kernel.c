@@ -11,9 +11,9 @@ void kernel_main()
 {
     idt_install();
     pit_init(1000);
-    stack_guard_install();
     register_all_cpu_exceptions_isrs();
     keyboard_install();
+    stack_guard_install();
 
     set_graphics_mode();
     draw_mode13h_test_pattern();
