@@ -12,7 +12,7 @@ static func_t pit_tasks[255];
 
 static uint8_t task_count = 0;
 
-void pit_handler()
+void pit_handler(void)
 {
     timer_ticks++;
     for (uint8_t i = 0; i < task_count; i++)
@@ -43,12 +43,12 @@ void pit_init(uint32_t frequency)
     pic_unmask_irq(IRQ_TIMER);
 }
 
-uint64_t get_timer_ticks()
+uint64_t get_timer_ticks(void)
 {
     return timer_ticks;
 }
 
-uint32_t get_timer_frequency()
+uint32_t get_timer_frequency(void)
 {
     return timer_frequency;
 }

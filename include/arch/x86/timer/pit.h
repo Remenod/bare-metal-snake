@@ -12,8 +12,8 @@ void pit_init(uint32_t frequency);
 
 void register_pit_task(func_t task);
 
-uint64_t get_timer_ticks();
+uint64_t get_timer_ticks(void);
 
-uint32_t get_timer_frequency();
+uint32_t get_timer_frequency(void);
 
 void sleep(uint32_t ms);
