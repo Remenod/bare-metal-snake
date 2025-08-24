@@ -8,9 +8,21 @@ static volatile uint64_t timer_ticks = 0;
 
 static volatile uint32_t timer_frequency;
 
+static func_t pit_tasks[255];
+
+static uint8_t task_count = 0;
+
 void pit_handler()
 {
     timer_ticks++;
+    for (uint8_t i = 0; i < task_count; i++)
+        pit_tasks[i]();
+}
+
+void register_pit_task(func_t task)
+{
+    if (task_count < (sizeof(pit_tasks) / sizeof(pit_tasks[0])))
+        pit_tasks[task_count++] = task;
 }
 
 void pit_init(uint32_t frequency)
