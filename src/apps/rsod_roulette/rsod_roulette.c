@@ -175,11 +175,11 @@ static inline const Crash *spin_crashes(void)
 
 static inline void countdown(void)
 {
-    put_art_text(&countdown_3_art, 4);
+    put_art_text(&countdown_3_art[0][0], 4);
     sleep(1000);
-    put_art_text(&countdown_2_art, 4);
+    put_art_text(&countdown_2_art[0][0], 4);
     sleep(1000);
-    put_art_text(&countdown_1_art, 4);
+    put_art_text(&countdown_1_art[0][0], 4);
     sleep(1000);
 }
 
@@ -187,7 +187,7 @@ void rsod_roulette_main(void)
 {
     set_cursor_visibility(false);
 
-    put_art_text(&spin_art, 4);
+    put_art_text(&spin_art[0][0], 4);
 
     put_string(((80 - strlen(launch_text)) / 2) + 80 * 12, launch_text); // Add launch_text
     put_string(((80 - strlen(alt_launch_text)) / 2) + 80 * 24, alt_launch_text);
