@@ -2,7 +2,7 @@
 
 #include <ports.h>
 
-static isr_t interrupt_handlers[IDT_ENTRIES];
+static func_t interrupt_handlers[IDT_ENTRIES];
 
 void isr_common_handler(uint32_t int_no)
 {
@@ -36,7 +36,7 @@ void isr_stateless_exception_handler(
         interrupt_handlers[int_no](&state);
 }
 
-void register_interrupt_handler(uint32_t int_no, isr_t handler)
+void register_interrupt_handler(uint32_t int_no, func_t handler)
 {
     interrupt_handlers[int_no] = handler;
 }
