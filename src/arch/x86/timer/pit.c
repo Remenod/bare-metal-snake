@@ -11,7 +11,6 @@ static volatile uint32_t timer_frequency;
 void pit_handler()
 {
     timer_ticks++;
-    outb(PIC1_COMMAND, PIC_EOI);
 }
 
 void pit_init(uint32_t frequency)
