@@ -11,6 +11,40 @@
 #define CRASHES_LEN (uint8_t)(sizeof(crashes) / sizeof(crashes[0]))
 #define COLORS_LEN (uint8_t)(sizeof(colors) / sizeof(colors[0]))
 
+#define DEF_RT_TEXT_OFFSET 1
+#define DEF_RT_PLACES_GAP 3
+
+#define CASE_AT(offset, delta)                       \
+    case (DEF_RT_TEXT_OFFSET - offset):              \
+        put_roulette_text(long_blank, j, g - delta); \
+        break;
+
+#define GEN_CASES_1()
+#define GEN_CASES_2() CASE_AT(1, 1)
+#define GEN_CASES_3() CASE_AT(2, 1) CASE_AT(1, 2)
+#define GEN_CASES_4() CASE_AT(3, 1) CASE_AT(2, 2) CASE_AT(1, 3)
+#define GEN_CASES_5() CASE_AT(4, 1) CASE_AT(3, 2) CASE_AT(2, 3) CASE_AT(1, 4)
+#define GEN_CASES_6() CASE_AT(5, 1) CASE_AT(4, 2) CASE_AT(3, 3) CASE_AT(2, 4) CASE_AT(1, 5)
+#define GEN_CASES_7() CASE_AT(6, 1) CASE_AT(5, 2) CASE_AT(4, 3) CASE_AT(3, 4) CASE_AT(2, 5) CASE_AT(1, 5)
+
+#if DEF_RT_PLACES_GAP == 1
+#define GEN_CASES() GEN_CASES_1()
+#elif DEF_RT_PLACES_GAP == 2
+#define GEN_CASES() GEN_CASES_2()
+#elif DEF_RT_PLACES_GAP == 3
+#define GEN_CASES() GEN_CASES_3()
+#elif DEF_RT_PLACES_GAP == 4
+#define GEN_CASES() GEN_CASES_4()
+#elif DEF_RT_PLACES_GAP == 5
+#define GEN_CASES() GEN_CASES_5()
+#elif DEF_RT_PLACES_GAP == 6
+#define GEN_CASES() GEN_CASES_6()
+#elif DEF_RT_PLACES_GAP == 7
+#define GEN_CASES() GEN_CASES_7()
+#endif
+
+static const char long_blank[] = "                    ";
+
 typedef struct
 {
     const char *msg;
@@ -119,11 +153,11 @@ static void put_art_text(const char *art, uint8_t lines)
     }
 }
 
-static inline void put_roulette_text(const char *msg, int8_t place)
+static inline void put_roulette_text(const char *msg, int8_t place, uint8_t offset_from_center)
 {
     static const uint8_t colors[] = {WHITE, LIGHT_GREY, DARK_GREY, BLACK};
     uint16_t msg_len = strlen(msg);
-    uint16_t start_pos = (80 * 25 / 2 - msg_len / 2) + place * 3 * 80 + 80 * 3;
+    uint16_t start_pos = (80 * 25 / 2 - msg_len / 2) + place * DEF_RT_PLACES_GAP * 80 + (80 * offset_from_center);
 
     uint8_t color =
         place
@@ -140,7 +174,7 @@ static inline void put_roulette_text(const char *msg, int8_t place)
 
     put_string(start_pos, msg);
 
-    if (!place)
+    if (!place && offset_from_center == DEF_RT_TEXT_OFFSET)
     {
         put_char(start_pos - 2, '>');
         put_char(start_pos + msg_len + 1, '<');
@@ -154,21 +188,30 @@ static inline const Crash *spin_crashes(void)
 
     for (uint32_t i = 0; (uint32_t)motion < random_next_range(&rand, 400, 1200); i++)
     {
-        for (int8_t j = -2; j < 3; j++)
+        for (uint8_t g = DEF_RT_TEXT_OFFSET + DEF_RT_PLACES_GAP - 1; g > DEF_RT_TEXT_OFFSET - 1; g--)
         {
-            int idx = (int)(i + j) % (int)CRASHES_LEN;
-            if (idx < 0)
-                idx += CRASHES_LEN;
-            res = (uint8_t)idx;
-            put_roulette_text(crashes[res].msg, j);
+            put_roulette_text(long_blank, -2, DEF_RT_TEXT_OFFSET);
+            for (int8_t j = -2; j < 3; j++)
+            {
+                int idx = (int)(i + j) % (int)CRASHES_LEN;
+                if (idx < 0)
+                    idx += CRASHES_LEN;
+                res = (uint8_t)idx;
+
+                put_roulette_text(crashes[res].msg, j, g);
+                put_roulette_text(long_blank, j, g + 1);
+
+                switch (g % DEF_RT_PLACES_GAP)
+                {
+                    GEN_CASES();
+                }
+            }
+            motion *= 1.04f;
+            sleep((uint32_t)motion);
         }
-
-        motion *= 1.05f;
-
-        sleep((uint32_t)motion);
     }
     for (int i = 0; i < 80; i++)
-        set_fg_color(80 * 12 + i + 80 * 3, GREEN);
+        set_fg_color(80 * 12 + i + 80 * DEF_RT_TEXT_OFFSET, GREEN);
 
     return &crashes[(res + CRASHES_LEN - 2) % CRASHES_LEN];
 }
