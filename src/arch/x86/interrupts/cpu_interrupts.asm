@@ -71,3 +71,5 @@ isr%1:
     %endif
     %assign i i+1
 %endrep
+
+ISR_EXC_COMMON 48

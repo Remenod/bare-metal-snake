@@ -66,8 +66,6 @@ void keyboard_handler()
         if (c)
             last_char = c;
     }
-
-    outb(PIC1_COMMAND, PIC_EOI);
 }
 
 char get_char()

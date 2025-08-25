@@ -28,6 +28,10 @@ typedef struct
     func_t crash;
 } Crash;
 
+static Random rand;
+
+static const char long_blank[] = "                    ";
+
 static void div_by_zero(void)
 {
     volatile int a = 0x1230;
@@ -78,6 +82,25 @@ static void sig_overflow(void)
         : "al");
 }
 
+static void stack_overflow(void)
+{
+    for (int i = 0; i < 2000; i++)
+        if (i % 80 > 50 || i % 80 < 30)
+            set_fg_color(i, WHITE);
+    while (true)
+    {
+        asm volatile("pushl $0x1234");
+        put_string(
+            (random_next_bounded(&rand, 2)             // random side
+                 ? random_next_bounded(&rand, 20)      // random pos on left side
+                 : random_next_range(&rand, 50, 80)) + // random pos on right side
+                80 * random_next_bounded(&rand, 25),   // random row
+            "   PUSH!   ");
+        for (int i = 0; i < 10000; i++) // non timer sleep.
+            ;                           //(if stack overflows too fast there will be not a single pit tick to stack guard check)
+    }
+}
+
 static const char spin_art[4][21] = {
     " ___ ___ ___ _  _ _ ",
     "/ __| _ \\_ _| \\| | |",
@@ -108,11 +131,10 @@ static const char alt_launch_text[] = "or ENTER to get random RSoD immediately";
 static const char long_blank[] = "                    ";
 #endif
 
-static Random rand;
-
 static const Crash crashes[] = {
     {"Division by Zero", div_by_zero},
     {"Protection Fault", gp},
+    {"Stack Overflow", stack_overflow},
     {"Invalid Opcode", inv_opcode},
     {"Segment Not Present", seg_np},
     {"Bound Range Excess", bound_exc},
