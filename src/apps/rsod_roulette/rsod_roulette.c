@@ -14,37 +14,6 @@
 #define DEF_RT_TEXT_OFFSET 1
 #define DEF_RT_PLACES_GAP 3
 
-#define CASE_AT(offset, delta)                       \
-    case (DEF_RT_TEXT_OFFSET - offset):              \
-        put_roulette_text(long_blank, j, g - delta); \
-        break;
-
-#define GEN_CASES_1()
-#define GEN_CASES_2() CASE_AT(1, 1)
-#define GEN_CASES_3() CASE_AT(2, 1) CASE_AT(1, 2)
-#define GEN_CASES_4() CASE_AT(3, 1) CASE_AT(2, 2) CASE_AT(1, 3)
-#define GEN_CASES_5() CASE_AT(4, 1) CASE_AT(3, 2) CASE_AT(2, 3) CASE_AT(1, 4)
-#define GEN_CASES_6() CASE_AT(5, 1) CASE_AT(4, 2) CASE_AT(3, 3) CASE_AT(2, 4) CASE_AT(1, 5)
-#define GEN_CASES_7() CASE_AT(6, 1) CASE_AT(5, 2) CASE_AT(4, 3) CASE_AT(3, 4) CASE_AT(2, 5) CASE_AT(1, 5)
-
-#if DEF_RT_PLACES_GAP == 1
-#define GEN_CASES() GEN_CASES_1()
-#elif DEF_RT_PLACES_GAP == 2
-#define GEN_CASES() GEN_CASES_2()
-#elif DEF_RT_PLACES_GAP == 3
-#define GEN_CASES() GEN_CASES_3()
-#elif DEF_RT_PLACES_GAP == 4
-#define GEN_CASES() GEN_CASES_4()
-#elif DEF_RT_PLACES_GAP == 5
-#define GEN_CASES() GEN_CASES_5()
-#elif DEF_RT_PLACES_GAP == 6
-#define GEN_CASES() GEN_CASES_6()
-#elif DEF_RT_PLACES_GAP == 7
-#define GEN_CASES() GEN_CASES_7()
-#endif
-
-static const char long_blank[] = "                    ";
-
 typedef struct
 {
     const char *msg;
@@ -127,6 +96,7 @@ static const char countdown_1_art[4][4] = {
 
 static const char launch_text[] = "Press SPACE to continue!";
 static const char alt_launch_text[] = "or ENTER to get random RSoD immediately";
+static const char long_blank[] = "                    ";
 
 static Random rand;
 
@@ -201,9 +171,10 @@ static inline const Crash *spin_crashes(void)
                 put_roulette_text(crashes[res].msg, j, g);
                 put_roulette_text(long_blank, j, g + 1);
 
-                switch (g % DEF_RT_PLACES_GAP)
+                for (int c = DEF_RT_PLACES_GAP - 1; c > 0; c--)
                 {
-                    GEN_CASES();
+                    if (g % DEF_RT_PLACES_GAP == (DEF_RT_TEXT_OFFSET - c))
+                        put_roulette_text(long_blank, j, g - (DEF_RT_PLACES_GAP - c));
                 }
             }
             motion *= 1.04f;
