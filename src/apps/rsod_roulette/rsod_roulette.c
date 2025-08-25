@@ -12,7 +12,7 @@
 #define COLORS_LEN (uint8_t)(sizeof(colors) / sizeof(colors[0]))
 
 #define RT_TEXT_OFFSET 1
-#define RT_PLACES_GAP 3
+#define RT_PLACES_GAP 2
 
 typedef struct
 {
@@ -127,7 +127,7 @@ static inline void put_roulette_text(const char *msg, int8_t place, uint8_t offs
 {
     static const uint8_t colors[] = {WHITE, LIGHT_GREY, DARK_GREY, BLACK};
     uint16_t msg_len = strlen(msg);
-    uint16_t start_pos = (80 * 25 / 2 - msg_len / 2) + place * RT_PLACES_GAP * 80 + (80 * offset_from_center);
+    uint16_t start_pos = (80 * 25 / 2 - msg_len / 2) + place * (RT_PLACES_GAP + 1) * 80 + (80 * offset_from_center);
 
     uint8_t color =
         place
@@ -158,7 +158,7 @@ static inline const Crash *spin_crashes(void)
 
     for (uint32_t i = 0; (uint32_t)motion < random_next_range(&rand, 400, 1200); i++)
     {
-        for (uint8_t g = RT_TEXT_OFFSET + RT_PLACES_GAP - 1; g > RT_TEXT_OFFSET - 1; g--)
+        for (uint8_t g = RT_TEXT_OFFSET + RT_PLACES_GAP; g > RT_TEXT_OFFSET - 1; g--)
         {
             put_roulette_text(long_blank, -2, RT_TEXT_OFFSET);
             for (int8_t j = -2; j < 3; j++)
@@ -171,10 +171,10 @@ static inline const Crash *spin_crashes(void)
                 put_roulette_text(crashes[res].msg, j, g);
                 put_roulette_text(long_blank, j, g + 1);
 
-                for (int c = RT_PLACES_GAP - 1; c > 0; c--)
+                for (int c = RT_PLACES_GAP; c > 0; c--)
                 {
-                    if (g % RT_PLACES_GAP == (RT_TEXT_OFFSET - c))
-                        put_roulette_text(long_blank, j, g - (RT_PLACES_GAP - c));
+                    if (g % (RT_PLACES_GAP + 1) == (RT_TEXT_OFFSET - c))
+                        put_roulette_text(long_blank, j, g - (RT_PLACES_GAP + 1 - c));
                 }
             }
             motion *= 1.04f;
