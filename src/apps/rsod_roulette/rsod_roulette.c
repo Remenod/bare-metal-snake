@@ -11,8 +11,16 @@
 #define CRASHES_LEN (uint8_t)(sizeof(crashes) / sizeof(crashes[0]))
 #define COLORS_LEN (uint8_t)(sizeof(colors) / sizeof(colors[0]))
 
-#define RT_TEXT_OFFSET 1
+#define BASE_RT_TEXT_OFFSET 1
 #define RT_PLACES_GAP 2
+
+#define SMOOTH_MODE
+
+#ifndef SMOOTH_MODE
+#define RT_TEXT_OFFSET (BASE_RT_TEXT_OFFSET + 1)
+#else
+#define RT_TEXT_OFFSET BASE_RT_TEXT_OFFSET
+#endif
 
 typedef struct
 {
@@ -96,7 +104,9 @@ static const char countdown_1_art[4][4] = {
 
 static const char launch_text[] = "Press SPACE to continue!";
 static const char alt_launch_text[] = "or ENTER to get random RSoD immediately";
+#ifdef SMOOTH_MODE
 static const char long_blank[] = "                    ";
+#endif
 
 static Random rand;
 
@@ -158,9 +168,14 @@ static inline const Crash *spin_crashes(void)
 
     for (uint32_t i = 0; (uint32_t)motion < random_next_range(&rand, 400, 1200); i++)
     {
+#ifdef SMOOTH_MODE
         for (uint8_t g = RT_TEXT_OFFSET + RT_PLACES_GAP; g > RT_TEXT_OFFSET - 1; g--)
         {
             put_roulette_text(long_blank, -2, RT_TEXT_OFFSET);
+#else
+        {
+            const uint8_t g = RT_TEXT_OFFSET;
+#endif
             for (int8_t j = -2; j < 3; j++)
             {
                 int idx = (int)(i + j) % (int)CRASHES_LEN;
@@ -169,6 +184,7 @@ static inline const Crash *spin_crashes(void)
                 res = (uint8_t)idx;
 
                 put_roulette_text(crashes[res].msg, j, g);
+#ifdef SMOOTH_MODE
                 put_roulette_text(long_blank, j, g + 1);
 
                 for (int c = RT_PLACES_GAP; c > 0; c--)
@@ -176,6 +192,7 @@ static inline const Crash *spin_crashes(void)
                     if (g % (RT_PLACES_GAP + 1) == (RT_TEXT_OFFSET - c))
                         put_roulette_text(long_blank, j, g - (RT_PLACES_GAP + 1 - c));
                 }
+#endif
             }
             motion *= 1.04f;
             sleep((uint32_t)motion);
