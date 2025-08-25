@@ -11,8 +11,8 @@
 #define CRASHES_LEN (uint8_t)(sizeof(crashes) / sizeof(crashes[0]))
 #define COLORS_LEN (uint8_t)(sizeof(colors) / sizeof(colors[0]))
 
-#define DEF_RT_TEXT_OFFSET 1
-#define DEF_RT_PLACES_GAP 3
+#define RT_TEXT_OFFSET 1
+#define RT_PLACES_GAP 3
 
 typedef struct
 {
@@ -127,7 +127,7 @@ static inline void put_roulette_text(const char *msg, int8_t place, uint8_t offs
 {
     static const uint8_t colors[] = {WHITE, LIGHT_GREY, DARK_GREY, BLACK};
     uint16_t msg_len = strlen(msg);
-    uint16_t start_pos = (80 * 25 / 2 - msg_len / 2) + place * DEF_RT_PLACES_GAP * 80 + (80 * offset_from_center);
+    uint16_t start_pos = (80 * 25 / 2 - msg_len / 2) + place * RT_PLACES_GAP * 80 + (80 * offset_from_center);
 
     uint8_t color =
         place
@@ -144,7 +144,7 @@ static inline void put_roulette_text(const char *msg, int8_t place, uint8_t offs
 
     put_string(start_pos, msg);
 
-    if (!place && offset_from_center == DEF_RT_TEXT_OFFSET)
+    if (!place && offset_from_center == RT_TEXT_OFFSET)
     {
         put_char(start_pos - 2, '>');
         put_char(start_pos + msg_len + 1, '<');
@@ -158,9 +158,9 @@ static inline const Crash *spin_crashes(void)
 
     for (uint32_t i = 0; (uint32_t)motion < random_next_range(&rand, 400, 1200); i++)
     {
-        for (uint8_t g = DEF_RT_TEXT_OFFSET + DEF_RT_PLACES_GAP - 1; g > DEF_RT_TEXT_OFFSET - 1; g--)
+        for (uint8_t g = RT_TEXT_OFFSET + RT_PLACES_GAP - 1; g > RT_TEXT_OFFSET - 1; g--)
         {
-            put_roulette_text(long_blank, -2, DEF_RT_TEXT_OFFSET);
+            put_roulette_text(long_blank, -2, RT_TEXT_OFFSET);
             for (int8_t j = -2; j < 3; j++)
             {
                 int idx = (int)(i + j) % (int)CRASHES_LEN;
@@ -171,10 +171,10 @@ static inline const Crash *spin_crashes(void)
                 put_roulette_text(crashes[res].msg, j, g);
                 put_roulette_text(long_blank, j, g + 1);
 
-                for (int c = DEF_RT_PLACES_GAP - 1; c > 0; c--)
+                for (int c = RT_PLACES_GAP - 1; c > 0; c--)
                 {
-                    if (g % DEF_RT_PLACES_GAP == (DEF_RT_TEXT_OFFSET - c))
-                        put_roulette_text(long_blank, j, g - (DEF_RT_PLACES_GAP - c));
+                    if (g % RT_PLACES_GAP == (RT_TEXT_OFFSET - c))
+                        put_roulette_text(long_blank, j, g - (RT_PLACES_GAP - c));
                 }
             }
             motion *= 1.04f;
@@ -182,7 +182,7 @@ static inline const Crash *spin_crashes(void)
         }
     }
     for (int i = 0; i < 80; i++)
-        set_fg_color(80 * 12 + i + 80 * DEF_RT_TEXT_OFFSET, GREEN);
+        set_fg_color(80 * 12 + i + 80 * RT_TEXT_OFFSET, GREEN);
 
     return &crashes[(res + CRASHES_LEN - 2) % CRASHES_LEN];
 }
