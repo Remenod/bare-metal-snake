@@ -239,6 +239,6 @@ SPIN:
 
     countdown();
 
-    rsod_add_log("Hello from RSoD Coundown!");
+    rsod_add_log("Hello from RSoD Roulette!");
     choice->crash();
 }
