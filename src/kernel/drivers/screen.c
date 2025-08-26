@@ -127,4 +127,6 @@ void scroll_down(void)
     move_cursor(cursor_pos);
     for (uint16_t i = 0; i < 1920; i++)
         vga[i] = vga[i + 80];
+    for (uint16_t i = 1920; i < 2000; i++)
+        vga[i] &= 0b1111111100000000;
 }
