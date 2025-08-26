@@ -23,6 +23,14 @@ void put_char(uint16_t pos, unsigned char c);
 
 void put_attr(uint16_t pos, uint8_t attr);
 
+void put_attrchar(uint16_t pos, uint16_t attrchar);
+
+unsigned char get_char(uint16_t pos);
+
+uint8_t get_attr(uint16_t pos);
+
+uint16_t get_attrchar(uint16_t pos);
+
 void set_fg_color(uint16_t pos, uint8_t fg_color);
 
 void set_bg_color(uint16_t pos, uint8_t bg_color);

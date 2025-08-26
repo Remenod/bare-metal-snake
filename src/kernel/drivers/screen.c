@@ -4,7 +4,7 @@
 #include <lib/string.h>
 #include <lib/types.h>
 
-volatile uint16_t *vga = (volatile uint16_t *)0xB8000;
+static volatile uint16_t *vga = (volatile uint16_t *)0xB8000;
 static uint16_t cursor_pos = 0;
 char print_dec_buf[12];
 
@@ -16,6 +16,26 @@ void put_char(uint16_t pos, unsigned char c)
 void put_attr(uint16_t pos, uint8_t attr)
 {
     vga[pos] = (vga[pos] & 0b0000000011111111) | (attr << 8);
+}
+
+void put_attrchar(uint16_t pos, uint16_t attrchar)
+{
+    vga[pos] = attrchar;
+}
+
+unsigned char get_char(uint16_t pos)
+{
+    return vga[pos] & 0b0000000011111111;
+}
+
+uint8_t get_attr(uint16_t pos)
+{
+    return vga[pos] >> 8;
+}
+
+uint16_t get_attrchar(uint16_t pos)
+{
+    return vga[pos];
 }
 
 void set_fg_color(uint16_t pos, uint8_t fg_color)
