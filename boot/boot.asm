@@ -1,5 +1,5 @@
 [org 0x7c00]
-KERNEL_OFFSET equ 0x2000
+KERNEL_OFFSET equ 0x9000 ; on change also update linker.ld and recompile all *.c files
 
 %ifndef KERNEL_SECTORS
 %define KERNEL_SECTORS 12
@@ -116,19 +116,19 @@ gdt_data:
   db 11001111b      ; flags + limit high (4 bit)
   db 0x00           ; base high (8 bit)
   
-gdt_stack:          ; base 00 00 0000  limit 8 0000  G=1
-  dw 0x6fff         ; limit low (16 bit)
+gdt_stack:
+  dw 0x004f         ; limit low (16 bit)
   dw 0x0000         ; base low (16 bit)
   db 0x00           ; base mid (8 bit)
   db 10010110b      ; access byte
-  db 01000000b      ; flags + limit high (4 bit)
+  db 11000000b      ; flags + limit high (4 bit)
   db 0x00           ; base high (8 bit)
 
-gdt_test: ;7DFB
+gdt_test:
   dw 0x7df0         ; limit low (16 bit)
   dw 0x0000         ; base low (16 bit)
   db 0x00           ; base mid (8 bit)
-  db 10010110b      ; access byte
+  db 00010110b      ; access byte
   db 11001111b      ; flags + limit high (4 bit)
   db 0x00           ; base high (8 bit)
 
@@ -157,13 +157,15 @@ init_pm:
   mov ax, STACK_SEG ; unused
   mov ss, ax
   
-  mov ax, TEST_SEG
-  mov gs, ax
-  
   mov ax, DATA_SEG
+  mov gs, ax
   mov es, ax
   mov ds, ax
   mov fs, ax
+
+  ;mov ax, TEST_SEG
+  ;mov gs, ax
+  
   mov esp, 0x9FFFC
 
   call KERNEL_OFFSET
