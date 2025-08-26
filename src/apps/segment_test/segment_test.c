@@ -70,55 +70,31 @@ static void print_seg_info(seg_desc_t *info)
 }
 
 /* 0 - cs, 1 - ds, 2 - ss, 3 - es, 4 - fs, 5 - gs */
-static uint16_t get_seg_selector(uint8_t segment)
+static uint16_t get_seg_selector(uint8_t seg)
 {
-    uint16_t seg_selector = 0;
-    switch (segment)
+    uint16_t sel = 0;
+    switch (seg)
     {
     case 0:
-        asm volatile(
-            "mov %%cs, %0"
-            : "=r"(seg_selector)
-            :
-            : "memory");
+        asm volatile("mov %%cs, %0" : "=r"(sel));
         break;
     case 1:
-        asm volatile(
-            "mov %%ds, %0"
-            : "=r"(seg_selector)
-            :
-            : "memory");
+        asm volatile("mov %%ds, %0" : "=r"(sel));
         break;
     case 2:
-        asm volatile(
-            "mov %%ss, %0"
-            : "=r"(seg_selector)
-            :
-            : "memory");
+        asm volatile("mov %%ss, %0" : "=r"(sel));
         break;
     case 3:
-        asm volatile(
-            "mov %%es, %0"
-            : "=r"(seg_selector)
-            :
-            : "memory");
+        asm volatile("mov %%es, %0" : "=r"(sel));
         break;
     case 4:
-        asm volatile(
-            "mov %%fs, %0"
-            : "=r"(seg_selector)
-            :
-            : "memory");
+        asm volatile("mov %%fs, %0" : "=r"(sel));
         break;
     case 5:
-        asm volatile(
-            "mov %%gs, %0"
-            : "=r"(seg_selector)
-            :
-            : "memory");
+        asm volatile("mov %%gs, %0" : "=r"(sel));
         break;
     }
-    return seg_selector;
+    return sel;
 }
 
 void segment_test_main(void)
