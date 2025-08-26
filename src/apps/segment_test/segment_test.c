@@ -177,17 +177,17 @@ void segment_test_main(void)
     }
 
     uint32_t addr;
-    uint32_t accesses = 0;
     uint16_t cursor_pos_buf;
+
+    print("Enter an address offset(hex) to read byte from.\nBe careful cuz u might get an RSoD btw\n");
 
     while (true)
     {
-
         seg_info = get_segment_info(tested_segment);
         print_seg_info(&seg_info);
 
         cursor_pos_buf = get_cursor_pos();
-        static const char wanna_continue_text[] = "Press any key to continue or ESC to leave";
+        static const char wanna_continue_text[] = "Press any key to enable typing or ESC to leave";
         print(wanna_continue_text);
         for (int i = cursor_pos_buf, len = strlen(wanna_continue_text); i < len + cursor_pos_buf; i++)
             set_fg_color(i, DARK_GREY);
