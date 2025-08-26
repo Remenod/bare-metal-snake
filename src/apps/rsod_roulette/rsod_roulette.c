@@ -43,7 +43,7 @@ static void inv_opcode(void)
 static void seg_np(void)
 {
     asm volatile(
-        "movw $0x18, %%ax\n"
+        "movw $0x20, %%ax\n"
         "movw %%ax, %%ds\n" : : : "ax");
 }
 
