@@ -117,19 +117,19 @@ gdt_data:
   db 0x00           ; base high (8 bit)
   
 gdt_stack:          ; base 00 00 0000  limit 8 0000  G=1
-  dw 0x0000         ; limit low (16 bit)
-  dw 0xFFFF         ; base low (16 bit)
-  db 0xFF           ; base mid (8 bit)
-  db 10010110b      ; access byte
-  db 11000000b      ; flags + limit high (4 bit)
-  db 0xFF           ; base high (8 bit)
-
-gdt_test: ;7DFB
-  dw 0x7dff         ; limit low (16 bit)
+  dw 0x6fff         ; limit low (16 bit)
   dw 0x0000         ; base low (16 bit)
   db 0x00           ; base mid (8 bit)
-  db 10010010b      ; access byte
+  db 10010110b      ; access byte
   db 01000000b      ; flags + limit high (4 bit)
+  db 0x00           ; base high (8 bit)
+
+gdt_test: ;7DFB
+  dw 0x7df0         ; limit low (16 bit)
+  dw 0x0000         ; base low (16 bit)
+  db 0x00           ; base mid (8 bit)
+  db 10010110b      ; access byte
+  db 11001111b      ; flags + limit high (4 bit)
   db 0x00           ; base high (8 bit)
 
 gdt_end:
@@ -162,7 +162,6 @@ init_pm:
   
   mov ax, DATA_SEG
   mov es, ax
-  mov ss, ax
   mov ds, ax
   mov fs, ax
   mov esp, 0x9FFFC
