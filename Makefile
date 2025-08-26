@@ -67,7 +67,7 @@ pad_kernel:
 	fi
 
 run: $(IMAGE)
-	qemu-system-i386 -serial stdio -drive file=$(IMAGE),format=raw
+	qemu-system-i386 -enable-kvm -serial stdio -drive file=$(IMAGE),format=raw
 
 clean:
 	rm -rf $(BUILD_DIR)
