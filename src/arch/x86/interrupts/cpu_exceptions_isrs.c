@@ -10,7 +10,7 @@
 
 // add implemented isr vec here
 #define ISR_TO_REGISTRATION X(0) X(1) X(2) X(3) X(4) X(5) X(6) X(7) X(8) X(9) \
-    X(11) X(12) X(13) X(16) X(17) X(18) X(19)
+    X(11) X(12) X(13) X(16) X(17) X(18) X(19) X(48)
 
 DEFINE_UNSPECIAL_ISR(0, "Division by Zero");
 DEFINE_UNSPECIAL_ISR(2, "NMI - Hardware Critical")
@@ -53,6 +53,14 @@ _Noreturn void isr_7(const cpu_state_t *state)
 {
     rsod_add_log("ISR7. Probably FPU/SIMD Not Loaded");
     show_rsod("Coprocessor Not Ready", state, 7);
+    __builtin_unreachable();
+}
+/* 48 Stack Overflow - Custom Stack Guard Exception */
+_Noreturn void isr_48(const cpu_state_t *state)
+{
+    rsod_add_log("[STACK GUARD] Overflow detected!");
+    rsod_add_log("ESP below guard limit (0x60000)");
+    show_rsod("Stack Overflow", state, 48);
     __builtin_unreachable();
 }
 

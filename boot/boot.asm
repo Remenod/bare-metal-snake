@@ -1,5 +1,5 @@
 [org 0x7c00]
-KERNEL_OFFSET equ 0x1000
+KERNEL_OFFSET equ 0x9000 ; on change also update linker.ld and recompile all *.c files
 
 %ifndef KERNEL_SECTORS
 %define KERNEL_SECTORS 12
@@ -76,33 +76,61 @@ print_str:
   popa
   ret
 
+; ====Access byte guide====
+; 1    - Present (P) - 1 for active sector
+; 00   - Descriptor Privilege Level
+; 1    - Descriptor type (S) - system(0), code or data(1)
+;
+;   Descriptor type 1 only
+; 1    - Data/Code - Data(0), Code(1)
+; 0    - Expand-down(Stack) data/Conforming code(1)
+; 1    - Readonly data/Executeonly code(0), Writable data/Readable code(1)
+; 0    - Accessed (A) - 0 by default, 1 set by CPU by accesing Descriptor
+; =========================
+
+; =======Flags guide=======
+; 1    - Granularity
+; 1    - Default/Big (0 - 16bit, 1 - 32bit)
+; 0    - 64bit
+; 0    - Available for use by system software
+; 1111 - limit high
+; =========================
+
 ; ===== GDT =====
 gdt_start:
   dq 0x0
 
 gdt_code:
-  dw 0xffff
-  dw 0x0
-  db 0x0
-  db 10011010b
-  db 11001111b
-  db 0x0
+  dw 0xffff         ; limit low (16 bit)
+  dw 0x0000         ; base low (16 bit)
+  db 0x00           ; base mid (8 bit)
+  db 10011010b      ; access byte
+  db 11001111b      ; flags + limit high (4 bit)
+  db 0x00           ; base high (8 bit)
 
 gdt_data:
-  dw 0xffff
-  dw 0x0
-  db 0x0
-  db 10010010b
-  db 11001111b
-  db 0x0
+  dw 0xffff         ; limit low (16 bit)
+  dw 0x0000         ; base low (16 bit)
+  db 0x00           ; base mid (8 bit)
+  db 10010010b      ; access byte
+  db 11001111b      ; flags + limit high (4 bit)
+  db 0x00           ; base high (8 bit)
+  
+gdt_stack:
+  dw 0x004f         ; limit low (16 bit)
+  dw 0x0000         ; base low (16 bit)
+  db 0x00           ; base mid (8 bit)
+  db 10010110b      ; access byte
+  db 11000000b      ; flags + limit high (4 bit)
+  db 0x00           ; base high (8 bit)
 
-gdt_debug:
-  dw 0xffff
-  dw 0x0
-  db 0x0
-  db 00010010b
-  db 11001111b
-  db 0x0
+gdt_test:
+  dw 0x7df0         ; limit low (16 bit)
+  dw 0x0000         ; base low (16 bit)
+  db 0x00           ; base mid (8 bit)
+  db 00010110b      ; access byte
+  db 11001111b      ; flags + limit high (4 bit)
+  db 0x00           ; base high (8 bit)
 
 gdt_end:
 
@@ -112,6 +140,8 @@ gdt_descriptor:
 
 CODE_SEG equ gdt_code - gdt_start
 DATA_SEG equ gdt_data - gdt_start
+STACK_SEG equ gdt_stack - gdt_start
+TEST_SEG equ gdt_test - gdt_start
 
 switch_to_pm:
   cli
@@ -124,13 +154,20 @@ switch_to_pm:
 [bits 32]
 
 init_pm:
-  mov ax, DATA_SEG
-  mov ds, ax
+  mov ax, STACK_SEG ; unused
   mov ss, ax
-  mov es, ax
-  mov fs, ax
+  
+  mov ax, DATA_SEG
   mov gs, ax
+  mov es, ax
+  mov ds, ax
+  mov fs, ax
+
+  ;mov ax, TEST_SEG
+  ;mov gs, ax
+  
   mov esp, 0x9FFFC
+
   call KERNEL_OFFSET
   jmp $
 

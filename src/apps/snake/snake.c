@@ -107,7 +107,7 @@ restart:
     while (true)
     {
         char c;
-        while (!(c = get_char()))
+        while (!(c = get_keyboard_char()))
         {
             if (ticks_on_last_automove + (timer_frequency / game_speed) < get_timer_ticks())
             {
@@ -170,7 +170,7 @@ restart:
             print_game_end(snake_size > FIELD_HEIGHT * FIELD_WIDTH / 2 - 1);
             while (true)
             {
-                while (!(c = get_char()))
+                while (!(c = get_keyboard_char()))
                     asm volatile("hlt");
                 switch (c)
                 {

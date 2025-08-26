@@ -28,6 +28,8 @@ typedef struct
     func_t crash;
 } Crash;
 
+static Random rand;
+
 static void div_by_zero(void)
 {
     volatile int a = 0x1230;
@@ -50,7 +52,7 @@ static void inv_opcode(void)
 static void seg_np(void)
 {
     asm volatile(
-        "movw $0x18, %%ax\n"
+        "movw $0x20, %%ax\n"
         "movw %%ax, %%ds\n" : : : "ax");
 }
 
@@ -76,6 +78,35 @@ static void sig_overflow(void)
         :
         : "r"(a1), "r"(b1)
         : "al");
+}
+
+static void stack_overflow(void)
+{
+    for (int i = 0; i < 2000; i++)
+        if (i % 80 > 50 || i % 80 < 30)
+            set_fg_color(i, WHITE);
+    while (true)
+    {
+        asm volatile("pushl $0x1234");
+        put_string(
+            (random_next_bounded(&rand, 2)             // random side
+                 ? random_next_bounded(&rand, 20)      // random pos on left side
+                 : random_next_range(&rand, 50, 80)) + // random pos on right side
+                80 * random_next_bounded(&rand, 25),   // random row
+            "   PUSH!   ");
+        for (int i = 0; i < 10000; i++) // non timer sleep.
+            ;                           //(if stack overflows too fast there will be not a single pit tick to stack guard check)
+    }
+}
+
+static void ss_fault(void) // on qemu works only with -enable-kvm
+{
+    uint16_t value;
+    asm volatile(
+        "movw %%ss:0, %0"
+        : "=r"(value)
+        :
+        : "memory");
 }
 
 static const char spin_art[4][21] = {
@@ -108,11 +139,11 @@ static const char alt_launch_text[] = "or ENTER to get random RSoD immediately";
 static const char long_blank[] = "                    ";
 #endif
 
-static Random rand;
-
 static const Crash crashes[] = {
     {"Division by Zero", div_by_zero},
     {"Protection Fault", gp},
+    {"Stack Segment Fault", ss_fault},
+    {"Stack Overflow", stack_overflow},
     {"Invalid Opcode", inv_opcode},
     {"Segment Not Present", seg_np},
     {"Bound Range Excess", bound_exc},
@@ -228,7 +259,7 @@ void rsod_roulette_main(void)
     while (true)
     {
         char c;
-        while (!(c = get_char()))
+        while (!(c = get_keyboard_char()))
             asm volatile("hlt");
         switch (c)
         {
@@ -259,6 +290,6 @@ SPIN:
 
     countdown();
 
-    rsod_add_log("Hello from RSoD Coundown!");
+    rsod_add_log("Hello from RSoD Roulette!");
     choice->crash();
 }
