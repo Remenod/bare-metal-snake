@@ -83,3 +83,29 @@ char *uint_to_str(uint32_t value, char *str)
 
     return str;
 }
+
+char *uint_to_str_hex(uint32_t value, char *str)
+{
+    static const char hex_digits[] = "0123456789ABCDEF";
+    char *p = str;
+    char *p1, *p2;
+
+    do
+    {
+        *p++ = hex_digits[value & 0xF];
+        value >>= 4;
+    } while (value);
+
+    *p = '\0';
+
+    p1 = str;
+    p2 = p - 1;
+    while (p1 < p2)
+    {
+        char tmp = *p1;
+        *p1++ = *p2;
+        *p2-- = tmp;
+    }
+
+    return str;
+}
