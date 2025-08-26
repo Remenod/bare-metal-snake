@@ -3,11 +3,13 @@
 #include <drivers/keyboard.h>
 #include <drivers/screen.h>
 
-extern uint8_t test_gs_addres_acces(uint32_t addr);
+extern uint8_t read_arrd_via_gs(uint32_t addr);
 
 void segment_test_main(void)
 {
     uint32_t addr;
+    uint32_t accesses = 0;
+
     while (true)
     {
         char c;
@@ -19,10 +21,18 @@ void segment_test_main(void)
             return;
             break;
         default:
-            addr = read_hex();
-            print_char(' ');
-            print_hex(test_gs_addres_acces(addr));
-            print_char('\n');
+            while (true)
+            {
+                addr = read_hex();
+                print_char('(');
+                print_udec(addr);
+                print_char(')');
+                print_char(' ');
+                print_hex(read_arrd_via_gs(addr));
+                print_char('\n');
+                if (++accesses > 23)
+                    scroll_down();
+            }
         }
     }
 }

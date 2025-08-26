@@ -1,10 +1,10 @@
-global test_gs_addres_acces
-test_gs_addres_acces:
+global read_arrd_via_gs
+read_arrd_via_gs:
     push ebp
     mov ebp, esp
 
-    mov eax, [ebp + 8]       ; отримати аргумент addr
-    movzx eax, byte [gs:eax] ; прочитати байт через GS і розширити до 32-біт
+    mov eax, [ebp + 8] 
+    movzx eax, byte [gs:eax]
 
     pop ebp
-    ret                       ; повертає значення в EAX
+    ret
