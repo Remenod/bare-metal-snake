@@ -151,6 +151,12 @@ make clean
 ### Segment Test
 ![Segment Test](docs/media/segment_test.gif)
 
+### Stack Overflow RSoD
+![Stack Overflow RSoD](docs/media/stack_overflow_rsod.png)
+
+### Application Selector
+![Application Selector](docs/media/app_selector.png)
+
 ---
 
 ## Future Plans
