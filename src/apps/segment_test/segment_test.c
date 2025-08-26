@@ -3,6 +3,7 @@
 #include <drivers/keyboard.h>
 #include <drivers/screen.h>
 #include <lib/string.h>
+#include <timer/pit.h>
 
 static char buf[12];
 
@@ -23,7 +24,7 @@ extern uint8_t read_addr_via_es(uint32_t addr);
 extern uint8_t read_addr_via_fs(uint32_t addr);
 extern uint8_t read_addr_via_gs(uint32_t addr);
 
-static const uint8_t (*const read_addr_arr[])(uint32_t addr) = {
+static uint8_t (*const read_addr_arr[])(uint32_t addr) = {
     read_addr_via_cs,
     read_addr_via_ds,
     read_addr_via_ss,
@@ -60,12 +61,12 @@ static seg_desc_t get_segment_info(uint16_t selector)
 static void print_seg_info(seg_desc_t *info)
 {
     put_string(80 - 25, "0x");
-    put_string(80 - 23, uint_to_str_hex(tested_segment, &buf));
+    put_string(80 - 23, uint_to_str_hex(tested_segment, buf));
     put_string(80 - 20, seg_info_text[3]);
     for (int i = 0; i < 3; i++)
     {
         put_string((80 * (i + 2)) - 25, seg_info_text[i]);
-        put_string((80 * (i + 2)) - 15, uint_to_str_hex(((uint32_t *)info)[i], &buf));
+        put_string((80 * (i + 2)) - 15, uint_to_str_hex(((uint32_t *)info)[i], buf));
     }
 }
 
@@ -107,7 +108,7 @@ void segment_test_main(void)
         clear_screen();
         print("Choose segment:\n");
 
-        for (uint16_t i = 0, seg_code; i < 6; i++)
+        for (uint16_t i = 0; i < 6; i++)
         {
             print_dec(i + 1);
             print(". ");

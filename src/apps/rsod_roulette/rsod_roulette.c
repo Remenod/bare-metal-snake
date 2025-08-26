@@ -19,8 +19,6 @@ typedef struct
 
 static Random rand;
 
-static const char long_blank[] = "                    ";
-
 static void div_by_zero(void)
 {
     volatile int a = 0x1230;

@@ -31,7 +31,7 @@ void stack_guard_warning_routine(void)
     for (int i = 3999999, i_len = num_digits(i), curr_i_len; i > 0; i--)
     {
         curr_i_len = num_digits(i);
-        put_string(73 + (i_len - curr_i_len), uint_to_str(i, &buf));
+        put_string(73 + (i_len - curr_i_len), uint_to_str(i, buf));
         if (curr_i_len != num_digits(i - 1))
             put_char(73 + (i_len - curr_i_len), '0');
     }
