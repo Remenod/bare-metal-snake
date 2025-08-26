@@ -215,7 +215,7 @@ void segment_test_main(void)
             print_char(' ');
             print_hex(read_addr(addr));
             print_char('\n');
-            if (++accesses > 22)
+            if (get_cursor_pos() > 1840)
             {
                 for (int i = 1; i < 5; i++)
                     for (int j = 80 * i - 25; j < 80 * i; j++)
