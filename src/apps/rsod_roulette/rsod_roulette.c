@@ -90,6 +90,16 @@ static void stack_overflow(void)
     }
 }
 
+static void ss_fault(void) // on qemu works only with -enable-kvm
+{
+    uint16_t value;
+    asm volatile(
+        "movw %%ss:0, %0"
+        : "=r"(value)
+        :
+        : "memory");
+}
+
 static const char spin_art[4][21] = {
     " ___ ___ ___ _  _ _ ",
     "/ __| _ \\_ _| \\| | |",
@@ -119,6 +129,7 @@ static const char launch_text[] = "Press SPACE to continue!";
 static const Crash crashes[] = {
     {"Division by Zero", div_by_zero},
     {"Protection Fault", gp},
+    {"Stack Segment Fault", ss_fault},
     {"Stack Overflow", stack_overflow},
     {"Invalid Opcode", inv_opcode},
     {"Segment Not Present", seg_np},
