@@ -68,7 +68,7 @@ void keyboard_handler(void)
     }
 }
 
-char get_char(void)
+char get_keyboard_char(void)
 {
     char c = last_char;
     last_char = 0;
@@ -83,7 +83,7 @@ int read_number(void)
     while (1)
     {
         char c = 0;
-        while (!(c = get_char()))
+        while (!(c = get_keyboard_char()))
             asm volatile("hlt");
 
         if (c == '\n' || c == '\r')
@@ -136,7 +136,7 @@ uint32_t read_hex(void)
     while (1)
     {
         char c = 0;
-        while (!(c = get_char()))
+        while (!(c = get_keyboard_char()))
             asm volatile("hlt");
 
         if (c == '\n' || c == '\r')

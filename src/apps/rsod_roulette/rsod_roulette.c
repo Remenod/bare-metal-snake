@@ -215,7 +215,7 @@ void rsod_roulette_main(void)
     while (true)
     {
         char c;
-        while (!(c = get_char()))
+        while (!(c = get_keyboard_char()))
             asm volatile("hlt");
         switch (c)
         {

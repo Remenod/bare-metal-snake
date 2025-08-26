@@ -10,6 +10,6 @@
 #define KEY_ESC 27
 
 void keyboard_install(void);
-char get_char(void);
+char get_keyboard_char(void);
 int read_number(void);
 uint32_t read_hex(void);

@@ -170,7 +170,7 @@ void segment_test_main(void)
         set_cursor_pos(cursor_pos_buf);
 
         char c;
-        while (!(c = get_char()))
+        while (!(c = get_keyboard_char()))
             asm volatile("hlt");
 
         switch (c)
