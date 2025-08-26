@@ -1,0 +1,132 @@
+# Bare Metal Snake
+
+A bare-metal educational operating system project for x86, originally created to implement the classic **Snake** game in protected mode without any external dependencies. The project boots from the **MBR** via BIOS and runs directly on the hardware (or QEMU).  
+
+Over time it has grown into a small experimental OS with exception handling, keyboard input, VGA text/graphics modes, custom fonts, palette control, a stack guard mechanism, and multiple demo applications.
+
+---
+
+## Features
+
+- Bootloader in **x86 assembly** (MBR).
+- Enters **32-bit protected mode** directly from BIOS.
+- Custom **kernel** with:
+  - Full CPU exception handling.
+  - Programmable Interrupt Controller (PIC) & PIT timer support.
+  - PS/2 keyboard driver.
+  - VGA driver with support for text mode `0x03` and graphics mode `0x13`.
+  - DAC palette setup and custom font loading.
+  - Expand-down stack segment with **Stack Guard**:
+    - Warns at 75% stack usage.
+    - Triggers a custom **Stack Overflow Interrupt** at 100%.
+  - **Red Screen of Death (RSoD)** kernel panic screen.
+- No dependency on `libc` or any external libraries.
+- Fully freestanding kernel (written in C and assembly).
+- **Applications included**:
+  1. **Text Sandbox** – type freely into VGA screen buffer.
+  2. **Snake** – classic snake game with a win condition (filling the field).
+  3. **RSoD Roulette** – casino-like roulette that randomly triggers CPU exceptions with animations.
+  4. **Segment Test** – manually explore memory by selecting segments and offsets.
+
+---
+
+## Repository Structure
+
+```
+boot/         - Bootloader (boot.asm, MBR)
+include/      - Public headers (arch, drivers, kernel, lib)
+src/          - Kernel, architecture-specific code, drivers, applications
+  apps/       - Demo programs (Snake, Sandbox, Roulette, etc.)
+  arch/x86/   - Interrupt handling, ports, PIC, PIT
+  kernel/     - Core kernel and drivers
+  lib/        - Custom C standard library replacement
+Makefile      - Build system
+```
+
+---
+
+## Build Instructions
+
+### Requirements
+- `nasm`
+- `i386-elf-gcc`
+- `i386-elf-ld`
+- `i386-elf-objcopy`
+- `qemu-system-i386` (for testing)
+
+### Build
+```bash
+make
+```
+
+This produces `build/snake.img`, a bootable raw image.
+
+### Run in QEMU
+```bash
+make run
+```
+
+### Clean
+```bash
+make clean
+```
+
+---
+
+## Running on Real Hardware
+
+1. Write `build/snake.img` to the beginning of a storage device (e.g. USB stick) since the bootloader is in the MBR:
+   ```bash
+   sudo dd if=build/snake.img of=/dev/sdX bs=512
+   ```
+2. Boot from it using BIOS (legacy boot).
+3. A **PS/2 keyboard** is required. If using USB, make sure **USB-PS/2 emulation** is enabled in BIOS/UEFI.
+
+---
+
+## Demo Screenshots / GIFs
+
+### Snake Game
+![Snake Gameplay](docs/media/snake.gif)
+
+### Text Sandbox
+![Text Sandbox](docs/media/text_sandbox.gif)
+
+### RSoD Roulette
+![RSoD Roulette](docs/media/roulette.gif)
+
+### Segment Test
+![Segment Test](docs/media/segment_test.gif)
+
+---
+
+## Future Plans
+
+- Dynamic memory allocation.
+- Paging support.
+- Additional demo applications (possibly **Tetris**).
+- Snake AI mode using pre-trained weights.
+- Further expansion of VGA graphics features.
+
+---
+
+## License & Credits
+
+This project is authored entirely by [Remenod](https://github.com/Remenod).  
+
+External sources:
+- VGA mode-setting code adapted from Chris Giese  
+  *“Sets VGA-compatible video modes without using the BIOS”*  
+  Original source: <https://files.osdev.org/mirrors/geezer/osd/graphics/modes.c>  
+  License: Public domain.  
+
+Many theoretical references were taken from [OSDev Wiki](https://wiki.osdev.org).
+
+Currently, the project does not specify an official license. It may be used for **educational purposes** by other OSDev enthusiasts.
+
+---
+
+## Disclaimer
+
+This project is experimental and intended as a learning resource.  
+It runs in **ring 0 only** (CPL0), with no user mode (CPL3).  
