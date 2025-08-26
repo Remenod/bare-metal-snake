@@ -161,7 +161,7 @@ uint32_t read_hex(void)
             continue;
         }
 
-        if (idx == 1 && read_number_buf[0] == '0' && (c == 'x' || c == 'X'))
+        if (idx == 1 && read_number_buf[0] == '0' && (c == 'x'))
         {
             read_number_buf[idx++] = c;
             has_0x = true;
@@ -172,7 +172,9 @@ uint32_t read_hex(void)
         if (((c >= '0' && c <= '9') ||
              (c >= 'a' && c <= 'f') ||
              (c >= 'A' && c <= 'F')) &&
-            idx < (int)(sizeof(read_number_buf) - 1))
+            idx < ((read_number_buf[1] == 'x')
+                       ? 10
+                       : 8))
         {
             read_number_buf[idx++] = c;
             print_char(c);

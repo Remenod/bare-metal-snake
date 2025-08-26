@@ -39,10 +39,14 @@ void move_cursor(uint16_t pos);
 
 void print(const char *text);
 
-void print_dec(const int num);
+void print_dec(int32_t num);
+
+void print_udec(uint32_t num);
 
 void print_hex(uint32_t val);
 
 void print_bin(uint32_t val, bool_t slicing);
 
 void print_char(char c);
+
+void scroll_down(void);

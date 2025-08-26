@@ -81,9 +81,14 @@ void print(const char *text)
         print_char(text[i]);
 }
 
-void print_dec(int num)
+void print_dec(int32_t num)
 {
     print(int_to_str(num, print_dec_buf));
+}
+
+void print_udec(uint32_t num)
+{
+    print(uint_to_str(num, print_dec_buf));
 }
 
 void print_hex(uint32_t val)
@@ -114,4 +119,12 @@ void print_char(char c)
     else
         put_char(cursor_pos++, c);
     move_cursor(cursor_pos);
+}
+
+void scroll_down(void)
+{
+    cursor_pos -= 80;
+    move_cursor(cursor_pos);
+    for (uint16_t i = 0; i < 1920; i++)
+        vga[i] = vga[i + 80];
 }
