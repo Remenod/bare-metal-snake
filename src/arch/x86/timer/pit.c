@@ -25,6 +25,12 @@ void register_pit_task(func_t task)
         pit_tasks[task_count++] = task;
 }
 
+void pop_pit_task(void)
+{
+    if (task_count > 0)
+        task_count--;
+}
+
 void pit_init(uint32_t frequency)
 {
     timer_frequency = frequency;
