@@ -4,7 +4,7 @@
 #include <timer/pit.h>
 #include <drivers/vga.h>
 #include <interrupts/cpu_exceptions.h>
-#include <timer/stack_guard.h>
+#include <interrupts/stack_guard/stack_guard.h>
 #include "../../apps/app_selector/app_selector.h"
 
 void kernel_main()

@@ -1,4 +1,4 @@
-#include <timer/stack_guard.h>
+#include <interrupts/stack_guard/stack_guard.h>
 
 #include <timer/pit.h>
 #include <interrupts/rsod_routine.h>
