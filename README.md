@@ -54,6 +54,59 @@ Makefile      - Build system
 - `i386-elf-objcopy`
 - `qemu-system-i386` (for testing)
 
+<details><summary>Setup instrunction</summary>
+
+#### 1. Establish dependencies
+```bash
+sudo apt update
+sudo apt install build-essential bison flex libgmp-dev libmpc-dev libmpfr-dev texinfo
+```
+
+#### 2. Build binutils
+```bash
+cd ~/src
+wget https://ftp.gnu.org/gnu/binutils/binutils-2.42.tar.xz
+tar -xf binutils-2.42.tar.xz
+mkdir -p binutils-build && cd binutils-build
+../binutils-2.42/configure --target=i386-elf --prefix=$HOME/opt/cross --with-sysroot --disable-nls --disable-werror
+make -j$(nproc)
+make install
+```
+
+#### 3. Build gcc
+```bash
+cd ~/src
+wget https://ftp.gnu.org/gnu/gcc/gcc-13.2.0/gcc-13.2.0.tar.xz
+tar -xf gcc-13.2.0.tar.xz
+mkdir -p gcc-build && cd gcc-build
+../gcc-13.2.0/configure --target=i386-elf --prefix=$HOME/opt/cross --disable-nls --enable-languages=c --without-headers
+make all-gcc -j$(nproc)
+make all-target-libgcc -j$(nproc)
+make install-gcc
+make install-target-libgcc
+```
+
+#### 4. Add to PATH
+```bash
+echo 'export PATH=$HOME/opt/cross/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
+```
+
+#### 5. Check
+```bash
+i386-elf-gcc --version
+i386-elf-ld --version
+```
+
+#### 6. Install QEMU and NASM
+```bash
+sudo apt install nasm qemu-system-i386
+```
+
+</details>
+
+---
+
 ### Build
 ```bash
 make
