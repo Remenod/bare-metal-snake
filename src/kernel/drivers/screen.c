@@ -40,7 +40,7 @@ void fill_screen(unsigned char symb, uint8_t fg_color, uint8_t bg_color)
         vga[i] = fill;
 
     cursor_pos = 0;
-    move_cursor(cursor_pos);
+    set_cursor_pos(cursor_pos);
 }
 
 void put_string(uint16_t start_pos, const char text[])
@@ -66,13 +66,20 @@ void set_cursor_visibility(bool_t visible)
     outb(0x3D5, cursor_start);
 }
 
-void move_cursor(uint16_t pos)
+void set_cursor_pos(uint16_t pos)
 {
+    if (pos > 1999)
+        pos = 1999;
     outb(0x3D4, 0x0F);
     outb(0x3D5, pos & 0xFF);
     outb(0x3D4, 0x0E);
     outb(0x3D5, (pos >> 8) & 0xFF);
     cursor_pos = pos;
+}
+
+uint16_t get_cursor_pos(void)
+{
+    return cursor_pos;
 }
 
 void print(const char *text)
@@ -118,13 +125,13 @@ void print_char(char c)
         put_char(--cursor_pos, 0);
     else
         put_char(cursor_pos++, c);
-    move_cursor(cursor_pos);
+    set_cursor_pos(cursor_pos);
 }
 
 void scroll_down(void)
 {
     cursor_pos -= 80;
-    move_cursor(cursor_pos);
+    set_cursor_pos(cursor_pos);
     for (uint16_t i = 0; i < 1920; i++)
         vga[i] = vga[i + 80];
     for (uint16_t i = 1920; i < 2000; i++)

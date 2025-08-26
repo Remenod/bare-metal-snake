@@ -35,7 +35,9 @@ void fill_screen(unsigned char symb, uint8_t fg_color, uint8_t bg_color);
 
 void set_cursor_visibility(bool_t visible);
 
-void move_cursor(uint16_t pos);
+void set_cursor_pos(uint16_t pos);
+
+uint16_t get_cursor_pos(void);
 
 void print(const char *text);
 
