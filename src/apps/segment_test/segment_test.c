@@ -116,7 +116,7 @@ void segment_test_main(void)
             print_hex(get_seg_selector(i));
             print_char('\n');
         }
-        print("7. Custom seg code from GDT\n> ");
+        print("7. Custom segment selector from GDT\n> ");
 
         uint8_t choice = read_number();
         if (choice > 0 && choice < 7)
