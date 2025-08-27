@@ -12,12 +12,12 @@
 void kernel_main()
 {
     const char done_text[] = "Done\n";
-    print("\nInstalling IDT... ");
-    idt_install();
-    print(done_text);
-
     print("Setting Initialization... ");
     settings_init();
+    print(done_text);
+
+    print("\nInstalling IDT... ");
+    idt_install();
     print(done_text);
 
     print("PIT Initialization... ");
