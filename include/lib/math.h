@@ -5,7 +5,7 @@
 #define PI 3.14159265358979323846
 
 #define fmod(x, y)    \
-    _Generic((x, y),  \
+    _Generic((x),     \
         float: fmodf, \
         double: fmodd)(x, y)
 
