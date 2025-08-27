@@ -79,7 +79,7 @@ static const uint8_t g_320x200x256[] =
         0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
         0x41, 0x00, 0x0F, 0x00, 0x00};
 
-static const uint8_t g_8x16_font[256][16] __attribute__((aligned(16), section(".rodata"))) =
+static const uint8_t g_8x16_font[][16] __attribute__((aligned(16), section(".rodata"))) =
     {
         {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},  // 000 0x00 ␀
         {0x00, 0x00, 0x7E, 0x81, 0xA5, 0x81, 0x81, 0xBD, 0x99, 0x81, 0x81, 0x7E, 0x00, 0x00, 0x00, 0x00},  // 001 0x01 ☺
@@ -776,54 +776,91 @@ static void set_plane(uint8_t plane)
     outb(VGA_SEQ_DATA, pmask);
 }
 
-static void write_font(const uint8_t font[256][FONT_HEIGHT])
+typedef struct
 {
     uint8_t seq2, seq4, gc4, gc5, gc6;
+} glyph_regs_backup_t;
 
-    /* save registers
-    set_plane() modifies GC 4 and SEQ 2, so save them as well */
+static glyph_regs_backup_t save_glyphs_write_regs(void)
+{
+    glyph_regs_backup_t backup;
+
+    /* save registers set_plane() modifies GC 4 and SEQ 2, so save them as well */
     outb(VGA_SEQ_INDEX, 2);
-    seq2 = inb(VGA_SEQ_DATA);
+    backup.seq2 = inb(VGA_SEQ_DATA);
 
     outb(VGA_SEQ_INDEX, 4);
-    seq4 = inb(VGA_SEQ_DATA);
+    backup.seq4 = inb(VGA_SEQ_DATA);
+
     /* turn off even-odd addressing (set flat addressing)
     assume: chain-4 addressing already off */
-    outb(VGA_SEQ_DATA, seq4 | 0x04);
+    outb(VGA_SEQ_DATA, backup.seq4 | 0x04);
 
     outb(VGA_GC_INDEX, 4);
-    gc4 = inb(VGA_GC_DATA);
+    backup.gc4 = inb(VGA_GC_DATA);
 
     outb(VGA_GC_INDEX, 5);
-    gc5 = inb(VGA_GC_DATA);
+    backup.gc5 = inb(VGA_GC_DATA);
+
     /* turn off even-odd addressing */
-    outb(VGA_GC_DATA, gc5 & ~0x10);
+    outb(VGA_GC_DATA, backup.gc5 & ~0x10);
 
     outb(VGA_GC_INDEX, 6);
-    gc6 = inb(VGA_GC_DATA);
+    backup.gc6 = inb(VGA_GC_DATA);
+
     /* turn off even-odd addressing */
-    outb(VGA_GC_DATA, gc6 & ~0x02);
+    outb(VGA_GC_DATA, backup.gc6 & ~0x02);
+
     /* write font to plane P4 */
     set_plane(2);
 
+    return backup;
+}
+
+static void restore_glyphs_write_regs(glyph_regs_backup_t backup)
+{
+    outb(VGA_SEQ_INDEX, 2);
+    outb(VGA_SEQ_DATA, backup.seq2);
+    outb(VGA_SEQ_INDEX, 4);
+    outb(VGA_SEQ_DATA, backup.seq4);
+    outb(VGA_GC_INDEX, 4);
+    outb(VGA_GC_DATA, backup.gc4);
+    outb(VGA_GC_INDEX, 5);
+    outb(VGA_GC_DATA, backup.gc5);
+    outb(VGA_GC_INDEX, 6);
+    outb(VGA_GC_DATA, backup.gc6);
+}
+
+void write_font(const uint8_t font[256][FONT_HEIGHT])
+{
+    glyph_regs_backup_t backup = save_glyphs_write_regs();
     for (int i = 0; i < 256; i++)
-    {
         for (int j = 0; j < FONT_HEIGHT; j++)
             pokeb(0xB800, i * 32 + j, font[i][j]); // Absolute magic. I`m totaly don`t give a f how it worked
-        for (int j = FONT_HEIGHT; j < 32; j++)
-            pokeb(0xB800, i * 32 + j, 0);
-    }
+    restore_glyphs_write_regs(backup);
+}
 
-    outb(VGA_SEQ_INDEX, 2);
-    outb(VGA_SEQ_DATA, seq2);
-    outb(VGA_SEQ_INDEX, 4);
-    outb(VGA_SEQ_DATA, seq4);
-    outb(VGA_GC_INDEX, 4);
-    outb(VGA_GC_DATA, gc4);
-    outb(VGA_GC_INDEX, 5);
-    outb(VGA_GC_DATA, gc5);
-    outb(VGA_GC_INDEX, 6);
-    outb(VGA_GC_DATA, gc6);
+void write_glyphs(uint8_t glyphs_count, const uint8_t glyphs[glyphs_count][FONT_HEIGHT], const uint8_t glyph_codes[glyphs_count])
+{
+    glyph_regs_backup_t backup = save_glyphs_write_regs();
+
+    for (int i = 0; i < glyphs_count; i++)
+        for (int j = 0; j < FONT_HEIGHT; j++)
+            pokeb(0xB800, glyph_codes[i] * 32 + j, glyphs[i][j]);
+    restore_glyphs_write_regs(backup);
+}
+
+void write_glyph(const uint8_t glyph[FONT_HEIGHT], uint8_t glyph_code)
+{
+    glyph_regs_backup_t backup = save_glyphs_write_regs();
+    for (int j = 0; j < FONT_HEIGHT; j++)
+        pokeb(0xB800, glyph_code * 32 + j, glyph[j]); // Absolute magic. I`m totaly don`t give a f how it worked
+    restore_glyphs_write_regs(backup);
+}
+
+const uint8_t *get_8x16_font_glyph(uint8_t glyph_code)
+{
+    return g_8x16_font[glyph_code];
 }
 
 static void write_palette(const uint8_t palette[][3], uint16_t count)
