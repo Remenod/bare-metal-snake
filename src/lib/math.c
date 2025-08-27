@@ -234,12 +234,12 @@ double lnd(double x)
 float log10f(float x)
 {
     const float ln10 = 2.30258509f;
-    return ln_fast(x) / ln10;
+    return lnf(x) / ln10;
 }
 double log10d(double x)
 {
     const double ln10 = 2.302585092994046;
-    return ln_fast(x) / ln10;
+    return lnd(x) / ln10;
 }
 
 float powf(float base, float exp)
