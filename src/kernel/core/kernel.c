@@ -1,6 +1,7 @@
 #include <interrupts/idt.h>
 #include <drivers/screen.h>
 #include <drivers/keyboard.h>
+#include <drivers/mouse.h>
 #include <timer/pit.h>
 #include <drivers/vga.h>
 #include <interrupts/cpu_exceptions.h>
@@ -13,6 +14,7 @@ void kernel_main()
     pit_init(1000);
     register_all_cpu_exceptions_isrs();
     keyboard_install();
+    mouse_install();
     stack_guard_install();
 
     set_graphics_mode();
