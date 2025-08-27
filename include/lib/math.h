@@ -33,11 +33,53 @@
 float fmodf(float x, float y);
 double fmodd(double x, double y);
 
+float expf(float x);
+double expd(double x);
+
 float sinf(float x);
 double sind(double x);
 
 float cosf(float x);
 double cosd(double x);
+
+float tanf(float x);
+double tand(double x);
+
+float ctgf(float x);
+double ctgd(double x);
+
+float asinf(float x);
+double asind(double x);
+
+float acosf(float x);
+double acosd(double x);
+
+float atanf(float x);
+double atand(double x);
+
+float actgf(float x);
+double actgd(double x);
+
+float sinhf(float x);
+double sinhd(double x);
+
+float coshf(float x);
+double coshd(double x);
+
+float tanhf(float x);
+double tanhd(double x);
+
+float sqrtf(float x);
+double sqrtd(double x);
+
+float lnf(float x);
+double lnd(double x);
+
+float log10f(float x);
+double log10d(double x);
+
+float powf(float base, float exp);
+double powd(double base, double exp);
 
 static inline int8_t abs_int8(int8_t val)
 {
