@@ -13,60 +13,60 @@
 #define PS2_STATUS_PORT 0x64
 #define PS2_CMD_PORT 0x64
 
-#define MOUSE_CHAR_1 0xA6
-#define MOUSE_CHAR_2 0xA7
-#define MOUSE_CHAR_3 0xEC
-#define MOUSE_CHAR_4 0xED
+// #define MOUSE_CHAR_1 0xA6
+// #define MOUSE_CHAR_2 0xA7
+// #define MOUSE_CHAR_3 0xEC
+// #define MOUSE_CHAR_4 0xED
+#define MOUSE_CHAR_1 0xC0
+#define MOUSE_CHAR_2 0xC1
+#define MOUSE_CHAR_3 0xC2
+#define MOUSE_CHAR_4 0xC3
+
+static uint16_t mouse_x = 0, mouse_y = 0;
 
 static mouse_packet_t last_packet;
-static uint8_t buf[13], cursor_cover_buf[4];
-static uint8_t mouse_packet_index = 0;
+static uint8_t buf[13], cursor_cover_buf[4], packets_buf[3], mouse_packet_index = 0;
 
 static const uint8_t mouse_glyphs_codes[] = {MOUSE_CHAR_1, MOUSE_CHAR_2, MOUSE_CHAR_3, MOUSE_CHAR_4};
 
-static uint8_t cursor_glyph[] =
-    {0b10000000,
-     0b11000000,
-     0b11100000,
-     0b11110000,
-     0b11111000,
-     0b11111100,
-     0b11111110,
-     0b11111110,
-     0b11110000,
-     0b11011000,
-     0b10011000,
-     0b00001100,
-     0b00001100,
-     0x00000000,
-     0x00000000,
-     0b00000000};
-
-static uint16_t mouse_x = 0, mouse_y = 0;
+static uint8_t cursor_glyph[] = {
+    0b10000000,
+    0b11000000,
+    0b11100000,
+    0b11110000,
+    0b11111000,
+    0b11111100,
+    0b11111110,
+    0b11111110,
+    0b11110000,
+    0b11011000,
+    0b10011000,
+    0b00001100,
+    0b00001100,
+    0x00000000,
+    0x00000000,
+    0b00000000};
 
 void mouse_handler(void)
 {
     uint8_t data = inb(PS2_DATA_PORT);
 
-    buf[mouse_packet_index++] = data;
+    packets_buf[mouse_packet_index++] = data;
 
     if (mouse_packet_index == 3)
     {
         mouse_packet_index = 0;
 
-        last_packet.buttons = buf[0] & 0b111; // &0b001 - left, &0b010 - right, &0b100 - middle,
-        last_packet.dx = (int8_t)buf[1];
-        last_packet.dy = (int8_t)buf[2];
+        last_packet.buttons = packets_buf[0] & 0b111; // &0b001 - left, &0b010 - right, &0b100 - middle,
+        last_packet.dx = (int8_t)packets_buf[1];
+        last_packet.dy = (int8_t)packets_buf[2];
 
         mouse_process(&last_packet);
         return;
     }
-
-    outb(0xA0, 0x20); // EOI slave
-    outb(0x20, 0x20); // EOI master
 }
 
-void mouse_process(mouse_packet_t *packet)
+static void mouse_process(mouse_packet_t *packet)
 {
     put_char(0, (packet->buttons & 0b001));
     put_char(1, (packet->buttons & 0b010) >> 1);
@@ -125,18 +125,47 @@ void mouse_process(mouse_packet_t *packet)
     }
 }
 
-static inline void ps2_wait_input_empty()
+static inline bool_t ps2_wait_input_empty_timeout()
 {
-    while (inb(PS2_STATUS_PORT) & 0x02)
-        ;
+    for (int i = 0; i < 100000; i++)
+        if (inb(PS2_STATUS_PORT) & 0x02)
+            return true;
+    return false;
 }
 
-static void ps2_mouse_send(uint8_t cmd)
+static inline bool_t ps2_wait_output_full_timeout()
 {
-    ps2_wait_input_empty();
-    outb(PS2_CMD_PORT, 0xD4);
-    ps2_wait_input_empty();
-    outb(PS2_DATA_PORT, cmd);
+    for (int i = 0; i < 100000; i++)
+        if (inb(PS2_STATUS_PORT) & 0x01)
+            return true;
+    return false;
+}
+
+static void ps2_write_cmd(uint8_t cmd)
+{
+    ps2_wait_input_empty_timeout();
+    outb(PS2_CMD_PORT, cmd);
+}
+
+static void ps2_write_data(uint8_t data)
+{
+    ps2_wait_input_empty_timeout();
+    outb(PS2_DATA_PORT, data);
+}
+
+static uint8_t ps2_read_data()
+{
+    if (!ps2_wait_output_full_timeout())
+        return 0xFF;
+    return inb(PS2_DATA_PORT);
+}
+
+static void ps2_mouse_write(uint8_t data)
+{
+    ps2_write_cmd(0xD4);
+    ps2_write_data(data);
+    uint8_t ack = ps2_read_data();
+    (void)ack;
 }
 
 void mouse_install(void)
@@ -144,28 +173,27 @@ void mouse_install(void)
     pic_unmask_irq(2);
     pic_unmask_irq(12);
 
-    ps2_wait_input_empty();
-    outb(PS2_CMD_PORT, 0xA8);
+    // Turn on the second PS/2 port (mouse)
+    ps2_write_cmd(0xA8);
 
-    ps2_wait_input_empty();
-    outb(PS2_CMD_PORT, 0x20);
-    uint8_t status = inb(PS2_DATA_PORT);
-    status |= 0x02;
-    ps2_wait_input_empty();
-    outb(PS2_CMD_PORT, 0x60);
-    ps2_wait_input_empty();
-    outb(PS2_DATA_PORT, status);
+    // Read the config (command byte)
+    ps2_write_cmd(0x20);
+    uint8_t status = ps2_read_data();
 
-    ps2_mouse_send(0xFF);
-    (void)inb(PS2_DATA_PORT);
-    (void)inb(PS2_DATA_PORT);
-    (void)inb(PS2_DATA_PORT);
+    // Set bits: enable IRQ12 (bits 0=keyboard, 1=mouse)
+    status |= 0x02;  // enable mouse IRQ
+    status &= ~0x20; // disable translation (required on real hardware)
 
-    ps2_mouse_send(0xF4);
-    (void)inb(PS2_DATA_PORT);
-    (void)inb(PS2_DATA_PORT);
-    (void)inb(PS2_DATA_PORT);
-    (void)inb(PS2_DATA_PORT);
+    ps2_write_cmd(0x60);
+    ps2_write_data(status);
+
+    ps2_mouse_write(0xFF); // reset
+    ps2_read_data();       // ACK 0xFA
+    ps2_read_data();       // self-test pass = 0xAA
+    ps2_read_data();       // mouse ID (0x00 for standard)
+
+    ps2_mouse_write(0xF6); // set defaults
+    ps2_mouse_write(0xF4); // enable streaming
 
     register_interrupt_handler(44, mouse_handler);
 }
