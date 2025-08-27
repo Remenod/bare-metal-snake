@@ -124,3 +124,41 @@ double tanhd(double x)
     double e2 = expd(2 * x);
     return (e2 - 1) / (e2 + 1);
 }
+
+float sqrtf(float x)
+{
+    if (x <= 0.0f)
+        return 0.0f;
+
+    float guess = x * 0.5f;
+    const float eps = 1e-6f;
+
+    for (int i = 0; i < 20; i++)
+    {
+        float new_guess = 0.5f * (guess + x / guess);
+        if (abs(new_guess - guess) < eps)
+            break;
+        guess = new_guess;
+    }
+
+    return guess;
+}
+
+double sqrtd(double x)
+{
+    if (x <= 0.0)
+        return 0.0;
+
+    double guess = x * 0.5;
+    const double eps = 1e-12;
+
+    for (int i = 0; i < 30; i++)
+    {
+        double new_guess = 0.5 * (guess + x / guess);
+        if (abs(new_guess - guess) < eps)
+            break;
+        guess = new_guess;
+    }
+
+    return guess;
+}

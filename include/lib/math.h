@@ -69,11 +69,18 @@
         float: tanhf, \
         double: tanhd)(val)
 
+#define sqrt(val)     \
+    _Generic((val),   \
+        float: sqrtf, \
+        double: sqrtd)(val)
+
 #define abs(val)            \
     _Generic((val),         \
         int8_t: abs_int8,   \
         int16_t: abs_int16, \
-        int32_t: abs_int32)(val)
+        int32_t: abs_int32, \
+        float: absf,        \
+        double: absd)(val)
 
 float fmodf(float x, float y);
 double fmodd(double x, double y);
@@ -93,6 +100,14 @@ static inline int16_t abs_int16(int16_t val)
     return val < 0 ? -val : val;
 }
 static inline int32_t abs_int32(int32_t val)
+{
+    return val < 0 ? -val : val;
+}
+static inline float absf(float val)
+{
+    return val < 0 ? -val : val;
+}
+static inline double absd(double val)
 {
     return val < 0 ? -val : val;
 }
