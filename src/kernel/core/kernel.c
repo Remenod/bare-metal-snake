@@ -15,21 +15,27 @@ void kernel_main()
     print("\nInstalling IDT... ");
     idt_install();
     print(done_text);
+
     print("PIT Initialization... ");
     pit_init(1000);
     print(done_text);
+
     print("CPU int registration... ");
     register_all_cpu_exceptions_isrs();
     print(done_text);
+
     print("Installing mouse... ");
     mouse_install();
     print(done_text);
+
     print("Installing keyboard... ");
     keyboard_install();
     print(done_text);
+
     print("Installing Stack Guard... ");
     stack_guard_install();
     print(done_text);
+
     print("Setting Initialization... ");
     settings_init();
     print(done_text);
