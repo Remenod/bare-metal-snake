@@ -14,6 +14,8 @@ Over time it has grown into a small experimental OS with exception handling, key
   - Full CPU exception handling.
   - Programmable Interrupt Controller (PIC) & PIT timer support.
   - PS/2 keyboard driver.
+  - PS/2 mouse driver.
+  - Procedurally generated cursor glyphs at runtime.
   - VGA driver with support for text mode `0x03` and graphics mode `0x13`.
   - DAC palette setup and custom font loading.
   - Expand-down stack segment with **Stack Guard**:
@@ -150,6 +152,9 @@ make clean
 
 ### Segment Test
 ![Segment Test](docs/media/segment_test.gif)
+
+### Cursor
+![Cursor](docs/media/cursor.gif)
 
 ### Stack Overflow RSoD
 ![Stack Overflow RSoD](docs/media/stack_overflow_rsod.png)
