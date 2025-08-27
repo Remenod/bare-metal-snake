@@ -20,11 +20,11 @@ void kernel_main()
     print("CPU int registration... ");
     register_all_cpu_exceptions_isrs();
     print(done_text);
-    print("Installing keyboard... ");
-    keyboard_install();
-    print(done_text);
     print("Installing mouse... ");
     mouse_install();
+    print(done_text);
+    print("Installing keyboard... ");
+    keyboard_install();
     print(done_text);
     print("Installing Stack Guard... ");
     stack_guard_install();
