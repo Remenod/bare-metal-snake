@@ -66,7 +66,7 @@ void mouse_handler(void)
     }
 }
 
-static void mouse_process(mouse_packet_t *packet)
+void mouse_process(mouse_packet_t *packet)
 {
     put_char(0, (packet->buttons & 0b001));
     put_char(1, (packet->buttons & 0b010) >> 1);
@@ -125,12 +125,10 @@ static void mouse_process(mouse_packet_t *packet)
     }
 }
 
-static inline bool_t ps2_wait_input_empty_timeout()
+static inline void ps2_wait_input_empty()
 {
-    for (int i = 0; i < 100000; i++)
-        if (inb(PS2_STATUS_PORT) & 0x02)
-            return true;
-    return false;
+    while (inb(PS2_STATUS_PORT) & 0x02)
+        ;
 }
 
 static inline bool_t ps2_wait_output_full_timeout()
@@ -143,13 +141,13 @@ static inline bool_t ps2_wait_output_full_timeout()
 
 static void ps2_write_cmd(uint8_t cmd)
 {
-    ps2_wait_input_empty_timeout();
+    ps2_wait_input_empty();
     outb(PS2_CMD_PORT, cmd);
 }
 
 static void ps2_write_data(uint8_t data)
 {
-    ps2_wait_input_empty_timeout();
+    ps2_wait_input_empty();
     outb(PS2_DATA_PORT, data);
 }
 
