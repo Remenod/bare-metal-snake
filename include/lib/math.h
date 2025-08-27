@@ -74,6 +74,21 @@
         float: sqrtf, \
         double: sqrtd)(val)
 
+#define ln(val)     \
+    _Generic((val), \
+        float: lnf, \
+        double: lnd)(val)
+
+#define log10(val)     \
+    _Generic((val),    \
+        float: log10f, \
+        double: log10d)(val)
+
+#define pow(val)     \
+    _Generic((val),  \
+        float: powf, \
+        double: powd)(val)
+
 #define abs(val)            \
     _Generic((val),         \
         int8_t: abs_int8,   \

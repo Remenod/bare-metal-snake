@@ -143,7 +143,6 @@ float sqrtf(float x)
 
     return guess;
 }
-
 double sqrtd(double x)
 {
     if (x <= 0.0)
@@ -161,4 +160,105 @@ double sqrtd(double x)
     }
 
     return guess;
+}
+
+float lnf(float x)
+{
+    if (x <= 0.0f)
+        return 0.0f;
+
+    int k = 0;
+    while (x > 1.5f)
+    {
+        x *= 0.5f;
+        k++;
+    }
+    while (x < 0.5f)
+    {
+        x *= 2.0f;
+        k--;
+    }
+
+    x = x - 1.0f;
+    float result = 0.0f;
+    float term = x;
+    for (int i = 1; i <= 20; i++)
+    {
+        float t = term / i;
+        if (i % 2 == 0)
+            result -= t;
+        else
+            result += t;
+        term *= x;
+    }
+
+    const float ln2 = 0.69314718f;
+    result += k * ln2;
+    return result;
+}
+double lnd(double x)
+{
+    if (x <= 0.0)
+        return 0.0;
+
+    int k = 0;
+    while (x > 1.5)
+    {
+        x *= 0.5;
+        k++;
+    }
+    while (x < 0.5)
+    {
+        x *= 2.0;
+        k--;
+    }
+
+    x = x - 1.0;
+    double result = 0.0;
+    double term = x;
+    for (int i = 1; i <= 30; i++)
+    {
+        double t = term / i;
+        if (i % 2 == 0)
+            result -= t;
+        else
+            result += t;
+        term *= x;
+    }
+
+    const double ln2 = 0.6931471805599453;
+    result += k * ln2;
+    return result;
+}
+
+float log10f(float x)
+{
+    const float ln10 = 2.30258509f;
+    return ln_fast(x) / ln10;
+}
+double log10d(double x)
+{
+    const double ln10 = 2.302585092994046;
+    return ln_fast(x) / ln10;
+}
+
+float powf(float base, float exp)
+{
+    if (base == 0.0f)
+        return 0.0f;
+    if (exp == 0.0f)
+        return 1.0f;
+
+    float ln_base = lnf(base);
+    return expf(exp * ln_base);
+}
+double powd(double base, double exp)
+{
+    if (base == 0.0)
+        return 0.0;
+    if (exp == 0.0)
+        return 1.0;
+
+    double ln_base = lnd(base);
+    return expd(exp * ln_base);
 }
