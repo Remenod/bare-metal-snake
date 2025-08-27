@@ -4,90 +4,23 @@
 
 #define PI 3.14159265358979323846
 
-#define fmod(x, y)    \
-    _Generic((x),     \
-        float: fmodf, \
-        double: fmodd)(x, y)
-
-#define exp(val)     \
-    _Generic((val),  \
-        float: expf, \
-        double: expd)(val)
-
-#define sin(val)     \
-    _Generic((val),  \
-        float: sinf, \
-        double: sind)(val)
-
-#define cos(val)     \
-    _Generic((val),  \
-        float: cosf, \
-        double: cosd)(val)
-
-#define tan(val)     \
-    _Generic((val),  \
-        float: tanf, \
-        double: tand)(val)
-
-#define ctg(val)     \
-    _Generic((val),  \
-        float: ctgf, \
-        double: ctgd)(val)
-
-#define asin(val)     \
-    _Generic((val),   \
-        float: asinf, \
-        double: asind)(val)
-
-#define acos(val)     \
-    _Generic((val),   \
-        float: acosf, \
-        double: acosd)(val)
-
-#define atan(val)     \
-    _Generic((val),   \
-        float: atanf, \
-        double: atand)(val)
-
-#define actg(val)     \
-    _Generic((val),   \
-        float: actgf, \
-        double: actgd)(val)
-
-#define sinh(val)     \
-    _Generic((val),   \
-        float: sinhf, \
-        double: sinhd)(val)
-
-#define cosh(val)     \
-    _Generic((val),   \
-        float: coshf, \
-        double: coshd)(val)
-
-#define tanh(val)     \
-    _Generic((val),   \
-        float: tanhf, \
-        double: tanhd)(val)
-
-#define sqrt(val)     \
-    _Generic((val),   \
-        float: sqrtf, \
-        double: sqrtd)(val)
-
-#define ln(val)     \
-    _Generic((val), \
-        float: lnf, \
-        double: lnd)(val)
-
-#define log10(val)     \
-    _Generic((val),    \
-        float: log10f, \
-        double: log10d)(val)
-
-#define pow(val)     \
-    _Generic((val),  \
-        float: powf, \
-        double: powd)(val)
+#define ln(val) _Generic((val), float: lnf, double: lnd)(val)
+#define exp(val) _Generic((val), float: expf, double: expd)(val)
+#define pow(val) _Generic((val), float: powf, double: powd)(val)
+#define sin(val) _Generic((val), float: sinf, double: sind)(val)
+#define cos(val) _Generic((val), float: cosf, double: cosd)(val)
+#define tan(val) _Generic((val), float: tanf, double: tand)(val)
+#define ctg(val) _Generic((val), float: ctgf, double: ctgd)(val)
+#define asin(val) _Generic((val), float: asinf, double: asind)(val)
+#define acos(val) _Generic((val), float: acosf, double: acosd)(val)
+#define atan(val) _Generic((val), float: atanf, double: atand)(val)
+#define actg(val) _Generic((val), float: actgf, double: actgd)(val)
+#define sinh(val) _Generic((val), float: sinhf, double: sinhd)(val)
+#define cosh(val) _Generic((val), float: coshf, double: coshd)(val)
+#define tanh(val) _Generic((val), float: tanhf, double: tanhd)(val)
+#define sqrt(val) _Generic((val), float: sqrtf, double: sqrtd)(val)
+#define fmod(x, y) _Generic((x), float: fmodf, double: fmodd)(x, y)
+#define log10(val) _Generic((val), float: log10f, double: log10d)(val)
 
 #define abs(val)            \
     _Generic((val),         \
