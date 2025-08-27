@@ -35,8 +35,6 @@ void mouse_handler(void)
         mouse_process(&last_packet);
         return;
     }
-    if (mouse_idx > 3)
-        mouse_idx = 0;
 
     outb(0xA0, 0x20); // EOI slave
     outb(0x20, 0x20); // EOI master
@@ -44,6 +42,10 @@ void mouse_handler(void)
 
 void mouse_process(mouse_packet_t *packet)
 {
+    put_char(0, (packet->buttons & 0b001));
+    put_char(1, (packet->buttons & 0b010) >> 1);
+    put_char(2, (packet->buttons & 0b100) >> 2);
+
     if (!(get_char(mouse_y * 80 + mouse_x) - MOUSE_CHAR))
         put_attrchar(mouse_x + mouse_y * 80, mouse_cover_buf);
     int new_x = mouse_x + packet->dx / 3;
@@ -57,10 +59,6 @@ void mouse_process(mouse_packet_t *packet)
 
     mouse_cover_buf = get_attrchar(mouse_x + mouse_y * 80);
     put_char(mouse_x + mouse_y * 80, MOUSE_CHAR);
-
-    put_char(0, (packet->buttons & 0b001));
-    put_char(1, (packet->buttons & 0b010) >> 1);
-    put_char(2, (packet->buttons & 0b100) >> 2);
 }
 
 static inline void ps2_wait_input_empty()
