@@ -49,6 +49,32 @@ int settings_subscribe_string(const char *key, settings_string_callback_t cb)
     return -1;
 }
 
+int settings_unsubscribe_int(const char *key, settings_int_callback_t cb)
+{
+    for (int i = 0; i < int_subscribers_count; i++)
+    {
+        if (int_subscribers[i].callback == cb && strcmp(int_subscribers[i].key, key) == 0)
+        {
+            int_subscribers[i] = int_subscribers[--int_subscribers_count];
+            return 0;
+        }
+    }
+    return -1;
+}
+
+int settings_unsubscribe_string(const char *key, settings_string_callback_t cb)
+{
+    for (int i = 0; i < string_subscribers_count; i++)
+    {
+        if (string_subscribers[i].callback == cb && strcmp(string_subscribers[i].key, key) == 0)
+        {
+            string_subscribers[i] = string_subscribers[--string_subscribers_count];
+            return 0;
+        }
+    }
+    return -1;
+}
+
 int settings_set_int(const char *key, int value)
 {
     setting_t *s = find_setting(key);

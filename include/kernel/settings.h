@@ -50,6 +50,9 @@ void settings_init();
 int settings_subscribe_int(const char *key, settings_int_callback_t cb);
 int settings_subscribe_string(const char *key, settings_string_callback_t cb);
 
+int settings_unsubscribe_int(const char *key, settings_int_callback_t cb);
+int settings_unsubscribe_string(const char *key, settings_string_callback_t cb);
+
 int settings_set_int(const char *key, int value);
 int settings_get_int(const char *key, int default_value);
 
