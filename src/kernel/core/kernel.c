@@ -40,6 +40,7 @@ void kernel_main()
     settings_init();
     print(done_text);
 
+
     print("Testing VGA modes... ");
     set_graphics_mode();
     draw_mode13h_test_pattern();
