@@ -50,7 +50,20 @@ static uint8_t cursor_glyph[] = {
     0x00000000,
     0b00000000};
 
-static void cursor_process(void)
+static inline bool_t is_mouse1(uint8_t buttons)
+{
+    return buttons & 0b001;
+}
+static inline bool_t is_mouse2(uint8_t buttons)
+{
+    return buttons & 0b010;
+}
+static inline bool_t is_mouse3(uint8_t buttons)
+{
+    return buttons & 0b100;
+}
+
+static void cursor_process()
 {
     uint16_t operating_chars_pos[4];
     operating_chars_pos[0] = mouse_x / 8 + mouse_y / 16 * 80;
@@ -105,7 +118,7 @@ static void cursor_process(void)
     }
 }
 
-static void click_process(void)
+static void click_process(uint8_t prev_buttons)
 {
     int selected = -1;
 
@@ -121,11 +134,13 @@ static void click_process(void)
             }
         }
     }
-    if (last_packet.buttons & 0b001 && ui_elements[selected].mouse1_handler)
+    if (selected < 0)
+        return;
+    if (is_mouse1(prev_buttons) && !is_mouse1(last_packet.buttons) && ui_elements[selected].mouse1_handler)
         ui_elements[selected].mouse1_handler();
-    if (last_packet.buttons & 0b010 && ui_elements[selected].mouse2_handler)
+    if (is_mouse2(prev_buttons) && !is_mouse2(last_packet.buttons) && ui_elements[selected].mouse2_handler)
         ui_elements[selected].mouse2_handler();
-    if (last_packet.buttons & 0b100 && ui_elements[selected].mouse3_handler)
+    if (is_mouse3(prev_buttons) && !is_mouse3(last_packet.buttons) && ui_elements[selected].mouse3_handler)
         ui_elements[selected].mouse3_handler();
 }
 
@@ -197,12 +212,15 @@ void mouse_handler(void)
     {
         mouse_packet_index = 0;
 
-        last_packet.buttons = packets_buf[0] & 0b111; // &0b001 - left, &0b010 - right, &0b100 - middle,
-        last_packet.dx = (int8_t)packets_buf[1];
-        last_packet.dy = (int8_t)packets_buf[2];
+        uint8_t prev_buttons_state = last_packet.buttons;
 
+        last_packet = (mouse_packet_t){
+            .buttons = packets_buf[0] & 0b111, // &0b001 - left, &0b010 - right, &0b100 - middle
+            .dx = (int8_t)packets_buf[1],
+            .dy = (int8_t)packets_buf[2]};
+
+        click_process(prev_buttons_state);
         cursor_process();
-        click_process();
     }
 }
 
