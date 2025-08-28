@@ -37,16 +37,23 @@
 #define log10(val) _Generic(val, float: log10f, double: log10d)(val)
 #define logb(val, base) _Generic(val, float: logbf, double: logbd)(val, base)
 
-#define exp(val) _Generic(val, float: expf, double: expd)(val)
-#define sqrt(val) _Generic(val, float: sqrtf, double: sqrtd)(val)
-#define pow(base, exp) _Generic(base, float: powf, double: powd)(base, exp)
-
 #define ceil(val) _Generic(val, float: ceilf, double: ceild)(val)
 #define floor(val) _Generic(val, float: floorf, double: floord)(val)
 #define round(val) _Generic(val, float: roundf, double: roundd)(val)
 
+#define exp(val) _Generic(val, float: expf, double: expd)(val)
+#define sqrt(val) _Generic(val, float: sqrtf, double: sqrtd)(val)
+#define pow(base, exp)        \
+    _Generic(base,            \
+        float: powf,          \
+        double: powd,         \
+        int32_t: pow_int32,   \
+        uint32_t: pow_uint32, \
+        int64_t: pow_int64,   \
+        uint64_t: pow_uint64)(base, exp)
+
 #define abs(val)            \
-    _Generic((val),         \
+    _Generic(val,           \
         int8_t: abs_int8,   \
         int16_t: abs_int16, \
         int32_t: abs_int32, \
@@ -107,6 +114,11 @@ double powd(double base, double exp);
 
 float logbf(float x, float base);
 double logbd(double x, double base);
+
+int32_t pow_int32(int32_t base, int32_t exp);
+uint32_t pow_uint32(uint32_t base, uint32_t exp);
+int64_t pow_int64(int64_t base, int64_t exp);
+uint64_t pow_uint64(uint64_t base, uint64_t exp);
 
 static inline int8_t abs_int8(int8_t val)
 {

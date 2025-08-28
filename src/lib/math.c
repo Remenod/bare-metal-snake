@@ -271,3 +271,52 @@ double powd(double base, double exp)
     double ln_base = lnd(base);
     return expd(exp * ln_base);
 }
+
+int32_t pow_int32(int32_t base, int32_t exp)
+{
+    int32_t result = 1;
+    while (exp > 0)
+    {
+        if (exp & 1)
+            result *= base;
+        base *= base;
+        exp >>= 1;
+    }
+    return result;
+}
+uint32_t pow_uint32(uint32_t base, uint32_t exp)
+{
+    uint32_t result = 1;
+    while (exp > 0)
+    {
+        if (exp & 1)
+            result *= base;
+        base *= base;
+        exp >>= 1;
+    }
+    return result;
+}
+int64_t pow_int64(int64_t base, int64_t exp)
+{
+    int64_t result = 1;
+    while (exp > 0)
+    {
+        if (exp & 1)
+            result *= base;
+        base *= base;
+        exp >>= 1;
+    }
+    return result;
+}
+uint64_t pow_uint64(uint64_t base, uint64_t exp)
+{
+    uint64_t result = 1;
+    while (exp > 0)
+    {
+        if (exp & 1)
+            result *= base;
+        base *= base;
+        exp >>= 1;
+    }
+    return result;
+}
