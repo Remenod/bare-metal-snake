@@ -3,22 +3,22 @@
 float fmodf(float x, float y)
 {
     if (y == 0.0f)
-        return 0.0f;
-    int sign = x < 0 ? -1 : 1;
-    x = (x < 0) ? -x : x;
-    y = (y < 0) ? -y : y;
-    int32_t n = (int32_t)(x / y);
-    return sign * (x - n * y);
+        return 0.0f / 0.0f; // NaN
+    int sign = x < 0.0f ? -1 : 1;
+    float ax = x < 0.0f ? -x : x;
+    float ay = y < 0.0f ? -y : y;
+    int32_t n = (int32_t)(ax / ay);
+    return sign * (ax - (float)n * ay);
 }
 double fmodd(double x, double y)
 {
     if (y == 0.0)
-        return 0.0;
-    int sign = x < 0 ? -1 : 1;
-    x = (x < 0) ? -x : x;
-    y = (y < 0) ? -y : y;
-    int64_t n = (int64_t)(x / y);
-    return sign * (x - n * y);
+        return 0.0 / 0.0; // NaN
+    int sign = x < 0.0 ? -1 : 1;
+    double ax = x < 0.0 ? -x : x;
+    double ay = y < 0.0 ? -y : y;
+    int64_t n = (int64_t)(ax / ay);
+    return sign * (ax - (double)n * ay);
 }
 
 /* Basic trigonometry funcs */
@@ -216,7 +216,9 @@ double expd(double x)
 
 float sqrtf(float x)
 {
-    if (x <= 0.0f)
+    if (x < 0.0f)
+        return 0.0f / 0.0f; // NaN
+    if (x == 0.0f)
         return 0.0f;
 
     float guess = x * 0.5f;
@@ -224,6 +226,8 @@ float sqrtf(float x)
 
     for (int i = 0; i < 20; i++)
     {
+        if (guess == 0.0f)
+            break;
         float new_guess = 0.5f * (guess + x / guess);
         if (abs(new_guess - guess) < eps)
             break;
@@ -234,7 +238,9 @@ float sqrtf(float x)
 }
 double sqrtd(double x)
 {
-    if (x <= 0.0)
+    if (x < 0.0)
+        return 0.0 / 0.0; // NaN
+    if (x == 0.0)
         return 0.0;
 
     double guess = x * 0.5;
@@ -242,6 +248,8 @@ double sqrtd(double x)
 
     for (int i = 0; i < 30; i++)
     {
+        if (guess == 0.0)
+            break;
         double new_guess = 0.5 * (guess + x / guess);
         if (abs(new_guess - guess) < eps)
             break;
