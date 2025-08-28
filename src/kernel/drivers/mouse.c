@@ -122,9 +122,9 @@ static void cursor_process(void)
     int new_y = mouse_y - last_packet.dy;
 
     new_x = new_x < 0 ? 0 : new_x;
-    mouse_x = new_x > (79 * 8) ? (79 * 8) : new_x;
+    mouse_x = new_x > (80 * 8 - 1) ? (80 * 8 - 1) : new_x;
     new_y = new_y < 0 ? 0 : new_y;
-    mouse_y = new_y > (24 * 16) ? (24 * 16) : new_y;
+    mouse_y = new_y > (25 * 16 - 1) ? (25 * 16 - 1) : new_y;
 
     get_covered_chars_pos(covered_chars_pos, mouse_x, mouse_y);
 
@@ -162,6 +162,8 @@ static void cursor_process(void)
     for (int i = 0; i < 4; i++)
     {
         cursor_cover_buf[i] = get_char(covered_chars_pos[i]);
+        if (mouse_x >= (79 * 8) && i % 2)
+            continue;
         put_char(covered_chars_pos[i], mouse_glyphs_codes[i]);
     }
 }
