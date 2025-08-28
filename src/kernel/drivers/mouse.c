@@ -25,7 +25,7 @@
 static uint16_t mouse_x = 0, mouse_y = 0;
 
 static mouse_packet_t last_packet;
-static uint8_t buf[13], cursor_cover_buf[4], packets_buf[3], mouse_packet_index = 0;
+static uint8_t cursor_cover_buf[4], packets_buf[3], mouse_packet_index = 0;
 
 static const uint8_t mouse_glyphs_codes[] = {MOUSE_CHAR_1, MOUSE_CHAR_2, MOUSE_CHAR_3, MOUSE_CHAR_4};
 
@@ -47,31 +47,8 @@ static uint8_t cursor_glyph[] = {
     0x00000000,
     0b00000000};
 
-void mouse_handler(void)
+static void cursor_process()
 {
-    uint8_t data = inb(PS2_DATA_PORT);
-
-    packets_buf[mouse_packet_index++] = data;
-
-    if (mouse_packet_index == 3)
-    {
-        mouse_packet_index = 0;
-
-        last_packet.buttons = packets_buf[0] & 0b111; // &0b001 - left, &0b010 - right, &0b100 - middle,
-        last_packet.dx = (int8_t)packets_buf[1];
-        last_packet.dy = (int8_t)packets_buf[2];
-
-        mouse_process(&last_packet);
-        return;
-    }
-}
-
-void mouse_process(mouse_packet_t *packet)
-{
-    put_char(0, (packet->buttons & 0b001));
-    put_char(1, (packet->buttons & 0b010) >> 1);
-    put_char(2, (packet->buttons & 0b100) >> 2);
-
     uint16_t operating_chars_pos[4];
     operating_chars_pos[0] = mouse_x / 8 + mouse_y / 16 * 80;
     operating_chars_pos[1] = operating_chars_pos[0] + 1;
@@ -82,8 +59,8 @@ void mouse_process(mouse_packet_t *packet)
         if (!(get_char(operating_chars_pos[i]) - mouse_glyphs_codes[i]))
             put_char(operating_chars_pos[i], cursor_cover_buf[i]);
 
-    int new_x = mouse_x + packet->dx;
-    int new_y = mouse_y - packet->dy;
+    int new_x = mouse_x + last_packet.dx;
+    int new_y = mouse_y - last_packet.dy;
     new_x = new_x < 0 ? 0 : new_x;
     mouse_x = new_x > (79 * 8) ? (79 * 8) : new_x;
     new_y = new_y < 0 ? 0 : new_y;
@@ -101,7 +78,7 @@ void mouse_process(mouse_packet_t *packet)
 
     for (int i = 0; i < 4; i++)
     {
-        uint8_t *covering_glyph = get_8x16_font_glyph(get_char(operating_chars_pos[i]));
+        const uint8_t *covering_glyph = get_8x16_font_glyph(get_char(operating_chars_pos[i]));
 
         int8_t cur_glyph_offset_y;
 
@@ -112,8 +89,8 @@ void mouse_process(mouse_packet_t *packet)
                 covering_glyph[j] | ((cur_glyph_offset_y < 0 || cur_glyph_offset_y > 15)
                                          ? 0
                                          : (i % 2
-                                                ? (cursor_glyph[cur_glyph_offset_y] << (8 - cursor_char_offset_x))
-                                                : (cursor_glyph[cur_glyph_offset_y] >> cursor_char_offset_x)));
+                                                ? (cursor_glyph[(uint8_t)cur_glyph_offset_y] << (8 - cursor_char_offset_x))
+                                                : (cursor_glyph[(uint8_t)cur_glyph_offset_y] >> cursor_char_offset_x)));
         }
     }
     write_glyphs(4, mouse_glyph_buf, mouse_glyphs_codes);
@@ -164,6 +141,25 @@ static void ps2_mouse_write(uint8_t data)
     ps2_write_data(data);
     uint8_t ack = ps2_read_data();
     (void)ack;
+}
+
+void mouse_handler(void)
+{
+    uint8_t data = inb(PS2_DATA_PORT);
+
+    packets_buf[mouse_packet_index++] = data;
+
+    if (mouse_packet_index == 3)
+    {
+        mouse_packet_index = 0;
+
+        last_packet.buttons = packets_buf[0] & 0b111; // &0b001 - left, &0b010 - right, &0b100 - middle,
+        last_packet.dx = (int8_t)packets_buf[1];
+        last_packet.dy = (int8_t)packets_buf[2];
+
+        cursor_process();
+        click_proccess();
+    }
 }
 
 void mouse_install(void)
