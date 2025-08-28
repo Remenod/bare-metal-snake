@@ -18,6 +18,11 @@ typedef enum
         settings_string_callback_t: settings_subscribe_string, \
         settings_int_callback_t: settings_subscribe_int)(key, cb)
 
+#define settings_unsubscribe(key, cb)                            \
+    _Generic(cb,                                                 \
+        settings_string_callback_t: settings_unsubscribe_string, \
+        settings_int_callback_t: settings_unsubscribe_int)(key, cb)
+
 typedef struct
 {
     const char *key;
