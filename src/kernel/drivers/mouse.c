@@ -32,7 +32,7 @@ static const uint8_t mouse_glyphs_codes[] = {MOUSE_CHAR_1, MOUSE_CHAR_2, MOUSE_C
 static mouse_ui_element_t ui_elements[255] = {0};
 static uint8_t highest_ui_layer = 0;
 
-static uint8_t cursor_glyph[] = {
+static uint8_t arrow_glyph[] = {
     0b10000000,
     0b11000000,
     0b11100000,
@@ -49,6 +49,26 @@ static uint8_t cursor_glyph[] = {
     0x00000000,
     0x00000000,
     0b00000000};
+
+static uint8_t select_glyph[] = {
+    0b10000000,
+    0b11000000,
+    0b11100000,
+    0b11110000,
+    0b11111000,
+    0b11111100,
+    0b11111110,
+    0b11111110,
+    0b11100000,
+    0b11000000,
+    0b10000000,
+    0b00000000,
+    0b00000000,
+    0x00000000,
+    0x00000000,
+    0b00000000};
+
+static uint8_t *cursor_glyph = &arrow_glyph;
 
 static inline bool_t is_mouse1(uint8_t buttons)
 {
@@ -128,6 +148,7 @@ static void click_process(uint8_t prev_buttons)
         {
             if (ui_elements[i].bound(mouse_x, mouse_y))
             {
+                cursor_glyph = &select_glyph;
                 selected = i;
                 highest_ui_layer = highest_ui_layer > i ? highest_ui_layer : i;
                 break;
@@ -135,7 +156,10 @@ static void click_process(uint8_t prev_buttons)
         }
     }
     if (selected < 0)
+    {
+        cursor_glyph = &arrow_glyph;
         return;
+    }
     if (is_mouse1(prev_buttons) && !is_mouse1(last_packet.buttons) && ui_elements[selected].mouse1_handler)
         ui_elements[selected].mouse1_handler();
     if (is_mouse2(prev_buttons) && !is_mouse2(last_packet.buttons) && ui_elements[selected].mouse2_handler)
