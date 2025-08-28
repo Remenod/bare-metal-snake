@@ -61,6 +61,18 @@
         float: absf,        \
         double: absd)(val)
 
+#define min(a, b)     \
+    _Generic(a,       \
+        float: minf,  \
+        double: mind, \
+        default: min_int)(a, b)
+
+#define max(a, b)     \
+    _Generic(a,       \
+        float: maxf,  \
+        double: maxd, \
+        default: max_int)(a, b)
+
 float fmodf(float x, float y);
 double fmodd(double x, double y);
 
@@ -178,5 +190,11 @@ static inline double roundd(double x)
 
 static inline int min_int(int a, int b) { return a < b ? a : b; }
 static inline int max_int(int a, int b) { return a > b ? a : b; }
+
+static inline float minf(float a, float b) { return a < b ? a : b; }
+static inline double mind(double a, double b) { return a < b ? a : b; }
+
+static inline float maxf(float a, float b) { return a > b ? a : b; }
+static inline double maxd(double a, double b) { return a > b ? a : b; }
 
 static inline int mod(int a, int b) { return ((a % b) + b) % b; }
