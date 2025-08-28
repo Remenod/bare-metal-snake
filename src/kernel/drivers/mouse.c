@@ -29,6 +29,9 @@ static uint8_t cursor_cover_buf[4], packets_buf[3], mouse_packet_index = 0;
 
 static const uint8_t mouse_glyphs_codes[] = {MOUSE_CHAR_1, MOUSE_CHAR_2, MOUSE_CHAR_3, MOUSE_CHAR_4};
 
+static mouse_ui_element_t ui_elements[255] = {0};
+static uint8_t highest_ui_layer = 0;
+
 static uint8_t cursor_glyph[] = {
     0b10000000,
     0b11000000,
@@ -47,7 +50,7 @@ static uint8_t cursor_glyph[] = {
     0x00000000,
     0b00000000};
 
-static void cursor_process()
+static void cursor_process(void)
 {
     uint16_t operating_chars_pos[4];
     operating_chars_pos[0] = mouse_x / 8 + mouse_y / 16 * 80;
@@ -100,6 +103,47 @@ static void cursor_process()
         cursor_cover_buf[i] = get_char(operating_chars_pos[i]);
         put_char(operating_chars_pos[i], mouse_glyphs_codes[i]);
     }
+}
+
+static void click_process(void)
+{
+    int selected = -1;
+
+    for (int i = highest_ui_layer; i > -1; i--)
+    {
+        if (ui_elements[i].bound)
+        {
+            if (ui_elements[i].bound(mouse_x, mouse_y))
+            {
+                selected = i;
+                highest_ui_layer = highest_ui_layer > i ? highest_ui_layer : i;
+                break;
+            }
+        }
+    }
+    if (last_packet.buttons & 0b001 && ui_elements[selected].mouse1_handler)
+        ui_elements[selected].mouse1_handler();
+    if (last_packet.buttons & 0b010 && ui_elements[selected].mouse2_handler)
+        ui_elements[selected].mouse2_handler();
+    if (last_packet.buttons & 0b100 && ui_elements[selected].mouse3_handler)
+        ui_elements[selected].mouse3_handler();
+}
+
+void register_ui_element(uint8_t layer, mouse_ui_element_t ui_element)
+{
+    highest_ui_layer = highest_ui_layer > layer ? highest_ui_layer : layer;
+    ui_elements[layer] = ui_element;
+}
+
+void reset_ui_structure(void)
+{
+    for (int i = 0; i < 256; i++)
+        ui_elements[i].bound = NULL;
+}
+
+void reset_ui_layer(uint8_t layer)
+{
+    ui_elements[layer].bound = NULL;
 }
 
 static inline void ps2_wait_input_empty()
@@ -158,7 +202,7 @@ void mouse_handler(void)
         last_packet.dy = (int8_t)packets_buf[2];
 
         cursor_process();
-        click_proccess();
+        click_process();
     }
 }
 
@@ -188,6 +232,6 @@ void mouse_install(void)
 
     ps2_mouse_write(0xF6); // set defaults
     ps2_mouse_write(0xF4); // enable streaming
-
+    reset_ui_structure();
     register_interrupt_handler(44, mouse_handler);
 }
