@@ -171,7 +171,7 @@ make clean
 
 ## License & Credits
 
-This project is authored entirely by [Remenod](https://github.com/Remenod).  
+This project is authored entirely by [Remenod](https://github.com/Remenod) and is released under the **MIT License**. See [LICENSE](./LICENSE) for details.
 
 External sources:
 - VGA mode-setting code adapted from Chris Giese  
@@ -180,8 +180,6 @@ External sources:
   License: Public domain.  
 
 Many theoretical references were taken from [OSDev Wiki](https://wiki.osdev.org).
-
-Currently, the project does not specify an official license. It may be used for **educational purposes** by other OSDev enthusiasts.
 
 ---
 
