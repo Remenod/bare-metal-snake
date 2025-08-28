@@ -247,7 +247,7 @@ static inline void countdown(void)
 
 void rsod_roulette_main(void)
 {
-    set_cursor_visibility(false);
+    set_vga_cursor_visibility(false);
 
     put_art_text(&spin_art[0][0], 4);
 

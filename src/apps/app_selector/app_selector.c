@@ -30,6 +30,7 @@ void app_selector()
 {
     while (true)
     {
+        set_vga_cursor_visibility(true);
         clear_screen();
         print("=== Application Selector ===\n\n");
 

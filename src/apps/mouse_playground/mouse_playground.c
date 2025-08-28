@@ -28,7 +28,7 @@ static void el0_mouse3(void)
 
 void mouse_playground_main(void)
 {
-    set_cursor_visibility(false);
+    set_vga_cursor_visibility(false);
     put_string(80 * 25 / 2 - strlen(m3_text) / 2, m3_text);
 
     register_ui_element(0, (mouse_ui_element_t){
