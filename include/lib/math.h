@@ -198,3 +198,19 @@ static inline float maxf(float a, float b) { return a > b ? a : b; }
 static inline double maxd(double a, double b) { return a > b ? a : b; }
 
 static inline int mod(int a, int b) { return ((a % b) + b) % b; }
+
+inline uint8_t num_digits(int n)
+{
+    uint8_t digits = 0;
+    if(n<0)
+    {
+      digits++;
+      n = abs(n);
+    }
+    do
+    {
+        n /= 10;
+        digits++;
+    } while (n);
+    return digits;
+}

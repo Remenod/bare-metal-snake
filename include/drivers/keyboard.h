@@ -9,7 +9,7 @@
 
 #define KEY_ESC 27
 
-void keyboard_install();
-char get_char();
-int read_number();
-bool_t check_exit_key(void);
+void keyboard_install(void);
+char get_keyboard_char(void);
+int read_number(void);
+uint32_t read_hex(void);

@@ -12,7 +12,7 @@ typedef int int32_t;
 typedef long long int64_t;
 
 // bool
-typedef int bool_t;
+typedef uint8_t bool_t;
 #define true 1
 #define false 0
 

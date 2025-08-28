@@ -4,7 +4,7 @@
 #include <lib/string.h>
 #include <lib/types.h>
 
-volatile uint16_t *vga = (volatile uint16_t *)0xB8000;
+static volatile uint16_t *vga = (volatile uint16_t *)0xB8000;
 static uint16_t cursor_pos = 0;
 char print_dec_buf[12];
 
@@ -16,6 +16,26 @@ void put_char(uint16_t pos, unsigned char c)
 void put_attr(uint16_t pos, uint8_t attr)
 {
     vga[pos] = (vga[pos] & 0b0000000011111111) | (attr << 8);
+}
+
+void put_attrchar(uint16_t pos, uint16_t attrchar)
+{
+    vga[pos] = attrchar;
+}
+
+unsigned char get_char(uint16_t pos)
+{
+    return vga[pos] & 0b0000000011111111;
+}
+
+uint8_t get_attr(uint16_t pos)
+{
+    return vga[pos] >> 8;
+}
+
+uint16_t get_attrchar(uint16_t pos)
+{
+    return vga[pos];
 }
 
 void set_fg_color(uint16_t pos, uint8_t fg_color)
@@ -40,7 +60,7 @@ void fill_screen(unsigned char symb, uint8_t fg_color, uint8_t bg_color)
         vga[i] = fill;
 
     cursor_pos = 0;
-    move_cursor(cursor_pos);
+    set_cursor_pos(cursor_pos);
 }
 
 void put_string(uint16_t start_pos, const char text[])
@@ -66,13 +86,20 @@ void set_cursor_visibility(bool_t visible)
     outb(0x3D5, cursor_start);
 }
 
-void move_cursor(uint16_t pos)
+void set_cursor_pos(uint16_t pos)
 {
+    if (pos > 1999)
+        pos = 1999;
     outb(0x3D4, 0x0F);
     outb(0x3D5, pos & 0xFF);
     outb(0x3D4, 0x0E);
     outb(0x3D5, (pos >> 8) & 0xFF);
     cursor_pos = pos;
+}
+
+uint16_t get_cursor_pos(void)
+{
+    return cursor_pos;
 }
 
 void print(const char *text)
@@ -81,9 +108,14 @@ void print(const char *text)
         print_char(text[i]);
 }
 
-void print_dec(int num)
+void print_dec(int32_t num)
 {
     print(int_to_str(num, print_dec_buf));
+}
+
+void print_udec(uint32_t num)
+{
+    print(uint_to_str(num, print_dec_buf));
 }
 
 void print_hex(uint32_t val)
@@ -113,5 +145,15 @@ void print_char(char c)
         put_char(--cursor_pos, 0);
     else
         put_char(cursor_pos++, c);
-    move_cursor(cursor_pos);
+    set_cursor_pos(cursor_pos);
+}
+
+void scroll_down(void)
+{
+    cursor_pos -= 80;
+    set_cursor_pos(cursor_pos);
+    for (uint16_t i = 0; i < 1920; i++)
+        vga[i] = vga[i + 80];
+    for (uint16_t i = 1920; i < 2000; i++)
+        vga[i] &= 0b1111111100000000;
 }

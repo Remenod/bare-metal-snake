@@ -8,10 +8,27 @@ static volatile uint64_t timer_ticks = 0;
 
 static volatile uint32_t timer_frequency;
 
-void pit_handler()
+static func_t pit_tasks[255];
+
+static uint8_t task_count = 0;
+
+void pit_handler(void)
 {
     timer_ticks++;
-    outb(PIC1_COMMAND, PIC_EOI);
+    for (uint8_t i = 0; i < task_count; i++)
+        pit_tasks[i]();
+}
+
+void register_pit_task(func_t task)
+{
+    if (task_count < (sizeof(pit_tasks) / sizeof(pit_tasks[0])))
+        pit_tasks[task_count++] = task;
+}
+
+void pop_pit_task(void)
+{
+    if (task_count > 0)
+        task_count--;
 }
 
 void pit_init(uint32_t frequency)
@@ -32,12 +49,12 @@ void pit_init(uint32_t frequency)
     pic_unmask_irq(IRQ_TIMER);
 }
 
-uint64_t get_timer_ticks()
+uint64_t get_timer_ticks(void)
 {
     return timer_ticks;
 }
 
-uint32_t get_timer_frequency()
+uint32_t get_timer_frequency(void)
 {
     return timer_frequency;
 }
