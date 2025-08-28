@@ -5,6 +5,7 @@
 #include <drivers/vga.h>
 #include <interrupts/cpu_exceptions.h>
 #include <interrupts/stack_guard/stack_guard.h>
+#include <kernel/settings.h>
 #include "../../apps/app_selector/app_selector.h"
 
 void kernel_main()
@@ -14,6 +15,8 @@ void kernel_main()
     register_all_cpu_exceptions_isrs();
     keyboard_install();
     stack_guard_install();
+
+    settings_init();
 
     set_graphics_mode();
     draw_mode13h_test_pattern();
