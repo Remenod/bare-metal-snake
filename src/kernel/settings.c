@@ -3,8 +3,8 @@
 
 static setting_t settings[MAX_SETTINGS];
 static int settings_count = 0;
-uint8_t int_subscriber_count = 0;
-uint8_t string_subscriber_count = 0;
+uint8_t int_subscribers_count = 0;
+uint8_t string_subscribers_count = 0;
 
 static settings_int_subscriber_t int_subscribers[MAX_SUBSCRIBERS];
 static settings_string_subscriber_t string_subscribers[MAX_SUBSCRIBERS];
@@ -12,8 +12,8 @@ static settings_string_subscriber_t string_subscribers[MAX_SUBSCRIBERS];
 void settings_init(void)
 {
     settings_count = 0;
-    int_subscriber_count = 0;
-    string_subscriber_count = 0;
+    int_subscribers_count = 0;
+    string_subscribers_count = 0;
 }
 
 static setting_t *find_setting(const char *key)
@@ -27,11 +27,11 @@ static setting_t *find_setting(const char *key)
 
 int settings_subscribe_int(const char *key, settings_int_callback_t cb)
 {
-    if (int_subscriber_count < MAX_SUBSCRIBERS)
+    if (int_subscribers_count < MAX_SUBSCRIBERS)
     {
-        int_subscribers[int_subscriber_count].key = key;
-        int_subscribers[int_subscriber_count].callback = cb;
-        int_subscriber_count++;
+        int_subscribers[int_subscribers_count].key = key;
+        int_subscribers[int_subscribers_count].callback = cb;
+        int_subscribers_count++;
         return 0;
     }
     return -1;
@@ -39,11 +39,11 @@ int settings_subscribe_int(const char *key, settings_int_callback_t cb)
 
 int settings_subscribe_string(const char *key, settings_string_callback_t cb)
 {
-    if (string_subscriber_count < MAX_SUBSCRIBERS)
+    if (string_subscribers_count < MAX_SUBSCRIBERS)
     {
-        string_subscribers[string_subscriber_count].key = key;
-        string_subscribers[string_subscriber_count].callback = cb;
-        string_subscriber_count++;
+        string_subscribers[string_subscribers_count].key = key;
+        string_subscribers[string_subscribers_count].callback = cb;
+        string_subscribers_count++;
         return 0;
     }
     return -1;
@@ -62,7 +62,7 @@ int settings_set_int(const char *key, int value)
     s->type = SETTING_INT;
     s->value.int_val = value;
 
-    for (int i = 0; i < int_subscriber_count; i++)
+    for (int i = 0; i < int_subscribers_count; i++)
         if (strcmp(int_subscribers[i].key, key) == 0)
             int_subscribers[i].callback(value);
 
@@ -90,7 +90,7 @@ int settings_set_string(const char *key, const char *value)
     s->type = SETTING_STRING;
     strncpy(s->value.str_val, value, MAX_STRING_LEN - 1);
 
-    for (int i = 0; i < string_subscriber_count; i++)
+    for (int i = 0; i < string_subscribers_count; i++)
         if (strcmp(string_subscribers[i].key, key) == 0)
             string_subscribers[i].callback(value);
 
