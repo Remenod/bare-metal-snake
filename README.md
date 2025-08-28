@@ -23,12 +23,13 @@ Over time it has grown into a small experimental OS with exception handling, key
     - Triggers a custom **Stack Overflow Interrupt** at 100%.
   - **Red Screen of Death (RSoD)** kernel panic screen.
 - No dependency on `libc` or any external libraries.
-- Fully freestanding kernel (written in C and assembly).
+- Fully freestanding kernel (written in C, C++ and assembly).
 - **Applications included**:
   1. **Text Sandbox** – type freely into VGA screen buffer.
   2. **Snake** – classic snake game with a win condition (filling the field).
   3. **RSoD Roulette** – casino-like roulette that randomly triggers CPU exceptions with animations.
   4. **Segment Test** – manually explore memory by selecting segments and offsets.
+  5. **Mouse Playground** – experiment with mouse input, test cursor interaction, and visualize UI element responses.
 
 ---
 
@@ -52,11 +53,12 @@ Makefile      - Build system
 ### Requirements
 - `nasm`
 - `i386-elf-gcc`
+- `i386-elf-g++`
 - `i386-elf-ld`
 - `i386-elf-objcopy`
 - `qemu-system-i386` (for testing)
 
-<details><summary>Setup instrunction</summary>
+<details><summary>Setup instrunction</summary><div style="margin-left: 40px;">
 
 #### 1. Establish dependencies
 ```bash
@@ -75,13 +77,13 @@ make -j$(nproc)
 make install
 ```
 
-#### 3. Build gcc
+#### 3. Build gcc with g++
 ```bash
 cd ~/src
 wget https://ftp.gnu.org/gnu/gcc/gcc-13.2.0/gcc-13.2.0.tar.xz
 tar -xf gcc-13.2.0.tar.xz
 mkdir -p gcc-build && cd gcc-build
-../gcc-13.2.0/configure --target=i386-elf --prefix=$HOME/opt/cross --disable-nls --enable-languages=c --without-headers
+../gcc-13.2.0/configure --target=i386-elf --prefix=$HOME/opt/cross --disable-nls --enable-languages=c,c++ --without-headers
 make all-gcc -j$(nproc)
 make all-target-libgcc -j$(nproc)
 make install-gcc
@@ -97,6 +99,7 @@ source ~/.bashrc
 #### 5. Check
 ```bash
 i386-elf-gcc --version
+i386-elf-g++ --version
 i386-elf-ld --version
 ```
 
@@ -105,7 +108,7 @@ i386-elf-ld --version
 sudo apt install nasm qemu-system-i386
 ```
 
-</details>
+</div></details>
 
 ---
 
@@ -136,6 +139,9 @@ make clean
    ```
 2. Boot from it using BIOS (legacy boot).
 3. A **PS/2 keyboard** is required. If using USB, make sure **USB-PS/2 emulation** is enabled in BIOS/UEFI.
+3. A **PS/2 mouse** is necessary for some apps. If using USB, make sure **USB-PS/2 emulation** is enabled in BIOS/UEFI.  
+   _Note: Some BIOS/UEFI implementations may not support USB-PS/2 mouse emulation, so functionality could be limited._
+
 
 ---
 
@@ -153,8 +159,8 @@ make clean
 ### Segment Test
 ![Segment Test](docs/media/segment_test.gif)
 
-### Cursor
-![Cursor](docs/media/cursor.gif)
+### Cursor Playground
+![Cursor Playground](docs/media/cursor_playground.gif)
 
 ### Stack Overflow RSoD
 ![Stack Overflow RSoD](docs/media/stack_overflow_rsod.png)
