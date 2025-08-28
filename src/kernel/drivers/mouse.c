@@ -46,8 +46,26 @@ static uint8_t arrow_glyph[] = {
     0b10011000,
     0b00001100,
     0b00001100,
-    0x00000000,
-    0x00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000};
+
+static uint8_t arrow_mask_pressed[] = {
+    0b00000000,
+    0b00000000,
+    0b01000000,
+    0b01100000,
+    0b01110000,
+    0b01111000,
+    0b01111100,
+    0b01110000,
+    0b01000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
     0b00000000};
 
 static uint8_t select_glyph[] = {
@@ -64,8 +82,8 @@ static uint8_t select_glyph[] = {
     0b10000000,
     0b00000000,
     0b00000000,
-    0x00000000,
-    0x00000000,
+    0b00000000,
+    0b00000000,
     0b00000000};
 
 static uint8_t *cursor_glyph = &arrow_glyph;
@@ -109,24 +127,31 @@ static void cursor_process()
 
     uint8_t mouse_glyph_buf[4][16] = {0};
 
-    uint8_t cursor_char_offset_x = mouse_x % 8;
-    uint8_t cursor_char_offset_y = mouse_y % 16;
+    uint8_t cur_ch_offset_x = mouse_x % 8;
+    uint8_t cur_ch_offset_y = mouse_y % 16;
 
     for (int i = 0; i < 4; i++)
     {
         const uint8_t *covering_glyph = get_8x16_font_glyph(get_char(operating_chars_pos[i]));
 
-        int8_t cur_glyph_offset_y;
+        uint8_t cur_gl_offset_y;
 
         for (int j = 0; j < 16; j++)
         {
-            cur_glyph_offset_y = j - cursor_char_offset_y + (i < 2 ? 0 : 16);
+            cur_gl_offset_y = j - cur_ch_offset_y + (i < 2 ? 0 : 16);
             mouse_glyph_buf[i][j] =
-                covering_glyph[j] | ((cur_glyph_offset_y < 0 || cur_glyph_offset_y > 15)
+                covering_glyph[j] | ((cur_gl_offset_y > 15) // Since cur_gl_offset_y is unsigned, values below 0 wrap to large numbers (~255)
                                          ? 0
                                          : (i % 2
-                                                ? (cursor_glyph[(uint8_t)cur_glyph_offset_y] << (8 - cursor_char_offset_x))
-                                                : (cursor_glyph[(uint8_t)cur_glyph_offset_y] >> cursor_char_offset_x)));
+                                                ? (cursor_glyph[cur_gl_offset_y] << (8 - cur_ch_offset_x))
+                                                : (cursor_glyph[cur_gl_offset_y] >> cur_ch_offset_x)));
+            if (last_packet.buttons)
+                mouse_glyph_buf[i][j] ^=
+                    ((cur_gl_offset_y > 15) // Since cur_gl_offset_y is unsigned, values below 0 wrap to large numbers (~255)
+                         ? 0
+                         : (i % 2
+                                ? (arrow_mask_pressed[cur_gl_offset_y] << (8 - cur_ch_offset_x))
+                                : (arrow_mask_pressed[cur_gl_offset_y] >> cur_ch_offset_x)));
         }
     }
     write_glyphs(4, mouse_glyph_buf, mouse_glyphs_codes);
