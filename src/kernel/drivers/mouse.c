@@ -170,7 +170,7 @@ static void click_process(uint8_t prev_buttons)
 {
     int selected = -1;
 
-    for (uint8_t i = highest_ui_layer; i >= 0; i--)
+    for (int i = highest_ui_layer; i >= 0; i--)
     {
         if (ui_elements[i].bound)
         {
