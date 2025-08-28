@@ -3,6 +3,7 @@
 #include <drivers/mouse.h>
 #include <drivers/screen.h>
 #include <drivers/keyboard.h>
+#include <lib/string.h>
 
 static const char m1_text[] = " Great! Now mouse2 ";
 static const char m2_text[] = "Impressive! Mouse3?";
