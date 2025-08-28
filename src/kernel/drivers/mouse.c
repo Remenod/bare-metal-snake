@@ -196,23 +196,6 @@ static void click_process(uint8_t prev_buttons)
         ui_elements[selected].mouse3_handler();
 }
 
-void register_ui_element(uint8_t layer, mouse_ui_element_t ui_element)
-{
-    highest_ui_layer = highest_ui_layer > layer ? highest_ui_layer : layer;
-    ui_elements[layer] = ui_element;
-}
-
-void reset_ui_structure(void)
-{
-    memset(&ui_elements, 0, sizeof(ui_elements));
-    highest_ui_layer = 0;
-}
-
-void reset_ui_layer(uint8_t layer)
-{
-    ui_elements[layer].bound = NULL;
-}
-
 static inline void ps2_wait_input_empty(void)
 {
     while (inb(PS2_STATUS_PORT) & 0x02)
@@ -252,6 +235,23 @@ static void ps2_mouse_write(uint8_t data)
     ps2_write_data(data);
     uint8_t ack = ps2_read_data();
     (void)ack;
+}
+
+void register_ui_element(uint8_t layer, mouse_ui_element_t ui_element)
+{
+    highest_ui_layer = highest_ui_layer > layer ? highest_ui_layer : layer;
+    ui_elements[layer] = ui_element;
+}
+
+void reset_ui_structure(void)
+{
+    memset(&ui_elements, 0, sizeof(ui_elements));
+    highest_ui_layer = 0;
+}
+
+void reset_ui_layer(uint8_t layer)
+{
+    ui_elements[layer].bound = NULL;
 }
 
 void mouse_handler(void)
