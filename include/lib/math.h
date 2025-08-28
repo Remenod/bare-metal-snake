@@ -119,3 +119,6 @@ static inline double absd(double val)
 {
     return val < 0 ? -val : val;
 }
+
+static inline int min_int(int a, int b) { return a < b ? a : b; }
+static inline int max_int(int a, int b) { return a > b ? a : b; }
