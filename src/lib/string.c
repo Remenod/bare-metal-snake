@@ -16,6 +16,34 @@ uint32_t strcpy(char *dst, const char *src)
     return i;
 }
 
+void strncpy(char *dst, const char *src, uint32_t n)
+{
+    uint32_t i = 0;
+    while (i < n && src[i] != '\0')
+    {
+        dst[i] = src[i];
+        i++;
+    }
+    while (i < n)
+        dst[i++] = '\0';
+}
+
+/* -1 when a < b  |  0 when a == b  |  1 when a > b */
+int8_t strcmp(const char *a, const char *b)
+{
+    while (*a && (*a == *b))
+    {
+        a++;
+        b++;
+    }
+    if (*(const unsigned char *)a < *(const unsigned char *)b)
+        return -1;
+    else if (*(const unsigned char *)a > *(const unsigned char *)b)
+        return 1;
+    else
+        return 0;
+}
+
 void strcat(char *dst, const char *src)
 {
     int dst_len = strlen(dst);

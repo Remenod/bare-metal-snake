@@ -6,6 +6,7 @@
 #include <drivers/vga.h>
 #include <interrupts/cpu_exceptions.h>
 #include <interrupts/stack_guard/stack_guard.h>
+#include <kernel/settings.h>
 #include "../../apps/app_selector/app_selector.h"
 
 void kernel_main()
@@ -28,6 +29,9 @@ void kernel_main()
     print(done_text);
     print("Installing Stack Guard... ");
     stack_guard_install();
+    print(done_text);
+    print("Setting Initialization... ");
+    settings_init();
     print(done_text);
 
     print("Testing VGA modes... ");
