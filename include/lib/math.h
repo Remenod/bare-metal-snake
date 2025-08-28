@@ -132,80 +132,80 @@ uint32_t pow_uint32(uint32_t base, uint32_t exp);
 int64_t pow_int64(int64_t base, int64_t exp);
 uint64_t pow_uint64(uint64_t base, uint64_t exp);
 
-static inline int8_t abs_int8(int8_t val)
+inline int8_t abs_int8(int8_t val)
 {
     return val < 0 ? -val : val;
 }
-static inline int16_t abs_int16(int16_t val)
+inline int16_t abs_int16(int16_t val)
 {
     return val < 0 ? -val : val;
 }
-static inline int32_t abs_int32(int32_t val)
+inline int32_t abs_int32(int32_t val)
 {
     return val < 0 ? -val : val;
 }
-static inline int64_t abs_int64(int64_t val)
+inline int64_t abs_int64(int64_t val)
 {
     return val < 0 ? -val : val;
 }
-static inline float absf(float val)
+inline float absf(float val)
 {
     return val < 0 ? -val : val;
 }
-static inline double absd(double val)
+inline double absd(double val)
 {
     return val < 0 ? -val : val;
 }
 
-static inline float floorf(float x)
+inline float floorf(float x)
 {
     int xi = (int)x;
     return (x < 0 && x != xi) ? xi - 1 : xi;
 }
-static inline double floord(double x)
+inline double floord(double x)
 {
     long xi = (long)x;
     return (x < 0 && x != xi) ? xi - 1 : xi;
 }
 
-static inline float ceilf(float x)
+inline float ceilf(float x)
 {
     int xi = (int)x;
     return (x > 0 && x != xi) ? xi + 1 : xi;
 }
-static inline double ceild(double x)
+inline double ceild(double x)
 {
     long xi = (long)x;
     return (x > 0 && x != xi) ? xi + 1 : xi;
 }
 
-static inline float roundf(float x)
+inline float roundf(float x)
 {
     return (x >= 0) ? floorf(x + 0.5f) : ceilf(x - 0.5f);
 }
-static inline double roundd(double x)
+inline double roundd(double x)
 {
     return (x >= 0) ? floord(x + 0.5) : ceild(x - 0.5);
 }
 
-static inline int min_int(int a, int b) { return a < b ? a : b; }
-static inline int max_int(int a, int b) { return a > b ? a : b; }
+inline int min_int(int a, int b) { return a < b ? a : b; }
+inline int max_int(int a, int b) { return a > b ? a : b; }
 
-static inline float minf(float a, float b) { return a < b ? a : b; }
-static inline double mind(double a, double b) { return a < b ? a : b; }
+inline float minf(float a, float b) { return a < b ? a : b; }
+inline double mind(double a, double b) { return a < b ? a : b; }
 
-static inline float maxf(float a, float b) { return a > b ? a : b; }
-static inline double maxd(double a, double b) { return a > b ? a : b; }
+inline float maxf(float a, float b) { return a > b ? a : b; }
+inline double maxd(double a, double b) { return a > b ? a : b; }
 
-static inline int mod(int a, int b) { return ((a % b) + b) % b; }
+inline int mod(int a, int b) { return ((a % b) + b) % b; }
 
 inline uint8_t num_digits(int n)
 {
     uint8_t digits = 0;
-    if(n<0)
+    if (n < 0)
     {
-      digits++;
-      n = abs(n);
+        digits++;
+        n = abs(n);
     }
     do
     {
