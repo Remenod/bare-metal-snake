@@ -66,7 +66,7 @@ double expd(double x)
 
 float sinf(float x)
 {
-    x = fmod(x, 2.0f * PI);
+    x = fmod(x, 2.0f * PIF);
     float x2 = x * x;
     return x * (1 - x2 / 6.0f + x2 * x2 / 120.0f - x2 * x2 * x2 / 5040.0f);
 }
@@ -79,7 +79,7 @@ double sind(double x)
 
 float cosf(float x)
 {
-    x = fmod(x, 2.0f * PI);
+    x = fmod(x, 2.0f * PIF);
     float x2 = x * x;
     return 1 - x2 / 2 + x2 * x2 / 24 - x2 * x2 * x2 / 720.0f;
 }
@@ -99,13 +99,13 @@ double ctgd(double x) { return cosd(x) / sind(x); }
 float asinf(float x) { return x + (x * x * x) / 6.0f + (3 * x * x * x * x * x) / 40.0f; }
 double asind(double x) { return x + (x * x * x) / 6.0 + (3 * x * x * x * x * x) / 40.0; }
 
-float acosf(float x) { return PI / 2 - asinf(x); }
+float acosf(float x) { return PIF / 2 - asinf(x); }
 double acosd(double x) { return PI / 2 - asind(x); }
 
 float atanf(float x) { return x - x * x * x / 3.0f + x * x * x * x * x / 5.0f; }
 double atand(double x) { return x - x * x * x / 3.0 + x * x * x * x * x / 5.0; }
 
-float actgf(float x) { return PI / 2 - atanf(x); }
+float actgf(float x) { return PIF / 2 - atanf(x); }
 double actgd(double x) { return PI / 2 - atand(x); }
 
 float sinhf(float x) { return (expf(x) - expf(-x)) / 2; }
@@ -192,8 +192,7 @@ float lnf(float x)
         term *= x;
     }
 
-    const float ln2 = 0.69314718f;
-    result += k * ln2;
+    result += k * LN2F;
     return result;
 }
 double lnd(double x)
@@ -226,20 +225,17 @@ double lnd(double x)
         term *= x;
     }
 
-    const double ln2 = 0.6931471805599453;
-    result += k * ln2;
+    result += k * LN2;
     return result;
 }
 
 float log10f(float x)
 {
-    const float ln10 = 2.30258509f;
-    return lnf(x) / ln10;
+    return lnf(x) / LN10F;
 }
 double log10d(double x)
 {
-    const double ln10 = 2.302585092994046;
-    return lnd(x) / ln10;
+    return lnd(x) / LN10;
 }
 
 float powf(float base, float exp)

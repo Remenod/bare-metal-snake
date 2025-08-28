@@ -3,6 +3,19 @@
 #include <lib/types.h>
 
 #define PI 3.14159265358979323846
+#define E 2.71828182845904523536
+#define LN2 0.69314718055994530942
+#define LN10 2.30258509299404568402
+#define SQRT2 1.41421356237309504880
+
+#define PIF 3.14159265f
+#define EF 2.71828182f
+#define LN2F 0.69314718f
+#define LN10F 2.30258509f
+#define SQRT2F 1.41421356f
+
+#define DEG2RAD(deg) ((deg) * (PI / 180.0))
+#define RAD2DEG(rad) ((rad) * (180.0 / PI))
 
 #define ln(val) _Generic(val, float: lnf, double: lnd)(val)
 #define exp(val) _Generic(val, float: expf, double: expd)(val)
