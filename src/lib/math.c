@@ -21,48 +21,7 @@ double fmodd(double x, double y)
     return sign * (x - n * y);
 }
 
-float expf(float x)
-{
-    if (x == 0.0f)
-        return 1.0f;
-
-    int neg = x < 0.0f ? 1 : 0;
-    if (neg)
-        x = -x;
-
-    float term = 1.0f;
-    float sum = 1.0f;
-    for (int n = 1; n < 20; n++)
-    {
-        term *= x / n;
-        sum += term;
-        if (term < 1e-6f)
-            break;
-    }
-
-    return neg ? 1.0f / sum : sum;
-}
-double expd(double x)
-{
-    if (x == 0.0)
-        return 1.0;
-
-    int neg = x < 0.0 ? 1 : 0;
-    if (neg)
-        x = -x;
-
-    double term = 1.0;
-    double sum = 1.0;
-    for (int n = 1; n < 30; n++)
-    {
-        term *= x / n;
-        sum += term;
-        if (term < 1e-12)
-            break;
-    }
-
-    return neg ? 1.0 / sum : sum;
-}
+/* Basic trigonometry funcs */
 
 float sinf(float x)
 {
@@ -96,6 +55,8 @@ double tand(double x) { return sind(x) / cosd(x); }
 float ctgf(float x) { return cosf(x) / sinf(x); }
 double ctgd(double x) { return cosd(x) / sind(x); }
 
+/* Reverce trigonometry funcs */
+
 float asinf(float x) { return x + (x * x * x) / 6.0f + (3 * x * x * x * x * x) / 40.0f; }
 double asind(double x) { return x + (x * x * x) / 6.0 + (3 * x * x * x * x * x) / 40.0; }
 
@@ -107,6 +68,8 @@ double atand(double x) { return x - x * x * x / 3.0 + x * x * x * x * x / 5.0; }
 
 float actgf(float x) { return PIF / 2 - atanf(x); }
 double actgd(double x) { return PI / 2 - atand(x); }
+
+/* Hyperbolic trigonometry funcs */
 
 float sinhf(float x) { return (expf(x) - expf(-x)) / 2; }
 double sinhd(double x) { return (expd(x) - expd(-x)) / 2; }
@@ -125,42 +88,7 @@ double tanhd(double x)
     return (e2 - 1) / (e2 + 1);
 }
 
-float sqrtf(float x)
-{
-    if (x <= 0.0f)
-        return 0.0f;
-
-    float guess = x * 0.5f;
-    const float eps = 1e-6f;
-
-    for (int i = 0; i < 20; i++)
-    {
-        float new_guess = 0.5f * (guess + x / guess);
-        if (abs(new_guess - guess) < eps)
-            break;
-        guess = new_guess;
-    }
-
-    return guess;
-}
-double sqrtd(double x)
-{
-    if (x <= 0.0)
-        return 0.0;
-
-    double guess = x * 0.5;
-    const double eps = 1e-12;
-
-    for (int i = 0; i < 30; i++)
-    {
-        double new_guess = 0.5 * (guess + x / guess);
-        if (abs(new_guess - guess) < eps)
-            break;
-        guess = new_guess;
-    }
-
-    return guess;
-}
+/* Logarithm funcs */
 
 float lnf(float x)
 {
@@ -238,6 +166,91 @@ double log10d(double x)
     return lnd(x) / LN10;
 }
 
+float logbf(float x, float base) { return lnf(x) / lnf(base); }
+double logbd(double x, double base) { return lnd(x) / lnd(base); }
+
+/* Power functions */
+
+float expf(float x)
+{
+    if (x == 0.0f)
+        return 1.0f;
+
+    int neg = x < 0.0f ? 1 : 0;
+    if (neg)
+        x = -x;
+
+    float term = 1.0f;
+    float sum = 1.0f;
+    for (int n = 1; n < 20; n++)
+    {
+        term *= x / n;
+        sum += term;
+        if (term < 1e-6f)
+            break;
+    }
+
+    return neg ? 1.0f / sum : sum;
+}
+double expd(double x)
+{
+    if (x == 0.0)
+        return 1.0;
+
+    int neg = x < 0.0 ? 1 : 0;
+    if (neg)
+        x = -x;
+
+    double term = 1.0;
+    double sum = 1.0;
+    for (int n = 1; n < 30; n++)
+    {
+        term *= x / n;
+        sum += term;
+        if (term < 1e-12)
+            break;
+    }
+
+    return neg ? 1.0 / sum : sum;
+}
+
+float sqrtf(float x)
+{
+    if (x <= 0.0f)
+        return 0.0f;
+
+    float guess = x * 0.5f;
+    const float eps = 1e-6f;
+
+    for (int i = 0; i < 20; i++)
+    {
+        float new_guess = 0.5f * (guess + x / guess);
+        if (abs(new_guess - guess) < eps)
+            break;
+        guess = new_guess;
+    }
+
+    return guess;
+}
+double sqrtd(double x)
+{
+    if (x <= 0.0)
+        return 0.0;
+
+    double guess = x * 0.5;
+    const double eps = 1e-12;
+
+    for (int i = 0; i < 30; i++)
+    {
+        double new_guess = 0.5 * (guess + x / guess);
+        if (abs(new_guess - guess) < eps)
+            break;
+        guess = new_guess;
+    }
+
+    return guess;
+}
+
 float powf(float base, float exp)
 {
     if (base == 0.0f)
@@ -258,6 +271,3 @@ double powd(double base, double exp)
     double ln_base = lnd(base);
     return expd(exp * ln_base);
 }
-
-float logbf(float x, float base) { return lnf(x) / lnf(base); }
-double logbd(double x, double base) { return lnd(x) / lnd(base); }
