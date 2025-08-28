@@ -8,6 +8,7 @@
 #include "../text_sandbox/text_sandbox.h"
 #include "../rsod_roulette/rsod_roulette.h"
 #include "../segment_test/segment_test.h"
+#include "../mouse_playground/mouse_playground.h"
 
 typedef struct
 {
@@ -20,6 +21,7 @@ static App apps[] = {
     {"Snake", snake_main},
     {"RSoD Roulette", rsod_roulette_main},
     {"Segment Test", segment_test_main},
+    {"Mouse Playground", mouse_playground_main},
 };
 
 #define APP_COUNT (uint8_t)(sizeof(apps) / sizeof(App))
