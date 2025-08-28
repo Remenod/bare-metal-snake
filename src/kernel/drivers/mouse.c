@@ -1,13 +1,12 @@
 #include <drivers/mouse.h>
 
 #include <interrupts/isr.h>
-#include <ports.h>
-#include <drivers/screen.h>
-#include <lib/string.h>
 #include <interrupts/pic.h>
+#include <drivers/screen.h>
 #include <drivers/vga.h>
-#include <drivers/qemu_serial.h>
-#include <lib/math.h>
+#include <ports.h>
+#include <lib/string.h>
+#include <lib/mem.h>
 
 #define PS2_DATA_PORT 0x60
 #define PS2_STATUS_PORT 0x64
@@ -29,7 +28,7 @@ static uint8_t cursor_cover_buf[4], packets_buf[3], mouse_packet_index = 0;
 
 static const uint8_t mouse_glyphs_codes[] = {MOUSE_CHAR_1, MOUSE_CHAR_2, MOUSE_CHAR_3, MOUSE_CHAR_4};
 
-static mouse_ui_element_t ui_elements[255] = {0};
+static mouse_ui_element_t ui_elements[256] = {0};
 static uint8_t highest_ui_layer = 0;
 
 static uint8_t arrow_glyph[] = {
@@ -110,7 +109,7 @@ static inline void get_covered_chars_pos(uint16_t dest[4], uint16_t mouse_x, uin
     dest[3] = base_pos + 81;
 }
 
-static void cursor_process()
+static void cursor_process(void)
 {
     uint16_t covered_chars_pos[4];
     get_covered_chars_pos(covered_chars_pos, mouse_x, mouse_y);
@@ -171,7 +170,7 @@ static void click_process(uint8_t prev_buttons)
 {
     int selected = -1;
 
-    for (int i = highest_ui_layer; i > -1; i--)
+    for (uint8_t i = highest_ui_layer; i >= 0; i--)
     {
         if (ui_elements[i].bound)
         {
@@ -184,7 +183,7 @@ static void click_process(uint8_t prev_buttons)
             }
         }
     }
-    if (selected < 0)
+    if (selected == -1)
     {
         cursor_glyph = &arrow_glyph;
         return;
@@ -205,8 +204,8 @@ void register_ui_element(uint8_t layer, mouse_ui_element_t ui_element)
 
 void reset_ui_structure(void)
 {
-    for (int i = 0; i < 256; i++)
-        ui_elements[i].bound = NULL;
+    memset(&ui_elements, 0, sizeof(ui_elements));
+    highest_ui_layer = 0;
 }
 
 void reset_ui_layer(uint8_t layer)
@@ -214,13 +213,13 @@ void reset_ui_layer(uint8_t layer)
     ui_elements[layer].bound = NULL;
 }
 
-static inline void ps2_wait_input_empty()
+static inline void ps2_wait_input_empty(void)
 {
     while (inb(PS2_STATUS_PORT) & 0x02)
         ;
 }
 
-static inline bool_t ps2_wait_output_full_timeout()
+static inline bool_t ps2_wait_output_full_timeout(void)
 {
     for (int i = 0; i < 100000; i++)
         if (inb(PS2_STATUS_PORT) & 0x01)
@@ -240,7 +239,7 @@ static void ps2_write_data(uint8_t data)
     outb(PS2_DATA_PORT, data);
 }
 
-static uint8_t ps2_read_data()
+static uint8_t ps2_read_data(void)
 {
     if (!ps2_wait_output_full_timeout())
         return 0xFF;
