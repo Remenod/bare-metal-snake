@@ -40,6 +40,7 @@
         int8_t: abs_int8,   \
         int16_t: abs_int16, \
         int32_t: abs_int32, \
+        int64_t: abs_int64, \
         float: absf,        \
         double: absd)(val)
 
@@ -103,6 +104,10 @@ static inline int16_t abs_int16(int16_t val)
     return val < 0 ? -val : val;
 }
 static inline int32_t abs_int32(int32_t val)
+{
+    return val < 0 ? -val : val;
+}
+static inline int64_t abs_int64(int64_t val)
 {
     return val < 0 ? -val : val;
 }
