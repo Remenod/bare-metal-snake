@@ -122,3 +122,5 @@ static inline double absd(double val)
 
 static inline int min_int(int a, int b) { return a < b ? a : b; }
 static inline int max_int(int a, int b) { return a > b ? a : b; }
+
+static inline int mod(int a, int b) { return ((a % b) + b) % b; }
