@@ -36,6 +36,10 @@
 #define pow(base, exp) _Generic(base, float: powf, double: powd)(base, exp)
 #define logb(val, base) _Generic(val, float: logbf, double: logbd)(val, base)
 
+#define ceil(val) _Generic((val), float: ceilf, double: ceild)(val)
+#define floor(val) _Generic((val), float: floorf, double: floord)(val)
+#define round(val) _Generic((val), float: roundf, double: roundd)(val)
+
 #define abs(val)            \
     _Generic((val),         \
         int8_t: abs_int8,   \
@@ -122,6 +126,37 @@ static inline float absf(float val)
 static inline double absd(double val)
 {
     return val < 0 ? -val : val;
+}
+
+static inline float floorf(float x)
+{
+    int xi = (int)x;
+    return (x < 0 && x != xi) ? xi - 1 : xi;
+}
+static inline double floord(double x)
+{
+    long xi = (long)x;
+    return (x < 0 && x != xi) ? xi - 1 : xi;
+}
+
+static inline float ceilf(float x)
+{
+    int xi = (int)x;
+    return (x > 0 && x != xi) ? xi + 1 : xi;
+}
+static inline double ceild(double x)
+{
+    long xi = (long)x;
+    return (x > 0 && x != xi) ? xi + 1 : xi;
+}
+
+static inline float roundf(float x)
+{
+    return (x >= 0) ? floorf(x + 0.5f) : ceilf(x - 0.5f);
+}
+static inline double roundd(double x)
+{
+    return (x >= 0) ? floord(x + 0.5) : ceild(x - 0.5);
 }
 
 static inline int min_int(int a, int b) { return a < b ? a : b; }
