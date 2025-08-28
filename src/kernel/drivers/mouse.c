@@ -101,29 +101,33 @@ static inline bool_t is_mouse3(uint8_t buttons)
     return buttons & 0b100;
 }
 
+static inline void get_covered_chars_pos(uint16_t dest[4], uint16_t mouse_x, uint16_t mouse_y)
+{
+    uint16_t base_pos = (mouse_y / 16) * 80 + (mouse_x / 8);
+    dest[0] = base_pos;
+    dest[1] = base_pos + 1;
+    dest[2] = base_pos + 80;
+    dest[3] = base_pos + 81;
+}
+
 static void cursor_process()
 {
-    uint16_t operating_chars_pos[4];
-    operating_chars_pos[0] = mouse_x / 8 + mouse_y / 16 * 80;
-    operating_chars_pos[1] = operating_chars_pos[0] + 1;
-    operating_chars_pos[2] = operating_chars_pos[0] + 80;
-    operating_chars_pos[3] = operating_chars_pos[0] + 81;
+    uint16_t covered_chars_pos[4];
+    get_covered_chars_pos(covered_chars_pos, mouse_x, mouse_y);
 
     for (int i = 0; i < 4; i++)
-        if (!(get_char(operating_chars_pos[i]) - mouse_glyphs_codes[i]))
-            put_char(operating_chars_pos[i], cursor_cover_buf[i]);
+        if (!(get_char(covered_chars_pos[i]) - mouse_glyphs_codes[i]))
+            put_char(covered_chars_pos[i], cursor_cover_buf[i]);
 
     int new_x = mouse_x + last_packet.dx;
     int new_y = mouse_y - last_packet.dy;
+
     new_x = new_x < 0 ? 0 : new_x;
     mouse_x = new_x > (79 * 8) ? (79 * 8) : new_x;
     new_y = new_y < 0 ? 0 : new_y;
     mouse_y = new_y > (24 * 16) ? (24 * 16) : new_y;
 
-    operating_chars_pos[0] = mouse_x / 8 + mouse_y / 16 * 80;
-    operating_chars_pos[1] = operating_chars_pos[0] + 1;
-    operating_chars_pos[2] = operating_chars_pos[0] + 80;
-    operating_chars_pos[3] = operating_chars_pos[0] + 81;
+    get_covered_chars_pos(covered_chars_pos, mouse_x, mouse_y);
 
     uint8_t mouse_glyph_buf[4][16] = {0};
 
@@ -132,7 +136,7 @@ static void cursor_process()
 
     for (int i = 0; i < 4; i++)
     {
-        const uint8_t *covering_glyph = get_8x16_font_glyph(get_char(operating_chars_pos[i]));
+        const uint8_t *covering_glyph = get_8x16_font_glyph(get_char(covered_chars_pos[i]));
 
         uint8_t cur_gl_offset_y;
 
@@ -158,8 +162,8 @@ static void cursor_process()
 
     for (int i = 0; i < 4; i++)
     {
-        cursor_cover_buf[i] = get_char(operating_chars_pos[i]);
-        put_char(operating_chars_pos[i], mouse_glyphs_codes[i]);
+        cursor_cover_buf[i] = get_char(covered_chars_pos[i]);
+        put_char(covered_chars_pos[i], mouse_glyphs_codes[i]);
     }
 }
 
