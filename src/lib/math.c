@@ -258,3 +258,6 @@ double powd(double base, double exp)
     double ln_base = lnd(base);
     return expd(exp * ln_base);
 }
+
+float logbf(float x, float base) { return lnf(x) / lnf(base); }
+double logbd(double x, double base) { return lnd(x) / lnd(base); }

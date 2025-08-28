@@ -19,7 +19,6 @@
 
 #define ln(val) _Generic(val, float: lnf, double: lnd)(val)
 #define exp(val) _Generic(val, float: expf, double: expd)(val)
-#define pow(val) _Generic(val, float: powf, double: powd)(val)
 #define sin(val) _Generic(val, float: sinf, double: sind)(val)
 #define cos(val) _Generic(val, float: cosf, double: cosd)(val)
 #define tan(val) _Generic(val, float: tanf, double: tand)(val)
@@ -34,6 +33,8 @@
 #define sqrt(val) _Generic(val, float: sqrtf, double: sqrtd)(val)
 #define fmod(x, y) _Generic(x, float: fmodf, double: fmodd)(x, y)
 #define log10(val) _Generic(val, float: log10f, double: log10d)(val)
+#define pow(base, exp) _Generic(base, float: powf, double: powd)(base, exp)
+#define logb(val, base) _Generic(val, float: logbf, double: logbd)(val, base)
 
 #define abs(val)            \
     _Generic((val),         \
@@ -94,6 +95,9 @@ double log10d(double x);
 
 float powf(float base, float exp);
 double powd(double base, double exp);
+
+float logbf(float x, float base);
+double logbd(double x, double base);
 
 static inline int8_t abs_int8(int8_t val)
 {
