@@ -212,6 +212,16 @@ static void sensitivity_subscriber(int new_value)
     mouse_sensitivity = new_value;
 }
 
+static void sensitivity_subscriber(int new_value)
+{
+    if (new_value < 0)
+        new_value = 0;
+    else if (new_value > 250)
+        new_value = 250;
+
+    mouse_sensitivity = new_value;
+}
+
 static inline void ps2_wait_input_empty(void)
 {
     while (inb(PS2_STATUS_PORT) & 0x02)
