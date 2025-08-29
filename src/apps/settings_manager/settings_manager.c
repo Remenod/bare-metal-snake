@@ -21,7 +21,7 @@ uint8_t selected_option = 0;
 typedef enum
 {
     SLIDER,
-    VALUE,
+    NUMBER,
     CHECKBOX
 } option_type_t;
 
@@ -133,7 +133,7 @@ void draw_option(option_t *opt, uint8_t pos)
     case CHECKBOX:
         /* TODO */
         break;
-    case VALUE:
+    case NUMBER:
         /* TODO */
         break;
 
