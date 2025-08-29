@@ -113,7 +113,7 @@ void draw_option(option_t *opt, uint8_t pos)
     {
         opt->data.value = max_int(min_int(opt->data.value, opt->data.slider.max_value), opt->data.slider.min_value); // set value in bounds
 
-        int slider_len = (opt->data.slider.max_value - opt->data.slider.min_value) / opt->data.slider.step;
+        int slider_len = (opt->data.slider.max_value - opt->data.slider.min_value) / opt->data.slider.step + 1;
         if (slider_len > 40 - LEFT_PAD)
         {
             put_string(el_screen_pos, "[Slider too long]");
