@@ -89,7 +89,7 @@ option_t options[] = {
         .data = {
             .value = 0,
             .slider = {
-                .min_value = 1,
+                .min_value = 20,
                 .max_value = 250,
                 .step = 10,
             },
