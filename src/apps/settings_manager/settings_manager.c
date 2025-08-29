@@ -7,8 +7,13 @@
 // #include <drivers/mouse.h>
 
 #define LEFT_PAD 2
+#define RIGHT_PAD 5
+
 #define OPTIONS_GAP 1
 #define OPTIONS_GAP_OFFSET ((OPTIONS_GAP + 2) * 80)
+
+#define SCREEN_WIDTH 80
+
 #define OPTIONS_SIZE (uint8_t)(sizeof(options) / sizeof(options[0]))
 
 uint8_t selected_option = 0;
@@ -104,8 +109,8 @@ option_t options[] = {
 
 void draw_option(option_t *opt, uint8_t pos)
 {
-    uint16_t el_screen_pos = (80 * 4 + LEFT_PAD + (pos * OPTIONS_GAP_OFFSET));
-    put_string(el_screen_pos - 80, opt->meta.caption);
+    uint16_t el_screen_pos = (SCREEN_WIDTH * 4 + LEFT_PAD + (pos * OPTIONS_GAP_OFFSET));
+    put_string(el_screen_pos - SCREEN_WIDTH, opt->meta.caption);
     switch (opt->meta.type)
     {
     case SLIDER:
@@ -113,7 +118,7 @@ void draw_option(option_t *opt, uint8_t pos)
         opt->data.value = max_int(min_int(opt->data.value, opt->data.slider.max_value), opt->data.slider.min_value); // set value in bounds
 
         int slider_len = (opt->data.slider.max_value - opt->data.slider.min_value) / opt->data.slider.step + 1;
-        if (slider_len > 40 - LEFT_PAD)
+        if (slider_len > SCREEN_WIDTH / 2 - LEFT_PAD - RIGHT_PAD)
         {
             put_string(el_screen_pos, "[Slider too long]");
             return;
@@ -140,7 +145,7 @@ void draw_option(option_t *opt, uint8_t pos)
 void settings_manager_main(void)
 {
     set_vga_cursor_visibility(false);
-    put_string(80 * 3 / 2 - strlen("Settings") / 2, "Settings");
+    put_string(SCREEN_WIDTH * 3 / 2 - strlen("Settings") / 2, "Settings");
     for (int i = 0; i < OPTIONS_SIZE; i++)
     {
         options[i].data.value = settings_get_int(options[i].meta.key, 0);
@@ -148,11 +153,9 @@ void settings_manager_main(void)
     }
 
     {
-        uint16_t el_screen_pos = (80 * 4 + (selected_option * OPTIONS_GAP_OFFSET));
-        for (int i = LEFT_PAD; i < 35; i++)
-        {
+        uint16_t el_screen_pos = (SCREEN_WIDTH * 4 + (selected_option * OPTIONS_GAP_OFFSET));
+        for (int i = LEFT_PAD; i < SCREEN_WIDTH / 2 - RIGHT_PAD + 1; i++)
             set_bg_color(el_screen_pos + i, LIGHT_GREY);
-        }
     }
 
     while (true)
@@ -168,8 +171,8 @@ void settings_manager_main(void)
         case KEY_DOWN:
             if (selected_option < OPTIONS_SIZE - 1)
             {
-                uint16_t el_screen_pos = (80 * 4 + (selected_option * OPTIONS_GAP_OFFSET));
-                for (int i = LEFT_PAD; i < 35; i++)
+                uint16_t el_screen_pos = (SCREEN_WIDTH * 4 + (selected_option * OPTIONS_GAP_OFFSET));
+                for (int i = LEFT_PAD; i < SCREEN_WIDTH / 2 - RIGHT_PAD + 1; i++)
                 {
                     set_bg_color(el_screen_pos + i, BLACK);
                     set_bg_color(el_screen_pos + i + OPTIONS_GAP_OFFSET, LIGHT_GREY);
@@ -181,7 +184,7 @@ void settings_manager_main(void)
             if (selected_option > 0)
             {
                 uint16_t el_screen_pos = (80 * 4 + (selected_option * OPTIONS_GAP_OFFSET));
-                for (int i = LEFT_PAD; i < 35; i++)
+                for (int i = LEFT_PAD; i < SCREEN_WIDTH / 2 - RIGHT_PAD + 1; i++)
                 {
                     set_bg_color(el_screen_pos + i - OPTIONS_GAP_OFFSET, LIGHT_GREY);
                     set_bg_color(el_screen_pos + i, BLACK);
