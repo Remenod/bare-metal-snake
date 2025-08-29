@@ -195,11 +195,11 @@ static void click_process(uint8_t prev_buttons)
         return;
     }
     if (is_mouse1(prev_buttons) && !is_mouse1(last_packet.buttons) && ui_elements[selected].mouse1_handler)
-        ui_elements[selected].mouse1_handler();
+        ui_elements[selected].mouse1_handler(mouse_x, mouse_y);
     if (is_mouse2(prev_buttons) && !is_mouse2(last_packet.buttons) && ui_elements[selected].mouse2_handler)
-        ui_elements[selected].mouse2_handler();
+        ui_elements[selected].mouse2_handler(mouse_x, mouse_y);
     if (is_mouse3(prev_buttons) && !is_mouse3(last_packet.buttons) && ui_elements[selected].mouse3_handler)
-        ui_elements[selected].mouse3_handler();
+        ui_elements[selected].mouse3_handler(mouse_x, mouse_y);
 }
 
 static void sensitivity_subscriber(int new_value)

@@ -18,13 +18,21 @@ void mouse_playground_main(void)
 
     register_ui_element(0, (mouse_ui_element_t){
                                .bound = [](uint16_t x, uint16_t y) -> bool_t
-                               { return x > 270 && x < 380 && y > 188 && y < 210; },
-                               .mouse1_handler = []() -> void
-                               { put_string(80 * 25 / 2 - strlen(m2_text) / 2, m1_text); },
-                               .mouse2_handler = []() -> void
-                               { put_string(80 * 25 / 2 - strlen(m1_text) / 2, m2_text); },
-                               .mouse3_handler = []() -> void
-                               { put_string(80 * 25 / 2 - strlen(m1_text) / 2, m3_text); },
+                               {
+                                   return x > 270 && x < 380 && y > 188 && y < 210;
+                               },
+                               .mouse1_handler = [](uint16_t x, uint16_t y) -> void
+                               {
+                                   put_string(80 * 25 / 2 - strlen(m2_text) / 2, m1_text);
+                               },
+                               .mouse2_handler = [](uint16_t x, uint16_t y) -> void
+                               {
+                                   put_string(80 * 25 / 2 - strlen(m1_text) / 2, m2_text);
+                               },
+                               .mouse3_handler = [](uint16_t x, uint16_t y) -> void
+                               {
+                                   put_string(80 * 25 / 2 - strlen(m1_text) / 2, m3_text);
+                               },
                            });
     while (true)
     {

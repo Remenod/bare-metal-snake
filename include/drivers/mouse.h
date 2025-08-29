@@ -10,13 +10,14 @@ typedef struct
 } mouse_packet_t;
 
 typedef bool_t (*ui_bound_func_t)(uint16_t cursor_x, uint16_t cursor_y);
+typedef void (*ui_hancler_func_t)(uint16_t cursor_x, uint16_t cursor_y);
 
 typedef struct
 {
     ui_bound_func_t bound;
-    func_t mouse1_handler;
-    func_t mouse2_handler;
-    func_t mouse3_handler;
+    ui_hancler_func_t mouse1_handler;
+    ui_hancler_func_t mouse2_handler;
+    ui_hancler_func_t mouse3_handler;
 
 } mouse_ui_element_t;
 
