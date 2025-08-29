@@ -1,13 +1,10 @@
 #include "settings_manager.h"
-extern "C"
-{
 #include <drivers/keyboard.h>
 #include <drivers/screen.h>
 #include <kernel/settings.h>
 #include <lib/string.h>
 #include <lib/math.h>
-    // #include <drivers/mouse.h>
-}
+// #include <drivers/mouse.h>
 
 #define LEFT_PAD 2
 #define OPTIONS_SIZE (uint8_t)(sizeof(options) / sizeof(options[0]))
