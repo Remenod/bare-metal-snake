@@ -52,7 +52,7 @@ typedef struct option
             } number;
             struct
             {
-                // currently unused
+                // currently not needed
             } checkbox;
         };
     } data;
