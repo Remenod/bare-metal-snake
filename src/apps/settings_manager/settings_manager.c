@@ -7,6 +7,8 @@
 // #include <drivers/mouse.h>
 
 #define LEFT_PAD 2
+#define OPTIONS_GAP 1
+#define OPTIONS_GAP_OFFSET ((OPTIONS_GAP + 2) * 80)
 #define OPTIONS_SIZE (uint8_t)(sizeof(options) / sizeof(options[0]))
 
 uint8_t selected_option = 0;
@@ -102,7 +104,7 @@ option_t options[] = {
 
 void draw_option(option_t *opt, uint8_t pos)
 {
-    uint16_t el_screen_pos = (80 * 4 + LEFT_PAD + (pos * 160));
+    uint16_t el_screen_pos = (80 * 4 + LEFT_PAD + (pos * OPTIONS_GAP_OFFSET));
     put_string(el_screen_pos - 80, opt->meta.caption);
     switch (opt->meta.type)
     {
@@ -144,6 +146,15 @@ void settings_manager_main(void)
         options[i].data.value = settings_get_int(options[i].meta.key, 0);
         draw_option(&options[i], i);
     }
+
+    {
+        uint16_t el_screen_pos = (80 * 4 + (selected_option * OPTIONS_GAP_OFFSET));
+        for (int i = LEFT_PAD; i < 35; i++)
+        {
+            set_bg_color(el_screen_pos + i, LIGHT_GREY);
+        }
+    }
+
     while (true)
     {
         char c;
@@ -155,12 +166,28 @@ void settings_manager_main(void)
             return;
             break;
         case KEY_DOWN:
-            if (selected_option < OPTIONS_SIZE)
+            if (selected_option < OPTIONS_SIZE - 1)
+            {
+                uint16_t el_screen_pos = (80 * 4 + (selected_option * OPTIONS_GAP_OFFSET));
+                for (int i = LEFT_PAD; i < 35; i++)
+                {
+                    set_bg_color(el_screen_pos + i, BLACK);
+                    set_bg_color(el_screen_pos + i + OPTIONS_GAP_OFFSET, LIGHT_GREY);
+                }
                 selected_option++;
+            }
             break;
         case KEY_UP:
             if (selected_option > 0)
+            {
+                uint16_t el_screen_pos = (80 * 4 + (selected_option * OPTIONS_GAP_OFFSET));
+                for (int i = LEFT_PAD; i < 35; i++)
+                {
+                    set_bg_color(el_screen_pos + i - OPTIONS_GAP_OFFSET, LIGHT_GREY);
+                    set_bg_color(el_screen_pos + i, BLACK);
+                }
                 selected_option--;
+            }
             break;
         case KEY_LEFT:
             if (options[selected_option].handler.left)
