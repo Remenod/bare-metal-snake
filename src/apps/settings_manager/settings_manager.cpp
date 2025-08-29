@@ -3,7 +3,6 @@ extern "C"
 {
 #include <drivers/keyboard.h>
 #include <drivers/screen.h>
-#include <drivers/qemu_serial.h>
 #include <kernel/settings.h>
 #include <lib/string.h>
 #include <lib/math.h>
@@ -145,9 +144,7 @@ void settings_manager_main(void)
     put_string(80 * 3 / 2 - strlen("Settings") / 2, "Settings");
     for (int i = 0; i < OPTIONS_SIZE; i++)
     {
-        serial_write_uint32(options[i].data.value);
         options[i].data.value = settings_get_int(options[i].meta.key, 0);
-        serial_write_uint32(options[i].data.value);
         draw_option(&options[i], i);
     }
     while (true)
