@@ -118,11 +118,11 @@ void draw_option(option_t *opt, uint8_t pos)
             put_string(el_screen_pos, "[Slider too long]");
             return;
         }
-        put_char(el_screen_pos, '<');
+        put_char(el_screen_pos, 0xC6);
         for (int i = 1; i < slider_len + 1; i++)
-            put_char(el_screen_pos + i, '=');
-        put_char(el_screen_pos + slider_len + 1, '>');
-        put_char(el_screen_pos + 1 + ((opt->data.value - opt->data.slider.min_value) / opt->data.slider.step), 219);
+            put_char(el_screen_pos + i, 0xCD);
+        put_char(el_screen_pos + slider_len + 1, 0xB5);
+        put_char(el_screen_pos + 1 + ((opt->data.value - opt->data.slider.min_value) / opt->data.slider.step), 0xD8);
         break;
     }
     case CHECKBOX:
