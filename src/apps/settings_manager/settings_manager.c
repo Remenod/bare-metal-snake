@@ -9,10 +9,10 @@
 #define LEFT_PAD 2
 #define RIGHT_PAD 5
 
-#define OPTIONS_GAP 1
-#define OPTIONS_GAP_OFFSET ((OPTIONS_GAP + 2) * 80)
-
 #define SCREEN_WIDTH 80
+
+#define OPTIONS_GAP 1
+#define OPTIONS_GAP_OFFSET ((OPTIONS_GAP + 2) * SCREEN_WIDTH)
 
 #define OPTIONS_SIZE (uint8_t)(sizeof(options) / sizeof(options[0]))
 
