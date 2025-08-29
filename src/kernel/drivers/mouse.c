@@ -7,6 +7,8 @@
 #include <ports.h>
 #include <lib/string.h>
 #include <lib/mem.h>
+#include <lib/math.h>
+#include <kernel/settings.h>
 
 #define PS2_DATA_PORT 0x60
 #define PS2_STATUS_PORT 0x64
@@ -30,6 +32,8 @@ static const uint8_t mouse_glyphs_codes[] = {MOUSE_CHAR_1, MOUSE_CHAR_2, MOUSE_C
 
 static mouse_ui_element_t ui_elements[256] = {0};
 static uint8_t highest_ui_layer = 0;
+
+static uint8_t mouse_sensitivity;
 
 static const uint8_t arrow_glyph[] = {
     0b10000000,
@@ -118,8 +122,8 @@ static void cursor_process(void)
         if (!(get_char(covered_chars_pos[i]) - mouse_glyphs_codes[i]))
             put_char(covered_chars_pos[i], cursor_cover_buf[i]);
 
-    int new_x = mouse_x + last_packet.dx;
-    int new_y = mouse_y - last_packet.dy;
+    int new_x = mouse_x + round((last_packet.dx * (mouse_sensitivity / 100.0f)));
+    int new_y = mouse_y - round((last_packet.dy * (mouse_sensitivity / 100.0f)));
 
     new_x = new_x < 0 ? 0 : new_x;
     mouse_x = new_x > (80 * 8 - 1) ? (80 * 8 - 1) : new_x;
@@ -196,6 +200,16 @@ static void click_process(uint8_t prev_buttons)
         ui_elements[selected].mouse2_handler();
     if (is_mouse3(prev_buttons) && !is_mouse3(last_packet.buttons) && ui_elements[selected].mouse3_handler)
         ui_elements[selected].mouse3_handler();
+}
+
+static void sensitivity_subscriber(int new_value)
+{
+    if (new_value < 0)
+        new_value = 0;
+    else if (new_value > 250)
+        new_value = 250;
+
+    mouse_sensitivity = new_value;
 }
 
 static inline void ps2_wait_input_empty(void)
@@ -305,5 +319,9 @@ void mouse_install(void)
     ps2_mouse_write(0xF6); // set defaults
     ps2_mouse_write(0xF4); // enable streaming
     reset_ui_structure();
+
+    sensitivity_subscriber(settings_get_int("mouse.sensitivity", 100));
+    settings_subscribe("mouse.sensitivity", sensitivity_subscriber);
+
     register_interrupt_handler(44, mouse_handler);
 }
