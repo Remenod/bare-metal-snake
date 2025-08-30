@@ -21,7 +21,7 @@ uint8_t selected_option = 0;
 typedef enum
 {
     SLIDER,
-    NUMBER,
+    NUMERIC,
     CHECKBOX
 } option_type_t;
 
@@ -52,7 +52,7 @@ typedef struct option
             {
                 int min_value;
                 int max_value;
-            } number;
+            } numeric;
             struct
             {
                 // currently not needed
@@ -90,7 +90,7 @@ void generic_checkbox(option_t *opt)
     settings_set_int(opt->meta.key, opt->data.value);
 }
 
-void generic_number(option_t *opt)
+void generic_numeric(option_t *opt)
 {
     set_vga_cursor_visibility(true);
     int input;
@@ -114,7 +114,7 @@ void generic_number(option_t *opt)
             put_attrchar(pos, buf[i]);
         }
     }
-    opt->data.value = max_int(min_int(input, opt->data.number.max_value), opt->data.number.min_value); // set value in bounds
+    opt->data.value = max_int(min_int(input, opt->data.numeric.max_value), opt->data.numeric.min_value); // set value in bounds
     settings_set_int(opt->meta.key, opt->data.value);
     set_vga_cursor_visibility(false);
 }
@@ -171,7 +171,7 @@ void draw_option(option_t *opt, uint8_t pos)
         else
             put_string(el_screen_pos, "OFF \xDD\xDC\xDE");
         break;
-    case NUMBER:
+    case NUMERIC:
         for (uint8_t i = 0; i < SCREEN_WIDTH / 2 - RIGHT_PAD + 1; i++)
             put_char(el_screen_pos + i, 0);
 
