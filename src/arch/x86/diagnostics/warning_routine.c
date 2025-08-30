@@ -56,14 +56,14 @@ void kernel_warning(const char *msg, uint32_t duration, bool_t manage_irq)
 
     put_string(1, "WARNING!");
     put_string(10, msg);
-    put_string(62, "Resume in:");
+    put_string(61, "Resume in:");
 
     for (int i = duration * iter_per_tick, i_len = num_digits(i), curr_i_len; i > 0; i--)
     {
         curr_i_len = num_digits(i);
-        put_string(73 + (i_len - curr_i_len), uint_to_str(i, buf));
+        put_string(71 + (i_len - curr_i_len), uint_to_str(i, buf));
         if (curr_i_len != num_digits(i - 1))
-            put_char(73 + (i_len - curr_i_len), '0');
+            put_char(71 + (i_len - curr_i_len), '0');
     }
 
     for (int i = 0; i < 80; i++)
