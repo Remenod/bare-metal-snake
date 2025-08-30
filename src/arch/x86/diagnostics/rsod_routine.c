@@ -1,4 +1,4 @@
-#include <interrupts/rsod_routine.h>
+#include <kernel/diagnostics/rsod_routine.h>
 
 #include <ports.h>
 #include <drivers/vga.h>
