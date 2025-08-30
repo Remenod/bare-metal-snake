@@ -236,8 +236,9 @@ void settings_manager_main(void)
 restart_settings_manager:
     clear_screen();
     put_string(SCREEN_WIDTH * (TOP_PAD / 2 - 1) + SCREEN_WIDTH / 2 - strlen("Settings") / 2, "Settings");
-    put_string(SCREEN_WIDTH * (TOP_PAD / 2) + SCREEN_WIDTH - strlen("Prev/Next Page: [ ]") - RIGHT_PAD, "Prev/Next Page: [ ]");
+    if (MAX_PAGES > 1)
     {
+        put_string(SCREEN_WIDTH * (TOP_PAD / 2) + SCREEN_WIDTH - strlen("Prev/Next Page: [ ]") - RIGHT_PAD, "Prev/Next Page: [ ]");
         uint8_t num_digits_max_pages = num_digits(MAX_PAGES);
         uint8_t num_digits_curr_page = num_digits(current_page + 1);
         char page_str[7 + num_digits_max_pages * 2];
