@@ -25,26 +25,26 @@ double fmodd(double x, double y)
 
 float sinf(float x)
 {
-    x = fmod(x, 2.0f * PIF);
+    x = fmodf(x, 2.0f * PIF);
     float x2 = x * x;
     return x * (1 - x2 / 6.0f + x2 * x2 / 120.0f - x2 * x2 * x2 / 5040.0f);
 }
 double sind(double x)
 {
-    x = fmod(x, 2.0 * PI);
+    x = fmodd(x, 2.0 * PI);
     double x2 = x * x;
     return x * (1 - x2 / 6.0 + x2 * x2 / 120.0 - x2 * x2 * x2 / 5040.0);
 }
 
 float cosf(float x)
 {
-    x = fmod(x, 2.0f * PIF);
+    x = fmodf(x, 2.0f * PIF);
     float x2 = x * x;
     return 1 - x2 / 2 + x2 * x2 / 24 - x2 * x2 * x2 / 720.0f;
 }
 double cosd(double x)
 {
-    x = fmod(x, 2.0 * PI);
+    x = fmodd(x, 2.0 * PI);
     double x2 = x * x;
     return 1 - x2 / 2 + x2 * x2 / 24 - x2 * x2 * x2 / 720.0;
 }
@@ -229,7 +229,7 @@ float sqrtf(float x)
         if (guess == 0.0f)
             break;
         float new_guess = 0.5f * (guess + x / guess);
-        if (abs(new_guess - guess) < eps)
+        if (absf(new_guess - guess) < eps)
             break;
         guess = new_guess;
     }
@@ -251,7 +251,7 @@ double sqrtd(double x)
         if (guess == 0.0)
             break;
         double new_guess = 0.5 * (guess + x / guess);
-        if (abs(new_guess - guess) < eps)
+        if (absd(new_guess - guess) < eps)
             break;
         guess = new_guess;
     }

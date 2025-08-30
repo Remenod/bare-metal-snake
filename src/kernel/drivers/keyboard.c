@@ -4,6 +4,7 @@
 #include <interrupts/isr.h>
 #include <lib/types.h>
 #include <drivers/screen.h>
+#include <lib/math.h>
 
 #define KBD_DATA_PORT 0x60
 
@@ -21,7 +22,6 @@ static const char scancode_ascii[128] = {
 
 static volatile char last_char = 0;
 static volatile bool_t extended = 0;
-char read_number_buf[12];
 
 void keyboard_handler(void)
 {
@@ -77,8 +77,15 @@ char get_keyboard_char(void)
 
 int read_number(void)
 {
+    return read_number_conf(12, false);
+}
+int read_number_conf(uint8_t number_to_read_len, bool_t overflow_catch)
+{
     int idx = 0;
     bool_t negative = false;
+    char read_number_buf[12];
+
+    number_to_read_len = max_int(min_int(number_to_read_len, (int)(sizeof(read_number_buf) - 1)), 1); // set value in bounds
 
     while (1)
     {
@@ -109,7 +116,7 @@ int read_number(void)
             continue;
         }
 
-        if (c >= '0' && c <= '9' && idx < (int)(sizeof(read_number_buf) - 1))
+        if (c >= '0' && c <= '9' && idx < number_to_read_len + negative)
         {
             read_number_buf[idx++] = c;
             print_char(c);
@@ -118,10 +125,28 @@ int read_number(void)
 
     int value = 0;
     int start = (negative ? 1 : 0);
+
     for (int i = start; read_number_buf[i] != '\0'; i++)
     {
-        value = value * 10 + (read_number_buf[i] - '0');
+        int digit = read_number_buf[i] - '0';
+
+        if (overflow_catch)
+        {
+            if (!negative)
+            {
+                if (value > (INT_MAX - digit) / 10)
+                    return INT_MAX;
+            }
+            else
+            {
+                if (value > (-(INT_MIN + digit)) / 10)
+                    return INT_MIN;
+            }
+        }
+
+        value = value * 10 + digit;
     }
+
     if (negative)
         value = -value;
 
@@ -132,6 +157,7 @@ uint32_t read_hex(void)
 {
     int idx = 0;
     bool_t has_0x = false;
+    char read_number_buf[12];
 
     while (1)
     {
