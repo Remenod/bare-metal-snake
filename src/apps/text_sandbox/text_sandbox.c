@@ -7,7 +7,7 @@
 
 void text_sandbox_main()
 {
-    set_cursor_visibility(true);
+    set_vga_cursor_visibility(true);
     clear_screen();
 
     for (int n = 0; n < 256; n++)
@@ -16,7 +16,7 @@ void text_sandbox_main()
     static const char hello[] = "Hello, world!";
     put_string(80 * 25 / 2 - strlen(hello) / 2, hello);
     int i = 0;
-    set_cursor_pos(i);
+    set_vga_cursor_pos(i);
     while (true)
     {
         char c;
@@ -62,7 +62,7 @@ void text_sandbox_main()
             i++;
             break;
         }
-        set_cursor_pos(i);
+        set_vga_cursor_pos(i);
         if (i > 80 * 25)
             i = 3;
     }

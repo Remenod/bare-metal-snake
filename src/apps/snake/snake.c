@@ -98,7 +98,7 @@ static void game_reset()
 
 void snake_main()
 {
-    set_cursor_visibility(false);
+    set_vga_cursor_visibility(false);
     random_init(&rand, get_timer_ticks());
     timer_frequency = get_timer_frequency();
 restart:

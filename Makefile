@@ -5,10 +5,12 @@ INCLUDE_DIRS := include include/arch/x86
 
 ASM := nasm
 CC := i386-elf-gcc
+CXX := i386-elf-g++
 LD := i386-elf-ld
 OBJCOPY := i386-elf-objcopy
 
 CFLAGS := -ffreestanding -O2 -Wall -Wextra -m32 $(foreach dir,$(INCLUDE_DIRS),-I$(dir))
+CXXFLAGS := $(CFLAGS) -fno-exceptions -fno-rtti -fno-threadsafe-statics
 LDFLAGS := -T $(SRC_DIR)/kernel/linker.ld
 
 BOOT_SRC := $(BOOT_DIR)/boot.asm
@@ -21,9 +23,11 @@ KERNEL_BIN := $(BUILD_DIR)/kernel.bin
 IMAGE := $(BUILD_DIR)/snake.img
 
 C_SRCS := $(shell find $(SRC_DIR) -name "*.c")
+CPP_SRCS := $(shell find $(SRC_DIR) -name "*.cpp")
 ASM_SRCS := $(shell find $(SRC_DIR) -name "*.asm")
 
 C_OBJS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(C_SRCS))
+CPP_OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(CPP_SRCS))
 ASM_OBJS := $(patsubst $(SRC_DIR)/%.asm,$(BUILD_DIR)/%.o,$(ASM_SRCS))
 
 .PHONY: all clean run pad_kernel
@@ -37,18 +41,21 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.asm | $(BUILD_DIR)
 	@mkdir -p $(dir $@)
 	$(ASM) -f elf32 $< -o $@
 
-$(KERNEL_ELF): $(ENTRY_OBJ) $(C_OBJS) $(ASM_OBJS)
+$(KERNEL_ELF): $(ENTRY_OBJ) $(C_OBJS) $(CPP_OBJS) $(ASM_OBJS)
 	@mkdir -p $(dir $@)
-	$(LD) $(LDFLAGS) -o $@ $(ENTRY_OBJ) $(filter-out $(ENTRY_OBJ),$(C_OBJS) $(ASM_OBJS))
+	$(LD) $(LDFLAGS) -o $@ $(ENTRY_OBJ) $(filter-out $(ENTRY_OBJ),$(C_OBJS) $(CPP_OBJS) $(ASM_OBJS))
 
 $(KERNEL_BIN): $(KERNEL_ELF)
 	$(OBJCOPY) -O binary $< $@
 	$(MAKE) pad_kernel
-
 
 $(BOOT_BIN): $(BOOT_SRC) $(KERNEL_BIN) | $(BUILD_DIR)
 	@size=$$(stat -c%s $(KERNEL_BIN)); \
