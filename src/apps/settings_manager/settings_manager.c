@@ -298,23 +298,23 @@ restart_settings_manager:
         case KEY_LEFT:
             if (current_opt->handler.left)
             {
-                current_opt->handler.left(&current_opt);
-                draw_option(&current_opt, selected_option);
+                current_opt->handler.left(current_opt);
+                draw_option(current_opt, selected_option);
             }
             break;
         case KEY_RIGHT:
             if (current_opt->handler.right)
             {
-                current_opt->handler.right(&current_opt);
-                draw_option(&current_opt, selected_option);
+                current_opt->handler.right(current_opt);
+                draw_option(current_opt, selected_option);
             }
             break;
         case ' ':
         case '\n':
             if (current_opt->handler.middle)
             {
-                current_opt->handler.middle(&current_opt);
-                draw_option(&current_opt, selected_option);
+                current_opt->handler.middle(current_opt);
+                draw_option(current_opt, selected_option);
             }
             break;
         case '[':
