@@ -17,12 +17,12 @@
 #define OPTIONS_GAP 2
 #define OPTIONS_GAP_OFFSET ((OPTIONS_GAP + 2) * SCREEN_WIDTH)
 
-#define OPTIONS_LENGHT (uint8_t)(sizeof(options) / sizeof(options[0]))
+#define OPTIONS_LENGTH (uint8_t)(sizeof(options) / sizeof(options[0]))
 
 #define OPTIONS_IN_COLLUM \
     (((SCREEN_HEIGHT - TOP_PAD - BOTTOM_PAD) + ((2 + OPTIONS_GAP) - 1)) / (2 + OPTIONS_GAP))
 
-#define MAX_PAGES (uint8_t)(OPTIONS_LENGHT / (OPTIONS_IN_COLLUM * 2))
+#define MAX_PAGES (uint8_t)(OPTIONS_LENGTH / (OPTIONS_IN_COLLUM * 2))
 
 static uint8_t selected_option = 0;
 static uint8_t current_page = 0;
@@ -258,7 +258,7 @@ restart_settings_manager:
 
         put_string(SCREEN_WIDTH * (SCREEN_HEIGHT - BOTTOM_PAD) + SCREEN_WIDTH - RIGHT_PAD - strlen(page_str), page_str);
     }
-    for (int i = 0; i < ((current_page == MAX_PAGES) ? (OPTIONS_LENGHT % (OPTIONS_IN_COLLUM * 2)) : (OPTIONS_IN_COLLUM * 2)); i++)
+    for (int i = 0; i < ((current_page == MAX_PAGES) ? (OPTIONS_LENGTH % (OPTIONS_IN_COLLUM * 2)) : (OPTIONS_IN_COLLUM * 2)); i++)
     {
         int ind = i + current_page * (OPTIONS_IN_COLLUM * 2);
         options[ind].data.value = settings_get_int(options[ind].meta.key, 0);
@@ -272,13 +272,15 @@ restart_settings_manager:
         char c;
         while (!(c = get_keyboard_char()))
             asm volatile("hlt");
+
+        option_t *current_opt = &options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)];
         switch (c)
         {
         case KEY_ESC:
             return;
             break;
         case KEY_DOWN:
-            if (selected_option < ((current_page == MAX_PAGES) ? OPTIONS_LENGHT % (OPTIONS_IN_COLLUM * 2) - 1 : OPTIONS_IN_COLLUM * 2 - 1))
+            if (selected_option < ((current_page == MAX_PAGES) ? OPTIONS_LENGTH % (OPTIONS_IN_COLLUM * 2) - 1 : OPTIONS_IN_COLLUM * 2 - 1))
             {
                 highlight_selection(selected_option, BLACK);
                 selected_option++;
@@ -294,25 +296,25 @@ restart_settings_manager:
             }
             break;
         case KEY_LEFT:
-            if (options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)].handler.left)
+            if (current_opt->handler.left)
             {
-                options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)].handler.left(&options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)]);
-                draw_option(&options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)], selected_option);
+                current_opt->handler.left(&current_opt);
+                draw_option(&current_opt, selected_option);
             }
             break;
         case KEY_RIGHT:
-            if (options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)].handler.right)
+            if (current_opt->handler.right)
             {
-                options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)].handler.right(&options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)]);
-                draw_option(&options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)], selected_option);
+                current_opt->handler.right(&current_opt);
+                draw_option(&current_opt, selected_option);
             }
             break;
         case ' ':
         case '\n':
-            if (options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)].handler.middle)
+            if (current_opt->handler.middle)
             {
-                options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)].handler.middle(&options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)]);
-                draw_option(&options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)], selected_option);
+                current_opt->handler.middle(&current_opt);
+                draw_option(&current_opt, selected_option);
             }
             break;
         case '[':
