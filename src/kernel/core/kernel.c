@@ -14,7 +14,7 @@ void kernel_main()
     idt_install();
     pit_init(1000);
     register_all_cpu_exceptions_isrs();
-    calibrate_warning_iter_per_tick();
+    init_kernel_warning_routine();
     keyboard_install();
     stack_guard_install();
 

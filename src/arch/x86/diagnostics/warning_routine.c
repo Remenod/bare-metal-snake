@@ -4,13 +4,14 @@
 #include <timer/pit.h>
 #include <lib/math.h>
 #include <lib/string.h>
+#include <kernel/settings.h>
 
 static uint16_t cover_buf[80];
 static char buf[12];
 
 static uint32_t iter_per_tick = 400;
 
-void calibrate_warning_iter_per_tick(void)
+static void calibrate_warning_iter_per_tick(void)
 {
     const uint32_t iter = 100000;
     uint64_t start_tick = get_timer_ticks();
@@ -27,6 +28,18 @@ void calibrate_warning_iter_per_tick(void)
     uint64_t end_tick = get_timer_ticks();
 
     iter_per_tick = iter / ((uint32_t)(end_tick - start_tick) + 1);
+}
+
+static void iter_per_tick_subscriber(int new_value)
+{
+    iter_per_tick = max_int(new_value, 1);
+}
+
+void init_kernel_warning_routine(void)
+{
+    calibrate_warning_iter_per_tick();
+    settings_set_int("kernel.diagnostics.iter_per_tick", iter_per_tick);
+    settings_subscribe("kernel.diagnostics.iter_per_tick", iter_per_tick_subscriber);
 }
 
 void kernel_warning(const char *msg, uint32_t duration, bool_t manage_irq)
