@@ -92,7 +92,7 @@ void generic_checkbox(option_t *opt)
 
 void generic_numeric(option_t *opt)
 {
-    set_vga_cursor_visibility(true);
+    set_cursor_visibility(true);
     int input;
     {
         const uint8_t input_max_len = 11, height = 4, width = 15;
@@ -106,7 +106,7 @@ void generic_numeric(option_t *opt)
             set_bg_color(pos, CYAN);
         }
         put_string(SCREEN_WIDTH * 11 + SCREEN_WIDTH / 2 - (strlen("New value:") / 2 - 1), "New value:");
-        set_vga_cursor_pos(SCREEN_WIDTH * 12 + SCREEN_WIDTH / 2 - input_max_len / 2);
+        set_cursor_pos(SCREEN_WIDTH * 12 + SCREEN_WIDTH / 2 - input_max_len / 2);
         input = read_number();
         for (int i = 0; i < width * height; i++)
         {
@@ -116,7 +116,7 @@ void generic_numeric(option_t *opt)
     }
     opt->data.value = max_int(min_int(input, opt->data.numeric.max_value), opt->data.numeric.min_value); // set value in bounds
     settings_set_int(opt->meta.key, opt->data.value);
-    set_vga_cursor_visibility(false);
+    set_cursor_visibility(false);
 }
 
 option_t options[] = {
@@ -243,7 +243,7 @@ void draw_option(option_t *opt, uint8_t pos)
 
 void settings_manager_main(void)
 {
-    set_vga_cursor_visibility(false);
+    set_cursor_visibility(false);
     put_string(SCREEN_WIDTH * 3 / 2 - strlen("Settings") / 2, "Settings");
     for (int i = 0; i < OPTIONS_SIZE; i++)
     {
