@@ -67,7 +67,42 @@ typedef struct option
     } handler;
 } option_t;
 
-void generic_slider_left(option_t *opt)
+static int popup_read_number(uint8_t input_max_len, uint8_t height, uint8_t width, uint8_t y_position)
+{
+    set_cursor_visibility(true);
+
+    uint16_t buf[width * height];
+
+    for (int i = 0; i < width * height; i++)
+    {
+        int pos = ((SCREEN_WIDTH * y_position +  // set y_position row
+                    SCREEN_WIDTH / 2 -           // set row cencer
+                    input_max_len / 2) +         // offset row to left for input center align
+                   (i / width * SCREEN_WIDTH) +  // calculate y_position+1 row
+                   i % width) -                  // calculate position in y_position+1 row
+                  ((width - input_max_len) / 2); // width center align
+        buf[i] = get_attrchar(pos);
+        set_bg_color(pos, CYAN);
+        put_char(pos, 0);
+    }
+    put_string((SCREEN_WIDTH * (y_position + height / 2 - 1) + SCREEN_WIDTH / 2 - (strlen("New value:") / 2 - 1)), "New value:");
+    set_cursor_pos((SCREEN_WIDTH * (y_position + height / 2) + SCREEN_WIDTH / 2 - input_max_len / 2));
+    int input = read_number_conf(input_max_len, true);
+    for (int i = 0; i < width * height; i++)
+    {
+        int pos = ((SCREEN_WIDTH * y_position +  // set y_position row
+                    SCREEN_WIDTH / 2 -           // set row cencer
+                    input_max_len / 2) +         // offset row to left for input center align
+                   (i / width * SCREEN_WIDTH) +  // calculate y_position+1 row
+                   i % width) -                  // calculate position in y_position+1 row
+                  ((width - input_max_len) / 2); // width center align
+        put_attrchar(pos, buf[i]);
+    }
+    set_cursor_visibility(false);
+    return input;
+}
+
+static void generic_slider_left(option_t *opt)
 {
     if (opt->data.value < opt->data.slider.min_value + opt->data.slider.step)
         settings_set_int(opt->meta.key, opt->data.slider.min_value);
@@ -75,7 +110,8 @@ void generic_slider_left(option_t *opt)
         settings_set_int(opt->meta.key, opt->data.value - opt->data.slider.step);
     opt->data.value = settings_get_int(opt->meta.key, 0);
 }
-void generic_slider_right(option_t *opt)
+
+static void generic_slider_right(option_t *opt)
 {
     if (opt->data.value > opt->data.slider.max_value - opt->data.slider.step)
         settings_set_int(opt->meta.key, opt->data.slider.max_value);
@@ -84,39 +120,17 @@ void generic_slider_right(option_t *opt)
     opt->data.value = settings_get_int(opt->meta.key, 0);
 }
 
-void generic_checkbox(option_t *opt)
+static void generic_checkbox(option_t *opt)
 {
     opt->data.value = !opt->data.value;
     settings_set_int(opt->meta.key, opt->data.value);
 }
 
-void generic_numeric(option_t *opt)
+static void generic_numeric(option_t *opt)
 {
-    set_cursor_visibility(true);
-    int input;
-    {
-        const uint8_t input_max_len = 11, height = 4, width = 15;
-
-        uint16_t buf[width * height];
-
-        for (int i = 0; i < width * height; i++)
-        {
-            int pos = ((SCREEN_WIDTH * 10 + SCREEN_WIDTH / 2 - input_max_len / 2) + (i / width * SCREEN_WIDTH) + i % width) - 2;
-            buf[i] = get_attrchar(pos);
-            set_bg_color(pos, CYAN);
-        }
-        put_string(SCREEN_WIDTH * 11 + SCREEN_WIDTH / 2 - (strlen("New value:") / 2 - 1), "New value:");
-        set_cursor_pos(SCREEN_WIDTH * 12 + SCREEN_WIDTH / 2 - input_max_len / 2);
-        input = read_number();
-        for (int i = 0; i < width * height; i++)
-        {
-            int pos = ((SCREEN_WIDTH * 10 + SCREEN_WIDTH / 2 - input_max_len / 2) + (i / width * SCREEN_WIDTH) + i % width) - 2;
-            put_attrchar(pos, buf[i]);
-        }
-    }
+    int input = popup_read_number(11, 6, 17, 9);
     opt->data.value = max_int(min_int(input, opt->data.numeric.max_value), opt->data.numeric.min_value); // set value in bounds
     settings_set_int(opt->meta.key, opt->data.value);
-    set_cursor_visibility(false);
 }
 
 option_t options[] = {
