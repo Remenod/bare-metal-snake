@@ -291,7 +291,27 @@ void settings_manager_main(void)
 restart_settings_manager:
     clear_screen();
     put_string(SCREEN_WIDTH * (TOP_PAD / 2 - 1) + SCREEN_WIDTH / 2 - strlen("Settings") / 2, "Settings");
-    put_string(SCREEN_WIDTH * (TOP_PAD / 2) + SCREEN_WIDTH - strlen("Navigate pages with [ ]") - RIGHT_PAD, "Navigate pages with [ ]");
+    put_string(SCREEN_WIDTH * (TOP_PAD / 2) + SCREEN_WIDTH - strlen("Prev/Next Page: [ ]") - RIGHT_PAD, "Prev/Next Page: [ ]");
+    {
+        uint8_t num_digits_max_pages = num_digits(MAX_PAGES);
+        uint8_t num_digits_curr_page = num_digits(current_page + 1);
+        char page_str[7 + num_digits_max_pages * 2];
+
+        for (uint8_t i = 5; i < 7 + num_digits_max_pages * 2 - 6 + num_digits_max_pages; i++)
+            page_str[i] = '0';
+
+        page_str[0] = 'P';
+        page_str[1] = 'a';
+        page_str[2] = 'g';
+        page_str[3] = 'e';
+        page_str[4] = ' ';
+        uint_to_str(current_page + 1, &page_str[5 + num_digits_max_pages - num_digits_curr_page]);
+        uint_to_str(MAX_PAGES + 1, &page_str[6 + num_digits_max_pages]);
+        page_str[5 + num_digits_max_pages] = '/';
+        page_str[7 + num_digits_max_pages * 2 - 1] = '\0';
+
+        put_string(SCREEN_WIDTH * (SCREEN_HEIGHT - BOTTOM_PAD) + SCREEN_WIDTH - RIGHT_PAD - strlen(page_str), page_str);
+    }
     for (int i = 0; i < ((current_page == MAX_PAGES) ? (OPTIONS_LENGHT % (OPTIONS_IN_COLLUM * 2)) : (OPTIONS_IN_COLLUM * 2)); i++)
     {
         int ind = i + current_page * (OPTIONS_IN_COLLUM * 2);
