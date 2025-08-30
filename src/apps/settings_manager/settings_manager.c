@@ -255,6 +255,15 @@ void draw_option(option_t *opt, uint8_t pos)
     }
 }
 
+static void highlight_selection(uint8_t selected, uint8_t color)
+{
+    uint16_t el_screen_pos = (SCREEN_WIDTH * 4 + (selected * OPTIONS_GAP_OFFSET));
+    for (int i = LEFT_PAD; i < SCREEN_WIDTH / 2 - RIGHT_PAD + 1; i++)
+    {
+        set_bg_color(el_screen_pos + i, color);
+    }
+}
+
 void settings_manager_main(void)
 {
     set_cursor_visibility(false);
@@ -265,11 +274,7 @@ void settings_manager_main(void)
         draw_option(&options[i], i);
     }
 
-    {
-        uint16_t el_screen_pos = (SCREEN_WIDTH * 4 + (selected_option * OPTIONS_GAP_OFFSET));
-        for (int i = LEFT_PAD; i < SCREEN_WIDTH / 2 - RIGHT_PAD + 1; i++)
-            set_bg_color(el_screen_pos + i, LIGHT_GREY);
-    }
+    highlight_selection(selected_option, LIGHT_GREY);
 
     while (true)
     {
@@ -284,25 +289,18 @@ void settings_manager_main(void)
         case KEY_DOWN:
             if (selected_option < OPTIONS_SIZE - 1)
             {
-                uint16_t el_screen_pos = (SCREEN_WIDTH * 4 + (selected_option * OPTIONS_GAP_OFFSET));
-                for (int i = LEFT_PAD; i < SCREEN_WIDTH / 2 - RIGHT_PAD + 1; i++)
-                {
-                    set_bg_color(el_screen_pos + i, BLACK);
-                    set_bg_color(el_screen_pos + i + OPTIONS_GAP_OFFSET, LIGHT_GREY);
-                }
+
+                highlight_selection(selected_option, BLACK);
                 selected_option++;
+                highlight_selection(selected_option, LIGHT_GREY);
             }
             break;
         case KEY_UP:
             if (selected_option > 0)
             {
-                uint16_t el_screen_pos = (80 * 4 + (selected_option * OPTIONS_GAP_OFFSET));
-                for (int i = LEFT_PAD; i < SCREEN_WIDTH / 2 - RIGHT_PAD + 1; i++)
-                {
-                    set_bg_color(el_screen_pos + i - OPTIONS_GAP_OFFSET, LIGHT_GREY);
-                    set_bg_color(el_screen_pos + i, BLACK);
-                }
+                highlight_selection(selected_option, BLACK);
                 selected_option--;
+                highlight_selection(selected_option, LIGHT_GREY);
             }
             break;
         case KEY_LEFT:
