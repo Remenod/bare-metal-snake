@@ -6,7 +6,7 @@
 #include <drivers/keyboard.h>
 #include <lib/string.h>
 #include <lib/math_generic.h>
-#include <interrupts/rsod_routine.h>
+#include <kernel/diagnostics/rsod_routine.h>
 
 #define CRASHES_LEN (uint8_t)(sizeof(crashes) / sizeof(crashes[0]))
 #define COLORS_LEN (uint8_t)(sizeof(colors) / sizeof(colors[0]))

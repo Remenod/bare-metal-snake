@@ -4,7 +4,8 @@
 #include <timer/pit.h>
 #include <drivers/vga.h>
 #include <interrupts/cpu_exceptions.h>
-#include <interrupts/stack_guard/stack_guard.h>
+#include <kernel/diagnostics/stack_guard/stack_guard.h>
+#include <kernel/diagnostics/warning_routine.h>
 #include <kernel/settings.h>
 #include "../../apps/app_selector/app_selector.h"
 
@@ -13,6 +14,7 @@ void kernel_main()
     idt_install();
     pit_init(1000);
     register_all_cpu_exceptions_isrs();
+    init_kernel_warning_routine();
     keyboard_install();
     stack_guard_install();
 
