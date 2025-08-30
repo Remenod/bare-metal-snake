@@ -6,17 +6,26 @@
 #include <lib/math_generic.h>
 // #include <drivers/mouse.h>
 
+#define TOP_PAD 5 // For correct display, values less than 3 are not recommended.
+#define BOTTOM_PAD 2
 #define LEFT_PAD 2
 #define RIGHT_PAD 5
 
 #define SCREEN_WIDTH 80
+#define SCREEN_HEIGHT 25
 
-#define OPTIONS_GAP 1
+#define OPTIONS_GAP 2
 #define OPTIONS_GAP_OFFSET ((OPTIONS_GAP + 2) * SCREEN_WIDTH)
 
-#define OPTIONS_SIZE (uint8_t)(sizeof(options) / sizeof(options[0]))
+#define OPTIONS_LENGHT (uint8_t)(sizeof(options) / sizeof(options[0]))
 
-uint8_t selected_option = 0;
+#define OPTIONS_IN_COLLUM \
+    (((SCREEN_HEIGHT - TOP_PAD - BOTTOM_PAD) + ((2 + OPTIONS_GAP) - 1)) / (2 + OPTIONS_GAP))
+
+#define MAX_PAGES (uint8_t)(OPTIONS_LENGHT / (OPTIONS_IN_COLLUM * 2))
+
+static uint8_t selected_option = 0;
+static uint8_t current_page = 0;
 
 typedef enum
 {
@@ -133,7 +142,7 @@ static void generic_numeric(option_t *opt)
     settings_set_int(opt->meta.key, opt->data.value);
 }
 
-option_t options[] = {
+static option_t options[] = {
     {
         .meta = {
             .caption = "Mouse sensitivity",
@@ -211,9 +220,16 @@ option_t options[] = {
     },
 };
 
-void draw_option(option_t *opt, uint8_t pos)
+static void draw_option(option_t *opt, uint8_t pos)
 {
-    uint16_t el_screen_pos = (SCREEN_WIDTH * 4 + LEFT_PAD + (pos * OPTIONS_GAP_OFFSET));
+    uint16_t el_screen_pos;
+    if (TOP_PAD + BOTTOM_PAD + (2 + OPTIONS_GAP) * pos < SCREEN_HEIGHT)
+        el_screen_pos = (SCREEN_WIDTH * TOP_PAD + LEFT_PAD + (pos * OPTIONS_GAP_OFFSET));
+    else if (TOP_PAD + BOTTOM_PAD + (2 + OPTIONS_GAP) * (pos - OPTIONS_IN_COLLUM) < SCREEN_HEIGHT)
+        el_screen_pos = (SCREEN_WIDTH * TOP_PAD + (SCREEN_WIDTH / 2 + LEFT_PAD) + ((pos - OPTIONS_IN_COLLUM) * OPTIONS_GAP_OFFSET));
+    else
+        return;
+
     put_string(el_screen_pos - SCREEN_WIDTH, opt->meta.caption);
     switch (opt->meta.type)
     {
@@ -255,23 +271,32 @@ void draw_option(option_t *opt, uint8_t pos)
     }
 }
 
-static void highlight_selection(uint8_t selected, uint8_t color)
+static void highlight_selection(uint8_t pos, uint8_t color)
 {
-    uint16_t el_screen_pos = (SCREEN_WIDTH * 4 + (selected * OPTIONS_GAP_OFFSET));
+    uint16_t el_screen_pos;
+    if (TOP_PAD + BOTTOM_PAD + (2 + OPTIONS_GAP) * pos < SCREEN_HEIGHT)
+        el_screen_pos = (SCREEN_WIDTH * TOP_PAD + (pos * OPTIONS_GAP_OFFSET));
+    else if (TOP_PAD + BOTTOM_PAD + (2 + OPTIONS_GAP) * (pos - OPTIONS_IN_COLLUM) < SCREEN_HEIGHT)
+        el_screen_pos = (SCREEN_WIDTH * TOP_PAD + (SCREEN_WIDTH / 2) + ((pos - OPTIONS_IN_COLLUM) * OPTIONS_GAP_OFFSET));
+    else
+        return;
+
     for (int i = LEFT_PAD; i < SCREEN_WIDTH / 2 - RIGHT_PAD + 1; i++)
-    {
         set_bg_color(el_screen_pos + i, color);
-    }
 }
 
 void settings_manager_main(void)
 {
     set_cursor_visibility(false);
-    put_string(SCREEN_WIDTH * 3 / 2 - strlen("Settings") / 2, "Settings");
-    for (int i = 0; i < OPTIONS_SIZE; i++)
+restart_settings_manager:
+    clear_screen();
+    put_string(SCREEN_WIDTH * (TOP_PAD / 2 - 1) + SCREEN_WIDTH / 2 - strlen("Settings") / 2, "Settings");
+    put_string(SCREEN_WIDTH * (TOP_PAD / 2) + SCREEN_WIDTH - strlen("Navigate pages with [ ]") - RIGHT_PAD, "Navigate pages with [ ]");
+    for (int i = 0; i < ((current_page == MAX_PAGES) ? (OPTIONS_LENGHT % (OPTIONS_IN_COLLUM * 2)) : (OPTIONS_IN_COLLUM * 2)); i++)
     {
-        options[i].data.value = settings_get_int(options[i].meta.key, 0);
-        draw_option(&options[i], i);
+        int ind = i + current_page * (OPTIONS_IN_COLLUM * 2);
+        options[ind].data.value = settings_get_int(options[ind].meta.key, 0);
+        draw_option(&options[ind], i);
     }
 
     highlight_selection(selected_option, LIGHT_GREY);
@@ -287,9 +312,8 @@ void settings_manager_main(void)
             return;
             break;
         case KEY_DOWN:
-            if (selected_option < OPTIONS_SIZE - 1)
+            if (selected_option < ((current_page == MAX_PAGES) ? OPTIONS_LENGHT % (OPTIONS_IN_COLLUM * 2) - 1 : OPTIONS_IN_COLLUM * 2 - 1))
             {
-
                 highlight_selection(selected_option, BLACK);
                 selected_option++;
                 highlight_selection(selected_option, LIGHT_GREY);
@@ -304,25 +328,41 @@ void settings_manager_main(void)
             }
             break;
         case KEY_LEFT:
-            if (options[selected_option].handler.left)
+            if (options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)].handler.left)
             {
-                options[selected_option].handler.left(&options[selected_option]);
-                draw_option(&options[selected_option], selected_option);
+                options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)].handler.left(&options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)]);
+                draw_option(&options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)], selected_option);
             }
             break;
         case KEY_RIGHT:
-            if (options[selected_option].handler.right)
+            if (options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)].handler.right)
             {
-                options[selected_option].handler.right(&options[selected_option]);
-                draw_option(&options[selected_option], selected_option);
+                options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)].handler.right(&options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)]);
+                draw_option(&options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)], selected_option);
             }
             break;
         case ' ':
         case '\n':
-            if (options[selected_option].handler.middle)
+            if (options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)].handler.middle)
             {
-                options[selected_option].handler.middle(&options[selected_option]);
-                draw_option(&options[selected_option], selected_option);
+                options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)].handler.middle(&options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)]);
+                draw_option(&options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)], selected_option);
+            }
+            break;
+        case '[':
+            if (current_page > 0)
+            {
+                current_page--;
+                selected_option = 0;
+                goto restart_settings_manager;
+            }
+            break;
+        case ']':
+            if (current_page < MAX_PAGES)
+            {
+                current_page++;
+                selected_option = 0;
+                goto restart_settings_manager;
             }
             break;
         }
