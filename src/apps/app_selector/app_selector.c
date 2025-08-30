@@ -9,6 +9,7 @@
 #include "../rsod_roulette/rsod_roulette.h"
 #include "../segment_test/segment_test.h"
 #include "../mouse_playground/mouse_playground.h"
+#include "../settings_manager/settings_manager.h"
 
 typedef struct
 {
@@ -22,6 +23,7 @@ static App apps[] = {
     {"RSoD Roulette", rsod_roulette_main},
     {"Segment Test", segment_test_main},
     {"Mouse Playground", mouse_playground_main},
+    {"Settings", settings_manager_main},
 };
 
 #define APP_COUNT (uint8_t)(sizeof(apps) / sizeof(App))

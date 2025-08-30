@@ -5,7 +5,7 @@
 #include <drivers/screen.h>
 #include <drivers/keyboard.h>
 #include <lib/string.h>
-#include <lib/math.h>
+#include <lib/math_generic.h>
 #include <kernel/diagnostics/rsod_routine.h>
 
 #define CRASHES_LEN (uint8_t)(sizeof(crashes) / sizeof(crashes[0]))

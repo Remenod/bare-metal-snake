@@ -12,4 +12,5 @@
 void keyboard_install(void);
 char get_keyboard_char(void);
 int read_number(void);
+int read_number_conf(uint8_t number_to_read_len, bool_t overflow_catch);
 uint32_t read_hex(void);
