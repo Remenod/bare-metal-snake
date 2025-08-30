@@ -82,7 +82,7 @@ typedef struct option
 
 static int popup_read_number(uint8_t input_max_len, uint8_t height, uint8_t width, uint8_t y_position)
 {
-    set_cursor_visibility(true);
+    set_vga_cursor_visibility(true);
 
     uint16_t buf[width * height];
 
@@ -99,7 +99,7 @@ static int popup_read_number(uint8_t input_max_len, uint8_t height, uint8_t widt
         put_char(pos, 0);
     }
     put_string((SCREEN_WIDTH * (y_position + height / 2 - 1) + SCREEN_WIDTH / 2 - (strlen("New value:") / 2 - 1)), "New value:");
-    set_cursor_pos((SCREEN_WIDTH * (y_position + height / 2) + SCREEN_WIDTH / 2 - input_max_len / 2));
+    set_vga_cursor_pos((SCREEN_WIDTH * (y_position + height / 2) + SCREEN_WIDTH / 2 - input_max_len / 2));
     int input = read_number_conf(input_max_len, true);
     for (int i = 0; i < width * height; i++)
     {
@@ -111,7 +111,7 @@ static int popup_read_number(uint8_t input_max_len, uint8_t height, uint8_t widt
                   ((width - input_max_len) / 2); // width center align
         put_attrchar(pos, buf[i]);
     }
-    set_cursor_visibility(false);
+    set_vga_cursor_visibility(false);
     return input;
 }
 
@@ -236,7 +236,7 @@ static void highlight_selection(uint8_t pos, uint8_t color)
 
 void settings_manager_main(void)
 {
-    set_cursor_visibility(false);
+    set_vga_cursor_visibility(false);
 restart_settings_manager:
     clear_screen();
     put_string(SCREEN_WIDTH * (TOP_PAD / 2 - 1) + SCREEN_WIDTH / 2 - strlen("Settings") / 2, "Settings");

@@ -32,10 +32,6 @@ void kernel_main()
     print("CPU int registration... ");
     register_all_cpu_exceptions_isrs();
     print(done_text);
-  
-    print("Calibtating kernel warning loop sleep... ");
-    init_kernel_warning_routine();
-    print(done_text);
 
     print("Installing mouse... ");
     mouse_install();
@@ -43,6 +39,10 @@ void kernel_main()
 
     print("Installing keyboard... ");
     keyboard_install();
+    print(done_text);
+
+    print("Calibtating kernel warning loop sleep... ");
+    init_kernel_warning_routine();
     print(done_text);
 
     print("Installing Stack Guard... ");

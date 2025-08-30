@@ -7,7 +7,7 @@
 #include <ports.h>
 #include <lib/string.h>
 #include <lib/mem.h>
-#include <lib/math.h>
+#include <lib/math_generic.h>
 #include <kernel/settings.h>
 
 #define PS2_DATA_PORT 0x60
@@ -33,7 +33,7 @@ static const uint8_t mouse_glyphs_codes[] = {MOUSE_CHAR_1, MOUSE_CHAR_2, MOUSE_C
 static mouse_ui_element_t ui_elements[256] = {0};
 static uint8_t highest_ui_layer = 0;
 
-static uint8_t mouse_sensitivity;
+static uint16_t mouse_sensitivity;
 
 static const uint8_t arrow_glyph[] = {
     0b10000000,
@@ -206,18 +206,6 @@ static void sensitivity_subscriber(int new_value)
 {
     if (new_value < 0)
         new_value = 0;
-    else if (new_value > 250)
-        new_value = 250;
-
-    mouse_sensitivity = new_value;
-}
-
-static void sensitivity_subscriber(int new_value)
-{
-    if (new_value < 0)
-        new_value = 0;
-    else if (new_value > 250)
-        new_value = 250;
 
     mouse_sensitivity = new_value;
 }

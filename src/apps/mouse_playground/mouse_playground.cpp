@@ -1,3 +1,6 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 #include "mouse_playground.h"
 extern "C"
 {
@@ -46,3 +49,4 @@ void mouse_playground_main(void)
         }
     }
 }
+#pragma GCC diagnostic pop

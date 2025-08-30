@@ -15,7 +15,7 @@ void settings_init(void)
     int_subscribers_count = 0;
     string_subscribers_count = 0;
 
-    settings_set_int("mouse.sensitivity", 300);
+    settings_set_int("mouse.sensitivity", 130);
     settings_set_int("timer.frequency", 1000);
 }
 
