@@ -3,7 +3,7 @@
 #include <drivers/screen.h>
 #include <kernel/settings.h>
 #include <lib/string.h>
-#include <lib/math.h>
+#include <lib/math_generic.h>
 // #include <drivers/mouse.h>
 
 #define LEFT_PAD 2
@@ -128,8 +128,8 @@ static void generic_checkbox(option_t *opt)
 
 static void generic_numeric(option_t *opt)
 {
-    int input = popup_read_number(11, 6, 17, 9);
-    opt->data.value = max_int(min_int(input, opt->data.numeric.max_value), opt->data.numeric.min_value); // set value in bounds
+    int input = popup_read_number(max(num_digits(opt->data.numeric.max_value), num_digits(opt->data.numeric.min_value)), 6, 17, 9);
+    opt->data.value = max(min(input, opt->data.numeric.max_value), opt->data.numeric.min_value); // set value in bounds
     settings_set_int(opt->meta.key, opt->data.value);
 }
 
@@ -199,7 +199,7 @@ option_t options[] = {
         .data = {
             .value = 0,
             .numeric = {
-                .min_value = 0,
+                .min_value = -1,
                 .max_value = 50000,
             },
         },
