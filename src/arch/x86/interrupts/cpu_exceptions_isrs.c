@@ -1,5 +1,5 @@
 #include <interrupts/isr.h>
-#include <interrupts/rsod_routine.h>
+#include <kernel/diagnostics/rsod_routine.h>
 
 #define DEFINE_UNSPECIAL_ISR(n, msg)                 \
     _Noreturn void isr_##n(const cpu_state_t *state) \

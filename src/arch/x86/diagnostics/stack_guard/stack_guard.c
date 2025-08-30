@@ -1,7 +1,7 @@
-#include <interrupts/stack_guard/stack_guard.h>
+#include <kernel/diagnostics/stack_guard/stack_guard.h>
 
 #include <timer/pit.h>
-#include <interrupts/rsod_routine.h>
+#include <kernel/diagnostics/rsod_routine.h>
 #include <drivers/screen.h>
 #include <lib/string.h>
 #include <lib/math.h>
