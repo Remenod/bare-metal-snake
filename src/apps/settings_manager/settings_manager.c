@@ -1,3 +1,7 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
+#pragma GCC diagnostic ignored "-Wtype-limits"
+
 #include "settings_manager.h"
 #include <drivers/keyboard.h>
 #include <drivers/screen.h>
@@ -336,3 +340,4 @@ restart_settings_manager:
         }
     }
 }
+#pragma GCC diagnostic pop
