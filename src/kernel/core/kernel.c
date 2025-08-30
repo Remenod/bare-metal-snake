@@ -7,6 +7,7 @@
 #include <interrupts/cpu_exceptions.h>
 #include <kernel/diagnostics/stack_guard/stack_guard.h>
 #include <kernel/diagnostics/warning_routine.h>
+#include <kernel/settings.h>
 #include "../../apps/app_selector/app_selector.h"
 
 void kernel_main()
@@ -30,6 +31,10 @@ void kernel_main()
 
     print("CPU int registration... ");
     register_all_cpu_exceptions_isrs();
+    print(done_text);
+  
+    print("Calibtating kernel warning loop sleep... ");
+    init_kernel_warning_routine();
     print(done_text);
 
     print("Installing mouse... ");
