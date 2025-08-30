@@ -13,7 +13,7 @@ static uint32_t iter_per_tick = 400;
 
 static void calibrate_warning_iter_per_tick(void)
 {
-    const uint32_t iter = 100000;
+    const uint32_t iter = 200000;
     uint64_t start_tick = get_timer_ticks();
     for (int i = iter, i_len = num_digits(i), curr_i_len; i > 0; i--)
     {
