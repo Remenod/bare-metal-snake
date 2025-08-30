@@ -84,6 +84,41 @@ void generic_slider_right(option_t *opt)
     opt->data.value = settings_get_int(opt->meta.key, 0);
 }
 
+void generic_checkbox(option_t *opt)
+{
+    opt->data.value = !opt->data.value;
+    settings_set_int(opt->meta.key, opt->data.value);
+}
+
+void generic_number(option_t *opt)
+{
+    set_vga_cursor_visibility(true);
+    int input;
+    {
+        const uint8_t input_max_len = 11, height = 4, width = 15;
+
+        uint16_t buf[width * height];
+
+        for (int i = 0; i < width * height; i++)
+        {
+            int pos = ((SCREEN_WIDTH * 10 + SCREEN_WIDTH / 2 - input_max_len / 2) + (i / width * SCREEN_WIDTH) + i % width) - 2;
+            buf[i] = get_attrchar(pos);
+            set_bg_color(pos, CYAN);
+        }
+        put_string(SCREEN_WIDTH * 11 + SCREEN_WIDTH / 2 - (strlen("New value:") / 2 - 1), "New value:");
+        set_vga_cursor_pos(SCREEN_WIDTH * 12 + SCREEN_WIDTH / 2 - input_max_len / 2);
+        input = read_number();
+        for (int i = 0; i < width * height; i++)
+        {
+            int pos = ((SCREEN_WIDTH * 10 + SCREEN_WIDTH / 2 - input_max_len / 2) + (i / width * SCREEN_WIDTH) + i % width) - 2;
+            put_attrchar(pos, buf[i]);
+        }
+    }
+    opt->data.value = max_int(min_int(input, opt->data.number.max_value), opt->data.number.min_value); // set value in bounds
+    settings_set_int(opt->meta.key, opt->data.value);
+    set_vga_cursor_visibility(false);
+}
+
 option_t options[] = {
     {
         .meta = {
@@ -131,10 +166,19 @@ void draw_option(option_t *opt, uint8_t pos)
         break;
     }
     case CHECKBOX:
-        /* TODO */
+        if (opt->data.value)
+            put_string(el_screen_pos, "ON  \xDD\xDF\xDE");
+        else
+            put_string(el_screen_pos, "OFF \xDD\xDC\xDE");
         break;
     case NUMBER:
-        /* TODO */
+        for (uint8_t i = 0; i < SCREEN_WIDTH / 2 - RIGHT_PAD + 1; i++)
+            put_char(el_screen_pos + i, 0);
+
+        put_char(el_screen_pos, '[');
+        char buf[12];
+        put_string(el_screen_pos + 2, int_to_str(opt->data.value, buf));
+        put_char(el_screen_pos + num_digits(opt->data.value) + 3, ']');
         break;
 
     default:
