@@ -157,8 +157,8 @@ static option_t options[] = {
             .value = 0,
             .slider = {
                 .min_value = 20,
-                .max_value = 250,
-                .step = 10,
+                .max_value = 550,
+                .step = 20,
             },
         },
         .handler = {
