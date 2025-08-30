@@ -140,6 +140,61 @@ option_t options[] = {
             .middle = (option_handler_t)NULL,
         },
     },
+    {
+        .meta = {
+            .caption = "Test slider",
+            .key = "",
+            .type = SLIDER,
+        },
+        .data = {
+            .value = 0,
+            .slider = {
+                .min_value = 1,
+                .max_value = 250,
+                .step = 8,
+            },
+        },
+        .handler = {
+            .left = generic_slider_left,
+            .right = generic_slider_right,
+            .middle = (option_handler_t)NULL,
+        },
+    },
+    {
+        .meta = {
+            .caption = "Test checkbox",
+            .key = "",
+            .type = CHECKBOX,
+        },
+        .data = {
+            .value = 0,
+            .checkbox = {},
+        },
+        .handler = {
+            .left = (option_handler_t)NULL,
+            .right = (option_handler_t)NULL,
+            .middle = generic_checkbox,
+        },
+    },
+    {
+        .meta = {
+            .caption = "Test numeric",
+            .key = "",
+            .type = NUMERIC,
+        },
+        .data = {
+            .value = 0,
+            .numeric = {
+                .min_value = 0,
+                .max_value = 50000,
+            },
+        },
+        .handler = {
+            .left = (option_handler_t)NULL,
+            .right = (option_handler_t)NULL,
+            .middle = generic_numeric,
+        },
+    },
 };
 
 void draw_option(option_t *opt, uint8_t pos)
