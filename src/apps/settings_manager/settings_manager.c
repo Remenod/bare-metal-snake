@@ -183,6 +183,8 @@ static void generic_numeric(option_t *opt)
 
 static bool_t generic_bound(uint16_t x, uint16_t y, void *ctx)
 {
+    if (block_ui)
+        return false;
     option_t *opt = (option_t *)ctx;
     switch (opt->meta.type)
     {
@@ -191,8 +193,7 @@ static bool_t generic_bound(uint16_t x, uint16_t y, void *ctx)
         break;
     case CHECKBOX:
     case NUMERIC:
-        return !block_ui &&
-               x > opt->ui_data.screen_x &&
+        return x > opt->ui_data.screen_x &&
                x < opt->ui_data.screen_x + GLYPH_WIDTH * (SCREEN_WIDTH / 2 - RIGHT_PAD - LEFT_PAD + 1) &&
                y > opt->ui_data.screen_y &&
                y < (opt->ui_data.screen_y + GLYPH_HEIGHT);
