@@ -34,6 +34,7 @@ static mouse_ui_element_t ui_elements[256] = {0};
 static uint8_t highest_ui_layer = 0;
 
 static uint16_t mouse_sensitivity;
+static bool_t mouse_debug_info;
 
 static const uint8_t arrow_glyph[] = {
     0b10000000,
@@ -170,6 +171,14 @@ static void cursor_process(void)
             continue;
         put_char(covered_chars_pos[i], mouse_glyphs_codes[i]);
     }
+    if (mouse_debug_info)
+    {
+        char mouse_debug_buf[12];
+        put_string(1999 - 79, "y:   ");
+        put_string(1999 - 77, uint_to_str(mouse_y, mouse_debug_buf));
+        put_string(1999 - 79 - 80, "x:   ");
+        put_string(1999 - 77 - 80, uint_to_str(mouse_x, mouse_debug_buf));
+    }
 }
 
 static void click_process(uint8_t prev_buttons)
@@ -208,6 +217,16 @@ static void sensitivity_subscriber(int new_value)
         new_value = 0;
 
     mouse_sensitivity = new_value;
+}
+
+static void debug_info_subscriber(int new_value)
+{
+    for (int i = 0; i < 6; i++)
+    {
+        put_char(1999 - 79 + i, 0);
+        put_char(1999 - 79 - 80 + i, 0);
+    }
+    mouse_debug_info = new_value != 0;
 }
 
 static inline void ps2_wait_input_empty(void)
@@ -319,7 +338,9 @@ void mouse_install(void)
     reset_ui_structure();
 
     sensitivity_subscriber(settings_get_int("mouse.sensitivity", 100));
+    debug_info_subscriber(settings_get_int("mouse.debug_info", false));
     settings_subscribe("mouse.sensitivity", sensitivity_subscriber);
+    settings_subscribe("mouse.debug_info", debug_info_subscriber);
 
     register_interrupt_handler(44, mouse_handler);
 }

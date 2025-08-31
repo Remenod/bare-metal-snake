@@ -167,6 +167,22 @@ static option_t options[] = {
             .middle = (option_handler_t)NULL,
         },
     },
+    {
+        .meta = {
+            .caption = "Mouse Debug Info",
+            .key = "mouse.debug_info",
+            .type = CHECKBOX,
+        },
+        .data = {
+            .value = 0,
+            .checkbox = {},
+        },
+        .handler = {
+            .left = NULL,
+            .right = NULL,
+            .middle = generic_checkbox,
+        },
+    },
 };
 
 static void draw_option(option_t *opt, uint8_t pos)
