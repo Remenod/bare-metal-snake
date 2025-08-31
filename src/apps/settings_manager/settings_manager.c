@@ -9,6 +9,7 @@ extern "C"
 #include "settings_manager.h"
 #include <drivers/keyboard.h>
 #include <drivers/screen.h>
+#include <drivers/mouse.h>
 #include <kernel/settings.h>
 #include <lib/string.h>
 #include <lib/math.h>
@@ -24,6 +25,9 @@ extern "C"
 #define SCREEN_WIDTH 80
 #define SCREEN_HEIGHT 25
 
+#define GLYPH_WIDTH 8
+#define GLYPH_HEIGHT 16
+
 #define OPTIONS_GAP 2
 #define OPTIONS_GAP_OFFSET ((OPTIONS_GAP + 2) * SCREEN_WIDTH)
 
@@ -38,6 +42,8 @@ extern "C"
 
 static uint8_t selected_option = 0;
 static uint8_t current_page = 0;
+static bool_t block_ui;
+static char keyboard_input;
 
 typedef enum
 {
@@ -82,16 +88,36 @@ typedef struct option
     } data;
     struct
     {
+        uint16_t screen_x;
+        uint16_t screen_y;
+        uint8_t page_pos;
+    } ui_data;
+    struct
+    {
         option_handler_t left;
         option_handler_t right;
         option_handler_t middle;
     } handler;
 } option_t;
 
+static void highlight_selection(uint8_t pos, uint8_t color)
+{
+    uint16_t el_screen_pos;
+    if (TOP_PAD + BOTTOM_PAD + (2 + OPTIONS_GAP) * pos < SCREEN_HEIGHT)
+        el_screen_pos = (SCREEN_WIDTH * TOP_PAD + (pos * OPTIONS_GAP_OFFSET));
+    else if (TOP_PAD + BOTTOM_PAD + (2 + OPTIONS_GAP) * (pos - OPTIONS_IN_COLLUM) < SCREEN_HEIGHT)
+        el_screen_pos = (SCREEN_WIDTH * TOP_PAD + (SCREEN_WIDTH / 2) + ((pos - OPTIONS_IN_COLLUM) * OPTIONS_GAP_OFFSET));
+    else
+        return;
+
+    for (int i = LEFT_PAD; i < SCREEN_WIDTH / 2 - RIGHT_PAD + 1; i++)
+        set_bg_color(el_screen_pos + i, color);
+}
+
 static int popup_read_number(uint8_t input_max_len, uint8_t height, uint8_t width, uint8_t y_position)
 {
     set_vga_cursor_visibility(true);
-
+    block_ui = true;
     uint16_t buf[width * height];
 
     for (int i = 0; i < width * height; i++)
@@ -120,6 +146,7 @@ static int popup_read_number(uint8_t input_max_len, uint8_t height, uint8_t widt
         put_attrchar(pos, buf[i]);
     }
     set_vga_cursor_visibility(false);
+    block_ui = false;
     return input;
 }
 
@@ -152,6 +179,45 @@ static void generic_numeric(option_t *opt)
     int input = popup_read_number(max_int(num_digits(opt->data.numeric.max_value), num_digits(opt->data.numeric.min_value)), 6, 17, 9);
     opt->data.value = max_int(min_int(input, opt->data.numeric.max_value), opt->data.numeric.min_value); // set value in bounds
     settings_set_int(opt->meta.key, opt->data.value);
+}
+
+static bool_t generic_bound(uint16_t x, uint16_t y, void *ctx)
+{
+    option_t *opt = (option_t *)ctx;
+    switch (opt->meta.type)
+    {
+    case SLIDER:
+        return false;
+        break;
+    case CHECKBOX:
+    case NUMERIC:
+        return !block_ui &&
+               x > opt->ui_data.screen_x &&
+               x < opt->ui_data.screen_x + GLYPH_WIDTH * (SCREEN_WIDTH / 2 - RIGHT_PAD - LEFT_PAD + 1) &&
+               y > opt->ui_data.screen_y &&
+               y < (opt->ui_data.screen_y + GLYPH_HEIGHT);
+    }
+}
+
+static void generic_mouse1(uint16_t x, uint16_t y, void *ctx)
+{
+    option_t *opt = (option_t *)ctx;
+    if (block_ui)
+        return;
+    highlight_selection(selected_option, BLACK);
+    highlight_selection(opt->ui_data.page_pos, LIGHT_GREY);
+    selected_option = opt->ui_data.page_pos;
+
+    switch (opt->meta.type)
+    {
+    case SLIDER:
+        /* code */
+        break;
+    case CHECKBOX:
+    case NUMERIC:
+        keyboard_input = '\n'; // middle select option
+        break;
+    }
 }
 
 static option_t options[] = {
@@ -191,6 +257,44 @@ static option_t options[] = {
             .middle = generic_checkbox,
         },
     },
+    {
+        .meta = {
+            .caption = "Test Numeric",
+            .key = "test",
+            .type = NUMERIC,
+        },
+        .data = {
+            .value = 0,
+            .numeric = {
+                .min_value = -100,
+                .max_value = 100,
+            },
+        },
+        .handler = {
+            .left = (option_handler_t)NULL,
+            .right = (option_handler_t)NULL,
+            .middle = generic_numeric,
+        },
+    },
+    {
+        .meta = {
+            .caption = "Test Numeric",
+            .key = "test",
+            .type = NUMERIC,
+        },
+        .data = {
+            .value = 0,
+            .numeric = {
+                .min_value = -100,
+                .max_value = 100,
+            },
+        },
+        .handler = {
+            .left = (option_handler_t)NULL,
+            .right = (option_handler_t)NULL,
+            .middle = generic_numeric,
+        },
+    },
 };
 
 static void draw_option(option_t *opt, uint8_t pos)
@@ -202,6 +306,10 @@ static void draw_option(option_t *opt, uint8_t pos)
         el_screen_pos = (SCREEN_WIDTH * TOP_PAD + (SCREEN_WIDTH / 2 + LEFT_PAD) + ((pos - OPTIONS_IN_COLLUM) * OPTIONS_GAP_OFFSET));
     else
         return;
+
+    opt->ui_data.screen_x = el_screen_pos % SCREEN_WIDTH * GLYPH_WIDTH;
+    opt->ui_data.screen_y = el_screen_pos / SCREEN_WIDTH * GLYPH_HEIGHT;
+    opt->ui_data.page_pos = pos;
 
     put_string(el_screen_pos - SCREEN_WIDTH, opt->meta.caption);
     switch (opt->meta.type)
@@ -244,20 +352,6 @@ static void draw_option(option_t *opt, uint8_t pos)
     }
 }
 
-static void highlight_selection(uint8_t pos, uint8_t color)
-{
-    uint16_t el_screen_pos;
-    if (TOP_PAD + BOTTOM_PAD + (2 + OPTIONS_GAP) * pos < SCREEN_HEIGHT)
-        el_screen_pos = (SCREEN_WIDTH * TOP_PAD + (pos * OPTIONS_GAP_OFFSET));
-    else if (TOP_PAD + BOTTOM_PAD + (2 + OPTIONS_GAP) * (pos - OPTIONS_IN_COLLUM) < SCREEN_HEIGHT)
-        el_screen_pos = (SCREEN_WIDTH * TOP_PAD + (SCREEN_WIDTH / 2) + ((pos - OPTIONS_IN_COLLUM) * OPTIONS_GAP_OFFSET));
-    else
-        return;
-
-    for (int i = LEFT_PAD; i < SCREEN_WIDTH / 2 - RIGHT_PAD + 1; i++)
-        set_bg_color(el_screen_pos + i, color);
-}
-
 void settings_manager_main(void)
 {
     set_vga_cursor_visibility(false);
@@ -291,22 +385,33 @@ restart_settings_manager:
         int ind = i + current_page * (OPTIONS_IN_COLLUM * 2);
         options[ind].data.value = settings_get_int(options[ind].meta.key, 0);
         draw_option(&options[ind], i);
+
+        register_ui_element(i, (mouse_ui_element_t){
+                                   .ctx = &options[ind],
+                                   .bound = generic_bound,
+                                   .mouse1_handler = generic_mouse1,
+                                   .mouse2_handler = (ui_handler_func_t)NULL,
+                                   .mouse3_handler = (ui_handler_func_t)NULL,
+                               });
     }
 
     highlight_selection(selected_option, LIGHT_GREY);
 
     while (true)
     {
-        char c;
-        while (!(c = get_keyboard_char()))
+        keyboard_input = 0;
+        while (!(keyboard_input))
+        {
+            keyboard_input = get_keyboard_char();
             asm volatile("hlt");
+        }
 
         option_t *current_opt = &options[selected_option + current_page * (OPTIONS_IN_COLLUM * 2)];
-        switch (c)
+        switch (keyboard_input)
         {
         case KEY_ESC:
+            reset_ui_structure();
             return;
-            break;
         case KEY_DOWN:
             if (selected_option < ((current_page == MAX_PAGES) ? OPTIONS_LENGTH % (OPTIONS_IN_COLLUM * 2) - 1 : OPTIONS_IN_COLLUM * 2 - 1))
             {
@@ -350,6 +455,7 @@ restart_settings_manager:
             {
                 current_page--;
                 selected_option = 0;
+                reset_ui_structure();
                 goto restart_settings_manager;
             }
             break;
@@ -358,6 +464,7 @@ restart_settings_manager:
             {
                 current_page++;
                 selected_option = 0;
+                reset_ui_structure();
                 goto restart_settings_manager;
             }
             break;

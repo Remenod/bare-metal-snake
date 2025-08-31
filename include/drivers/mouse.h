@@ -9,16 +9,16 @@ typedef struct
     uint8_t buttons;
 } mouse_packet_t;
 
-typedef bool_t (*ui_bound_func_t)(uint16_t cursor_x, uint16_t cursor_y);
-typedef void (*ui_hancler_func_t)(uint16_t cursor_x, uint16_t cursor_y);
+typedef bool_t (*ui_bound_func_t)(uint16_t cursor_x, uint16_t cursor_y, void *ctx);
+typedef void (*ui_handler_func_t)(uint16_t cursor_x, uint16_t cursor_y, void *ctx);
 
 typedef struct
 {
+    void *ctx;
     ui_bound_func_t bound;
-    ui_hancler_func_t mouse1_handler;
-    ui_hancler_func_t mouse2_handler;
-    ui_hancler_func_t mouse3_handler;
-
+    ui_handler_func_t mouse1_handler;
+    ui_handler_func_t mouse2_handler;
+    ui_handler_func_t mouse3_handler;
 } mouse_ui_element_t;
 
 void register_ui_element(uint8_t layer, mouse_ui_element_t ui_element);

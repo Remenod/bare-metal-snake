@@ -190,11 +190,12 @@ static void click_process(uint8_t prev_buttons)
     {
         if (ui_elements[i].bound)
         {
-            if (ui_elements[i].bound(mouse_x, mouse_y))
+            if (ui_elements[i].bound(mouse_x, mouse_y, ui_elements[i].ctx))
             {
                 cursor_glyph = select_glyph;
                 selected = i;
-                highest_ui_layer = highest_ui_layer > i ? highest_ui_layer : i;
+                if (i > highest_ui_layer)
+                    highest_ui_layer = i;
                 break;
             }
         }
@@ -204,12 +205,15 @@ static void click_process(uint8_t prev_buttons)
         cursor_glyph = arrow_glyph;
         return;
     }
-    if (is_mouse1(prev_buttons) && !is_mouse1(last_packet.buttons) && ui_elements[selected].mouse1_handler)
-        ui_elements[selected].mouse1_handler(mouse_x, mouse_y);
-    if (is_mouse2(prev_buttons) && !is_mouse2(last_packet.buttons) && ui_elements[selected].mouse2_handler)
-        ui_elements[selected].mouse2_handler(mouse_x, mouse_y);
-    if (is_mouse3(prev_buttons) && !is_mouse3(last_packet.buttons) && ui_elements[selected].mouse3_handler)
-        ui_elements[selected].mouse3_handler(mouse_x, mouse_y);
+
+    mouse_ui_element_t *el = &ui_elements[selected];
+
+    if (is_mouse1(prev_buttons) && !is_mouse1(last_packet.buttons) && el->mouse1_handler)
+        el->mouse1_handler(mouse_x, mouse_y, el->ctx);
+    if (is_mouse2(prev_buttons) && !is_mouse2(last_packet.buttons) && el->mouse2_handler)
+        el->mouse2_handler(mouse_x, mouse_y, el->ctx);
+    if (is_mouse3(prev_buttons) && !is_mouse3(last_packet.buttons) && el->mouse3_handler)
+        el->mouse3_handler(mouse_x, mouse_y, el->ctx);
 }
 
 static void sensitivity_subscriber(int new_value)
