@@ -198,10 +198,14 @@ static bool_t generic_bound(uint16_t x, uint16_t y, void *ctx)
                y > opt->ui_data.screen_y &&
                y < (opt->ui_data.screen_y + GLYPH_HEIGHT);
     }
+    return false;
 }
 
 static void generic_mouse1(uint16_t x, uint16_t y, void *ctx)
 {
+    (void)x; // mute gcc warning
+    (void)y;
+
     option_t *opt = (option_t *)ctx;
     if (block_ui)
         return;
