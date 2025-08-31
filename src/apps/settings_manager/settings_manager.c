@@ -13,6 +13,7 @@ extern "C"
 #include <kernel/settings.h>
 #include <lib/string.h>
 #include <lib/math.h>
+#include <drivers/qemu_serial.h>
 #ifdef __cplusplus
 }
 #endif
@@ -150,6 +151,61 @@ static int popup_read_number(uint8_t input_max_len, uint8_t height, uint8_t widt
     return input;
 }
 
+static void draw_option(option_t *opt, uint8_t pos)
+{
+    uint16_t el_screen_pos;
+    if (TOP_PAD + BOTTOM_PAD + (2 + OPTIONS_GAP) * pos < SCREEN_HEIGHT)
+        el_screen_pos = (SCREEN_WIDTH * TOP_PAD + LEFT_PAD + (pos * OPTIONS_GAP_OFFSET));
+    else if (TOP_PAD + BOTTOM_PAD + (2 + OPTIONS_GAP) * (pos - OPTIONS_IN_COLLUM) < SCREEN_HEIGHT)
+        el_screen_pos = (SCREEN_WIDTH * TOP_PAD + (SCREEN_WIDTH / 2 + LEFT_PAD) + ((pos - OPTIONS_IN_COLLUM) * OPTIONS_GAP_OFFSET));
+    else
+        return;
+
+    opt->ui_data.screen_x = el_screen_pos % SCREEN_WIDTH * GLYPH_WIDTH;
+    opt->ui_data.screen_y = el_screen_pos / SCREEN_WIDTH * GLYPH_HEIGHT;
+    opt->ui_data.page_pos = pos;
+
+    put_string(el_screen_pos - SCREEN_WIDTH, opt->meta.caption);
+    switch (opt->meta.type)
+    {
+    case SLIDER:
+    {
+        opt->data.value = max_int(min_int(opt->data.value, opt->data.slider.max_value), opt->data.slider.min_value); // set value in bounds
+
+        int slider_len = (opt->data.slider.max_value - opt->data.slider.min_value) / opt->data.slider.step + 1;
+        if (slider_len > SCREEN_WIDTH / 2 - LEFT_PAD - RIGHT_PAD)
+        {
+            put_string(el_screen_pos, "[Slider too long]");
+            return;
+        }
+        put_char(el_screen_pos, 0xC6);
+        for (int i = 1; i < slider_len + 1; i++)
+            put_char(el_screen_pos + i, 0xCD);
+        put_char(el_screen_pos + slider_len + 1, 0xB5);
+        put_char(el_screen_pos + 1 + ((opt->data.value - opt->data.slider.min_value) / opt->data.slider.step), 0xD8);
+        break;
+    }
+    case CHECKBOX:
+        if (opt->data.value)
+            put_string(el_screen_pos, "ON  \xDD\xDF\xDE");
+        else
+            put_string(el_screen_pos, "OFF \xDD\xDC\xDE");
+        break;
+    case NUMERIC:
+        for (uint8_t i = 0; i < SCREEN_WIDTH / 2 - RIGHT_PAD + 1; i++)
+            put_char(el_screen_pos + i, 0);
+
+        put_char(el_screen_pos, '[');
+        char buf[12];
+        put_string(el_screen_pos + 2, int_to_str(opt->data.value, buf));
+        put_char(el_screen_pos + num_digits(opt->data.value) + 3, ']');
+        break;
+
+    default:
+        break;
+    }
+}
+
 static void generic_slider_left(option_t *opt)
 {
     if (opt->data.value < opt->data.slider.min_value + opt->data.slider.step)
@@ -189,8 +245,14 @@ static bool_t generic_bound(uint16_t x, uint16_t y, void *ctx)
     switch (opt->meta.type)
     {
     case SLIDER:
-        return false;
-        break;
+    {
+        int slider_len = (opt->data.slider.max_value - opt->data.slider.min_value) / opt->data.slider.step + 1;
+        return x > opt->ui_data.screen_x &&
+               x < opt->ui_data.screen_x + GLYPH_WIDTH * slider_len &&
+               y > opt->ui_data.screen_y &&
+               y < (opt->ui_data.screen_y + GLYPH_HEIGHT);
+    }
+    break;
     case CHECKBOX:
     case NUMERIC:
         return x > opt->ui_data.screen_x &&
@@ -216,8 +278,27 @@ static void generic_mouse1(uint16_t x, uint16_t y, void *ctx)
     switch (opt->meta.type)
     {
     case SLIDER:
-        /* code */
+    {
+        int slider_len = (opt->data.slider.max_value - opt->data.slider.min_value) / opt->data.slider.step + 1;
+        float slider_value_per_pixel =
+            (float)(opt->data.slider.max_value - opt->data.slider.min_value) /
+            (slider_len * GLYPH_WIDTH - 1);
+
+        int value = opt->data.slider.min_value +
+                    (int)((x - opt->ui_data.screen_x) * slider_value_per_pixel);
+
+        if (value < opt->data.slider.min_value)
+            value = opt->data.slider.min_value;
+        if (value > opt->data.slider.max_value)
+            value = opt->data.slider.max_value;
+
+        opt->data.value = value;
+        settings_set_int(opt->meta.key, opt->data.value);
+
+        draw_option(opt, opt->ui_data.page_pos);
         break;
+    }
+
     case CHECKBOX:
     case NUMERIC:
         keyboard_input = '\n'; // middle select option
@@ -301,61 +382,6 @@ static option_t options[] = {
         },
     },
 };
-
-static void draw_option(option_t *opt, uint8_t pos)
-{
-    uint16_t el_screen_pos;
-    if (TOP_PAD + BOTTOM_PAD + (2 + OPTIONS_GAP) * pos < SCREEN_HEIGHT)
-        el_screen_pos = (SCREEN_WIDTH * TOP_PAD + LEFT_PAD + (pos * OPTIONS_GAP_OFFSET));
-    else if (TOP_PAD + BOTTOM_PAD + (2 + OPTIONS_GAP) * (pos - OPTIONS_IN_COLLUM) < SCREEN_HEIGHT)
-        el_screen_pos = (SCREEN_WIDTH * TOP_PAD + (SCREEN_WIDTH / 2 + LEFT_PAD) + ((pos - OPTIONS_IN_COLLUM) * OPTIONS_GAP_OFFSET));
-    else
-        return;
-
-    opt->ui_data.screen_x = el_screen_pos % SCREEN_WIDTH * GLYPH_WIDTH;
-    opt->ui_data.screen_y = el_screen_pos / SCREEN_WIDTH * GLYPH_HEIGHT;
-    opt->ui_data.page_pos = pos;
-
-    put_string(el_screen_pos - SCREEN_WIDTH, opt->meta.caption);
-    switch (opt->meta.type)
-    {
-    case SLIDER:
-    {
-        opt->data.value = max_int(min_int(opt->data.value, opt->data.slider.max_value), opt->data.slider.min_value); // set value in bounds
-
-        int slider_len = (opt->data.slider.max_value - opt->data.slider.min_value) / opt->data.slider.step + 1;
-        if (slider_len > SCREEN_WIDTH / 2 - LEFT_PAD - RIGHT_PAD)
-        {
-            put_string(el_screen_pos, "[Slider too long]");
-            return;
-        }
-        put_char(el_screen_pos, 0xC6);
-        for (int i = 1; i < slider_len + 1; i++)
-            put_char(el_screen_pos + i, 0xCD);
-        put_char(el_screen_pos + slider_len + 1, 0xB5);
-        put_char(el_screen_pos + 1 + ((opt->data.value - opt->data.slider.min_value) / opt->data.slider.step), 0xD8);
-        break;
-    }
-    case CHECKBOX:
-        if (opt->data.value)
-            put_string(el_screen_pos, "ON  \xDD\xDF\xDE");
-        else
-            put_string(el_screen_pos, "OFF \xDD\xDC\xDE");
-        break;
-    case NUMERIC:
-        for (uint8_t i = 0; i < SCREEN_WIDTH / 2 - RIGHT_PAD + 1; i++)
-            put_char(el_screen_pos + i, 0);
-
-        put_char(el_screen_pos, '[');
-        char buf[12];
-        put_string(el_screen_pos + 2, int_to_str(opt->data.value, buf));
-        put_char(el_screen_pos + num_digits(opt->data.value) + 3, ']');
-        break;
-
-    default:
-        break;
-    }
-}
 
 void settings_manager_main(void)
 {
