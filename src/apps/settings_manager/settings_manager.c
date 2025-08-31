@@ -2,13 +2,19 @@
 #pragma GCC diagnostic ignored "-Wunused-function"
 #pragma GCC diagnostic ignored "-Wtype-limits"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 #include "settings_manager.h"
 #include <drivers/keyboard.h>
 #include <drivers/screen.h>
 #include <kernel/settings.h>
 #include <lib/string.h>
-#include <lib/math_generic.h>
-// #include <drivers/mouse.h>
+#include <lib/math.h>
+#ifdef __cplusplus
+}
+#endif
 
 #define TOP_PAD 5 // For correct display, values less than 3 are not recommended.
 #define BOTTOM_PAD 2
@@ -143,8 +149,8 @@ static void generic_checkbox(option_t *opt)
 
 static void generic_numeric(option_t *opt)
 {
-    int input = popup_read_number(max(num_digits(opt->data.numeric.max_value), num_digits(opt->data.numeric.min_value)), 6, 17, 9);
-    opt->data.value = max(min(input, opt->data.numeric.max_value), opt->data.numeric.min_value); // set value in bounds
+    int input = popup_read_number(max_int(num_digits(opt->data.numeric.max_value), num_digits(opt->data.numeric.min_value)), 6, 17, 9);
+    opt->data.value = max_int(min_int(input, opt->data.numeric.max_value), opt->data.numeric.min_value); // set value in bounds
     settings_set_int(opt->meta.key, opt->data.value);
 }
 
@@ -180,8 +186,8 @@ static option_t options[] = {
             .checkbox = {},
         },
         .handler = {
-            .left = NULL,
-            .right = NULL,
+            .left = (option_handler_t)NULL,
+            .right = (option_handler_t)NULL,
             .middle = generic_checkbox,
         },
     },
