@@ -28,6 +28,8 @@
 
 #define MAX_PAGES (uint8_t)(OPTIONS_LENGTH / (OPTIONS_IN_COLLUM * 2))
 
+#define POPUP_BG_COLOR CYAN
+
 static uint8_t selected_option = 0;
 static uint8_t current_page = 0;
 
@@ -95,7 +97,7 @@ static int popup_read_number(uint8_t input_max_len, uint8_t height, uint8_t widt
                    i % width) -                  // calculate position in y_position+1 row
                   ((width - input_max_len) / 2); // width center align
         buf[i] = get_attrchar(pos);
-        set_bg_color(pos, CYAN);
+        set_bg_color(pos, POPUP_BG_COLOR);
         put_char(pos, 0);
     }
     put_string((SCREEN_WIDTH * (y_position + height / 2 - 1) + SCREEN_WIDTH / 2 - (strlen("New value:") / 2 - 1)), "New value:");
