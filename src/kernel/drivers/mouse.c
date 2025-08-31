@@ -208,11 +208,16 @@ static void click_process(uint8_t prev_buttons)
 
     mouse_ui_element_t *el = &ui_elements[selected];
 
-    if (is_mouse1(prev_buttons) && !is_mouse1(last_packet.buttons) && el->mouse1_handler)
+    if (el->mouse1_handler && ((is_mouse1(prev_buttons) && !is_mouse1(last_packet.buttons)) ||
+                               (is_mouse1(last_packet.buttons) && !is_mouse1(el->handlers_on_release_flags))))
         el->mouse1_handler(mouse_x, mouse_y, el->ctx);
-    if (is_mouse2(prev_buttons) && !is_mouse2(last_packet.buttons) && el->mouse2_handler)
+
+    if (el->mouse2_handler && ((is_mouse2(prev_buttons) && !is_mouse2(last_packet.buttons)) ||
+                               (is_mouse2(last_packet.buttons) && !is_mouse2(el->handlers_on_release_flags))))
         el->mouse2_handler(mouse_x, mouse_y, el->ctx);
-    if (is_mouse3(prev_buttons) && !is_mouse3(last_packet.buttons) && el->mouse3_handler)
+
+    if (el->mouse3_handler && ((is_mouse3(prev_buttons) && !is_mouse3(last_packet.buttons)) ||
+                               (is_mouse3(last_packet.buttons) && !is_mouse3(el->handlers_on_release_flags))))
         el->mouse3_handler(mouse_x, mouse_y, el->ctx);
 }
 

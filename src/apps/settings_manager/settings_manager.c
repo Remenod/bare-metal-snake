@@ -419,6 +419,7 @@ restart_settings_manager:
 
         register_ui_element(i, (mouse_ui_element_t){
                                    .ctx = &options[ind],
+                                   .handlers_on_release_flags = (0b110 | (options[ind].meta.type != SLIDER)),
                                    .bound = generic_bound,
                                    .mouse1_handler = generic_mouse1,
                                    .mouse2_handler = (ui_handler_func_t)NULL,

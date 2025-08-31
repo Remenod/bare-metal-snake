@@ -16,6 +16,7 @@ typedef struct
 {
     void *ctx;
     ui_bound_func_t bound;
+    uint8_t handlers_on_release_flags; // &0b001 - left, &0b010 - right, &0b100 - middle
     ui_handler_func_t mouse1_handler;
     ui_handler_func_t mouse2_handler;
     ui_handler_func_t mouse3_handler;

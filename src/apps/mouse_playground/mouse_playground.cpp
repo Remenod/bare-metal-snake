@@ -26,6 +26,7 @@ void mouse_playground_main(void)
                             {
                                 return x > 270 && x < 380 && y > 188 && y < 210;
                             },
+                            .handlers_on_release_flags = 0b111,
                             .mouse1_handler = [](uint16_t x, uint16_t y, void *ctx) -> void
                             {
                                 put_string(80 * 25 / 2 - strlen(m2_text) / 2, m1_text);
