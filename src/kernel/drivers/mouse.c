@@ -131,6 +131,15 @@ static void cursor_process(void)
     new_y = new_y < 0 ? 0 : new_y;
     mouse_y = new_y > (25 * 16 - 1) ? (25 * 16 - 1) : new_y;
 
+    if (mouse_debug_info)
+    {
+        char mouse_debug_buf[12];
+        put_string(1999 - 79, "y:   ");
+        put_string(1999 - 77, uint_to_str(mouse_y, mouse_debug_buf));
+        put_string(1999 - 79 - 80, "x:   ");
+        put_string(1999 - 77 - 80, uint_to_str(mouse_x, mouse_debug_buf));
+    }
+
     get_covered_chars_pos(covered_chars_pos, mouse_x, mouse_y);
 
     uint8_t mouse_glyph_buf[4][16] = {0};
@@ -170,14 +179,6 @@ static void cursor_process(void)
         if (mouse_x >= (79 * 8) && i % 2)
             continue;
         put_char(covered_chars_pos[i], mouse_glyphs_codes[i]);
-    }
-    if (mouse_debug_info)
-    {
-        char mouse_debug_buf[12];
-        put_string(1999 - 79, "y:   ");
-        put_string(1999 - 77, uint_to_str(mouse_y, mouse_debug_buf));
-        put_string(1999 - 79 - 80, "x:   ");
-        put_string(1999 - 77 - 80, uint_to_str(mouse_x, mouse_debug_buf));
     }
 }
 
