@@ -36,7 +36,7 @@ extern "C"
 #define OPTIONS_IN_COLLUM \
     (((SCREEN_HEIGHT - TOP_PAD - BOTTOM_PAD) + ((2 + OPTIONS_GAP) - 1)) / (2 + OPTIONS_GAP))
 
-#define MAX_PAGES (uint8_t)(OPTIONS_LENGTH / (OPTIONS_IN_COLLUM * 2))
+#define MAX_PAGE_INDEX (uint8_t)(OPTIONS_LENGTH / (OPTIONS_IN_COLLUM * 2))
 
 #define POPUP_BG_COLOR CYAN
 
@@ -363,10 +363,10 @@ void settings_manager_main(void)
 restart_settings_manager:
     clear_screen();
     put_string(SCREEN_WIDTH * (TOP_PAD / 2 - 1) + SCREEN_WIDTH / 2 - strlen("Settings") / 2, "Settings");
-    if (MAX_PAGES > 1)
+    if (MAX_PAGE_INDEX > 1)
     {
         put_string(SCREEN_WIDTH * (TOP_PAD / 2) + SCREEN_WIDTH - strlen("Prev/Next Page: [ ]") - RIGHT_PAD, "Prev/Next Page: [ ]");
-        uint8_t num_digits_max_pages = num_digits(MAX_PAGES);
+        uint8_t num_digits_max_pages = num_digits(MAX_PAGE_INDEX);
         uint8_t num_digits_curr_page = num_digits(current_page + 1);
         char page_str[7 + num_digits_max_pages * 2];
 
@@ -379,13 +379,13 @@ restart_settings_manager:
         page_str[3] = 'e';
         page_str[4] = ' ';
         uint_to_str(current_page + 1, &page_str[5 + num_digits_max_pages - num_digits_curr_page]);
-        uint_to_str(MAX_PAGES + 1, &page_str[6 + num_digits_max_pages]);
+        uint_to_str(MAX_PAGE_INDEX + 1, &page_str[6 + num_digits_max_pages]);
         page_str[5 + num_digits_max_pages] = '/';
         page_str[7 + num_digits_max_pages * 2 - 1] = '\0';
 
         put_string(SCREEN_WIDTH * (SCREEN_HEIGHT - BOTTOM_PAD) + SCREEN_WIDTH - RIGHT_PAD - strlen(page_str), page_str);
     }
-    for (int i = 0; i < ((current_page == MAX_PAGES) ? (OPTIONS_LENGTH % (OPTIONS_IN_COLLUM * 2)) : (OPTIONS_IN_COLLUM * 2)); i++)
+    for (int i = 0; i < ((current_page == MAX_PAGE_INDEX) ? (OPTIONS_LENGTH % (OPTIONS_IN_COLLUM * 2)) : (OPTIONS_IN_COLLUM * 2)); i++)
     {
         int ind = i + current_page * (OPTIONS_IN_COLLUM * 2);
         options[ind].data.value = settings_get_int(options[ind].meta.key, 0);
@@ -418,7 +418,7 @@ restart_settings_manager:
             reset_ui_structure();
             return;
         case KEY_DOWN:
-            if (selected_option < ((current_page == MAX_PAGES) ? OPTIONS_LENGTH % (OPTIONS_IN_COLLUM * 2) - 1 : OPTIONS_IN_COLLUM * 2 - 1))
+            if (selected_option < ((current_page == MAX_PAGE_INDEX) ? OPTIONS_LENGTH % (OPTIONS_IN_COLLUM * 2) - 1 : OPTIONS_IN_COLLUM * 2 - 1))
             {
                 highlight_selection(selected_option, BLACK);
                 selected_option++;
@@ -465,7 +465,7 @@ restart_settings_manager:
             }
             break;
         case ']':
-            if (current_page < MAX_PAGES)
+            if (current_page < MAX_PAGE_INDEX)
             {
                 current_page++;
                 selected_option = 0;
