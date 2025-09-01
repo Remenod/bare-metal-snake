@@ -31,7 +31,7 @@ _Noreturn void show_rsod(const char *msg, const cpu_state_t *state, uint32_t int
     asm volatile("cli");
 
     set_text_mode();
-    set_cursor_visibility(false);
+    set_vga_cursor_visibility(false);
     fill_screen(0, BLACK, RED);
 
     print(

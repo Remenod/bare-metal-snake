@@ -100,6 +100,7 @@ static uint16_t get_seg_selector(uint8_t seg)
 
 void segment_test_main(void)
 {
+    set_vga_cursor_visibility(true);
     seg_desc_t seg_info;
 
     static const char segs[] = {'c', 'd', 's', 'e', 'f', 'g'};
@@ -163,12 +164,12 @@ void segment_test_main(void)
         seg_info = get_segment_info(tested_segment);
         print_seg_info(&seg_info);
 
-        cursor_pos_buf = get_cursor_pos();
+        cursor_pos_buf = get_vga_cursor_pos();
         static const char wanna_continue_text[] = "Press any key to enable typing or ESC to leave";
         print(wanna_continue_text);
         for (int i = cursor_pos_buf, len = strlen(wanna_continue_text); i < len + cursor_pos_buf; i++)
             set_fg_color(i, DARK_GREY);
-        set_cursor_pos(cursor_pos_buf);
+        set_vga_cursor_pos(cursor_pos_buf);
 
         char c;
         while (!(c = get_keyboard_char()))
@@ -192,7 +193,7 @@ void segment_test_main(void)
             print_char(' ');
             print_hex(read_addr(addr));
             print_char('\n');
-            if (get_cursor_pos() > 1840)
+            if (get_vga_cursor_pos() > 1840)
             {
                 for (int i = 1; i < 5; i++)
                     for (int j = 80 * i - 25; j < 80 * i; j++)
