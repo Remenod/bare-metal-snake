@@ -21,10 +21,6 @@ void kernel_main()
     idt_install();
     print(done_text);
 
-    print("Setting Initialization... ");
-    settings_init();
-    print(done_text);
-
     print("PIT Initialization... ");
     pit_init(settings_get_int("timer.frequency", 1000));
     print(done_text);
