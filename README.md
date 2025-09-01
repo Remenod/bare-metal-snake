@@ -18,6 +18,7 @@ Over time it has grown into a small experimental OS with exception handling, key
   - Procedurally generated cursor glyphs at runtime.
   - VGA driver with support for text mode `0x03` and graphics mode `0x13`.
   - DAC palette setup and custom font loading.
+  - Global settings system
   - Expand-down stack segment with **Stack Guard**:
     - Warns at 75% stack usage.
     - Triggers a custom **Stack Overflow Interrupt** at 100%.
@@ -159,8 +160,8 @@ make clean
 ### Segment Test
 ![Segment Test](docs/media/segment_test.gif)
 
-### Cursor Playground
-![Cursor Playground](docs/media/cursor_playground.gif)
+### Cursor
+![Cursor](docs/media/cursor.gif)
 
 ### Stack Overflow RSoD
 ![Stack Overflow RSoD](docs/media/stack_overflow_rsod.png)
