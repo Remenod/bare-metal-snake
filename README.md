@@ -31,6 +31,14 @@ Over time it has grown into a small experimental OS with exception handling, key
   3. **RSoD Roulette** – casino-like roulette that randomly triggers CPU exceptions with animations.
   4. **Segment Test** – manually explore memory by selecting segments and offsets.
   5. **Mouse Playground** – experiment with mouse input, test cursor interaction, and visualize UI element responses.
+  6. **Settings** - interactive configuration manager:
+     - Supports three option types:
+       - **Slider** – smooth value adjustment (e.g. mouse sensitivity).
+       - **Checkbox** – simple ON/OFF switch.
+       - **Numeric** – number input via pop-up window.
+     - Options are applied instantly through the `settings` system module.
+     - Navigation: ↑/↓ to move, ←/→ and Enter/Space to edit. Pages can be switched with `[` and `]`.
+     - Full mouse support: click checkboxes, drag sliders, select options directly.
 
 ---
 
