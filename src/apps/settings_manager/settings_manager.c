@@ -343,44 +343,6 @@ static option_t options[] = {
             .middle = generic_checkbox,
         },
     },
-    {
-        .meta = {
-            .caption = "Test Numeric",
-            .key = "test",
-            .type = NUMERIC,
-        },
-        .data = {
-            .value = 0,
-            .numeric = {
-                .min_value = -100,
-                .max_value = 100,
-            },
-        },
-        .handler = {
-            .left = (option_handler_t)NULL,
-            .right = (option_handler_t)NULL,
-            .middle = generic_numeric,
-        },
-    },
-    {
-        .meta = {
-            .caption = "Test Numeric",
-            .key = "test",
-            .type = NUMERIC,
-        },
-        .data = {
-            .value = 0,
-            .numeric = {
-                .min_value = -100,
-                .max_value = 100,
-            },
-        },
-        .handler = {
-            .left = (option_handler_t)NULL,
-            .right = (option_handler_t)NULL,
-            .middle = generic_numeric,
-        },
-    },
 };
 
 void settings_manager_main(void)
