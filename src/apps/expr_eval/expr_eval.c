@@ -21,7 +21,7 @@ typedef struct parser
 
 static jmp_buf_t restore_point;
 
-static inline void error(error_handler_t handler, char const *message)
+static inline _Noreturn void error(error_handler_t handler, char const *message)
 {
     if (handler)
         handler(message);
