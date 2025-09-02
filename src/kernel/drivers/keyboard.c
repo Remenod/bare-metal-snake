@@ -32,7 +32,7 @@ static const char scancode_ascii_shift[128] = {
     0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0};
 
-static char *scancode_ascii = scancode_ascii_shiftnt;
+static const char *scancode_ascii = scancode_ascii_shiftnt;
 
 static volatile char last_char = 0;
 static volatile bool_t extended = 0;
