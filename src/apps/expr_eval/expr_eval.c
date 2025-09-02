@@ -212,6 +212,8 @@ size_t eval_expr(char const *input, int stack[], size_t stack_size, error_handle
 size_t eval_expr_v(char const *input, token_t buf[], size_t buf_size, int stack[], size_t stack_size, error_handler_t error_handler)
 {
     size_t tokens_count = parse_expr(input, buf, buf_size, error_handler);
+    if (setjmp(&restore_point))
+        return 0;
     size_t eval_count = eval_token_sequence(buf, tokens_count, stack, stack_size, error_handler);
     return eval_count;
 }
@@ -265,8 +267,8 @@ size_t eval_token_sequence(token_t seq[], size_t seq_size, int stack[], size_t s
         {
             if (sp < 1)
                 error(error_handler, "not enough item on the stack");
-            int a = stack[sp--];
             int b = stack[sp--];
+            int a = stack[sp--];
             stack[++sp] = a * b;
         }
         break;
@@ -278,10 +280,7 @@ size_t eval_token_sequence(token_t seq[], size_t seq_size, int stack[], size_t s
             int b = stack[sp--];
             int a = stack[sp--];
             if (b == 0)
-            {
                 error(error_handler, "division by zero");
-                return 0;
-            }
             stack[++sp] = a / b;
         }
         break;
@@ -293,10 +292,7 @@ size_t eval_token_sequence(token_t seq[], size_t seq_size, int stack[], size_t s
             int b = stack[sp--];
             int a = stack[sp--];
             if (b == 0)
-            {
                 error(error_handler, "division by zero");
-                return 0;
-            }
             stack[++sp] = a % b;
         }
         break;
