@@ -4,12 +4,12 @@
 
 typedef struct
 {
-    size_t EBP;
-    size_t EBX;
-    size_t ESI;
-    size_t EDI;
-    size_t ESP;
-    size_t EIP;
+    uint32_t EBP;
+    uint32_t EBX;
+    uint32_t ESI;
+    uint32_t EDI;
+    uint32_t ESP;
+    uint32_t EIP;
 } jmp_buf_t;
 
 int setjmp(jmp_buf_t *buf);
