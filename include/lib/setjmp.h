@@ -10,7 +10,6 @@ typedef struct
     size_t EDI;
     size_t ESP;
     size_t EIP;
-
 } jmp_buf_t;
 
 int setjmp(jmp_buf_t *buf);
