@@ -249,7 +249,7 @@ size_t eval_token_sequence(token_t seq[], size_t seq_size, int stack[], size_t s
             char buf[32];
             memcpy(buf, tok->input, tok->input_size);
             buf[tok->input_size] = '\0';
-            stack[++sp] = atoi(buf);
+            stack[++sp] = str_to_int(buf);
             break;
 
         case TOK_VAR:
