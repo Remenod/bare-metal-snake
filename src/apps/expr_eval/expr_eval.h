@@ -38,7 +38,7 @@ typedef void (*error_handler_t)(char const *message);
  * Returns a count of valid values on the stack.
  * Calls `error_handler` function on any error and returns immediately.
  */
-size_t parse_expr(char const *input, token_t buf[], size_t buf_size, error_handler_t error_handler);
+size_t eval_expr(char const *input, int stack[], size_t stack_size, error_handler_t error_handler);
 
 /**
  * Parses and evaluates `input` string as a simple mathematical expression.
