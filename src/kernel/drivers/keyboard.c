@@ -8,7 +8,7 @@
 
 #define KBD_DATA_PORT 0x60
 
-static const char scancode_ascii[128] = {
+static const char scancode_ascii_shiftnt[128] = {
     0, 27, '1', '2', '3', '4', '5', '6',
     '7', '8', '9', '0', '-', '=', '\b', '\t',
     'q', 'w', 'e', 'r', 't', 'y', 'u', 'i',
@@ -20,12 +20,31 @@ static const char scancode_ascii[128] = {
     0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0};
 
+static const char scancode_ascii_shift[128] = {
+    0, 27, '!', '@', '#', '$', '%', '^',
+    '&', '*', '(', ')', '_', '+', '\b', '\t',
+    'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I',
+    'O', 'P', '{', '}', '\n', 0, 'A', 'S',
+    'D', 'F', 'G', 'H', 'J', 'K', 'L', ';',
+    '\"', '~', 0, '|', 'Z', 'X', 'C', 'V',
+    'B', 'N', 'M', '<', '>', '?', 0, '*',
+    0, ' ', 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0};
+
+static char *scancode_ascii = scancode_ascii_shiftnt;
+
 static volatile char last_char = 0;
 static volatile bool_t extended = 0;
 
 void keyboard_handler(void)
 {
     uint8_t scancode = inb(KBD_DATA_PORT);
+
+    if (scancode == 0x2A || scancode == 0x36)
+        scancode_ascii = scancode_ascii_shift;
+    if (scancode == 0xAA || scancode == 0xB6)
+        scancode_ascii = scancode_ascii_shiftnt;
 
     if (scancode == 0xE0)
     {
@@ -60,7 +79,7 @@ void keyboard_handler(void)
         return;
     }
 
-    if (scancode < sizeof(scancode_ascii))
+    if (scancode < sizeof(scancode_ascii_shiftnt))
     {
         char c = scancode_ascii[scancode];
         if (c)
