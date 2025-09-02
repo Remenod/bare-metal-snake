@@ -75,21 +75,6 @@ static size_t str_count_leading_chars(char const *str, char const *chars)
     return n;
 }
 
-static inline bool_t is_space(char c)
-{
-    return (c == '\t' || c == '\n' || c == '\f' || c == ' ');
-}
-
-static inline bool_t is_digit(char c)
-{
-    return (c >= '0' && c <= '9');
-}
-
-static inline bool_t is_letter(char c)
-{
-    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
-}
-
 static token_t eat_token(parser_t *p)
 {
     token_t previous = p->token;
