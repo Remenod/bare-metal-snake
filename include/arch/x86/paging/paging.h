@@ -2,4 +2,4 @@
 
 #include <lib/types.h>
 
-void init_paging(void);
+void paging_init(void);

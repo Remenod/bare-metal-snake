@@ -23,7 +23,7 @@ static void setup_identity_mapping(void)
     }
 }
 
-void init_paging(void)
+void paging_init(void)
 {
     asm volatile("cli");
     setup_identity_mapping();
