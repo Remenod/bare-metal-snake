@@ -29,8 +29,7 @@ typedef struct
 } pte_t;
 
 /* init */
-inline void pte_init(pte_t *entry, uint32_t addr, bool_t rw, bool_t us,
-                     bool_t pwt, bool_t pcd, bool_t pat, bool_t global, uint8_t avl)
+inline void pte_init(pte_t *entry, uint32_t addr, bool_t rw, bool_t us, bool_t pwt, bool_t pcd, bool_t pat, bool_t global, uint8_t avl)
 {
     pte_set_addr(entry, addr);
     pte_set_rw_flag(entry, rw);
@@ -39,23 +38,21 @@ inline void pte_init(pte_t *entry, uint32_t addr, bool_t rw, bool_t us,
     pte_set_pcd_flag(entry, pcd);
     pte_set_global_flag(entry, global);
     pte_set_avl_flag(entry, avl);
+    pte_ser_present_flag(entry, 1);
     entry->fields.accessed = 0;
     entry->fields.dirty = 0;
-    entry->fields.present = 1;
     entry->fields.pat = 0;
 }
 
 /* set physical address */
-inline void pte_set_addr(pte_t *entry, uint32_t phys_addr)
-{
-    entry->fields.addr = phys_addr >> 12;
-}
+inline void pte_set_addr(pte_t *entry, uint32_t phys_addr) { entry->fields.addr = phys_addr >> 12; }
 
 /* set flags (lower 12 bits) */
-inline void pte_set_flags(pte_t *entry, uint16_t flags)
-{
-    entry->raw.data = (entry->raw.data & 0xFFFFF000) | (flags & 0x0FFF);
-}
+inline void pte_set_flags(pte_t *entry, uint16_t flags) { entry->raw.data = (entry->raw.data & 0xFFFFF000) | (flags & 0x0FFF); }
+
+/* Present
+ true = present | false = not present */
+inline void pte_ser_present_flag(pte_t *entry, bool_t val) { entry->fields.present = val != 0; };
 
 /* ReadWrite
  true = read/write | false = readonly */
