@@ -37,7 +37,7 @@ inline void pde_init(pde_t *entry, uint32_t addr, bool_t rw, bool_t us, bool_t p
     pde_set_pcd_flag(entry, pcd);
     pde_set_ps_flag(entry, ps);
     pde_set_avl_flag(entry, avl);
-    pde_ser_present_flag(entry, 1);
+    pde_set_present_flag(entry, 1);
     entry->fields.accessed = 0;
     entry->fields.reserved = 0;
 }
@@ -50,7 +50,7 @@ inline void pde_set_flags(pde_t *entry, uint16_t flags) { entry->raw.data = (ent
 
 /* Present
  true = present | false = not present */
-inline void pde_ser_present_flag(pde_t *entry, bool_t val) { entry->fields.present = val != 0; };
+inline void pde_set_present_flag(pde_t *entry, bool_t val) { entry->fields.present = val != 0; };
 
 /* ReadWrite
  true = read/write | false = readonly */

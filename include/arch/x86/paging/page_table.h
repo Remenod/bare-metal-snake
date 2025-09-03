@@ -38,7 +38,7 @@ inline void pte_init(pte_t *entry, uint32_t addr, bool_t rw, bool_t us, bool_t p
     pte_set_pcd_flag(entry, pcd);
     pte_set_global_flag(entry, global);
     pte_set_avl_flag(entry, avl);
-    pte_ser_present_flag(entry, 1);
+    pte_set_present_flag(entry, 1);
     entry->fields.accessed = 0;
     entry->fields.dirty = 0;
     entry->fields.pat = 0;
@@ -52,7 +52,7 @@ inline void pte_set_flags(pte_t *entry, uint16_t flags) { entry->raw.data = (ent
 
 /* Present
  true = present | false = not present */
-inline void pte_ser_present_flag(pte_t *entry, bool_t val) { entry->fields.present = val != 0; };
+inline void pte_set_present_flag(pte_t *entry, bool_t val) { entry->fields.present = val != 0; };
 
 /* ReadWrite
  true = read/write | false = readonly */
