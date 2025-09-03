@@ -1,4 +1,4 @@
-global set_cr_paging_bit
+global enable_paging
 global enable_global_pages
 global load_page_directory
 
