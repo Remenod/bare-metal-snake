@@ -1,14 +1,23 @@
 global set_cr_paging_bit
+global enable_global_pages
+global load_page_directory
 
-set_cr_paging_bit:
-    ; enable paging (CR0.PG = bit 31)
+enable_paging:
     mov eax, cr0
     or eax, 1 << 31
     mov cr0, eax
 
-    ; enable global pages (CR4.PGE = bit 7)
+    ret
+
+enable_global_pages:
     mov eax, cr4
     or eax, 1 << 7
     mov cr4, eax
+
+    ret
+
+load_page_directory:
+    mov eax, esp+4
+    mov cr3, eax
 
     ret
